@@ -4,7 +4,7 @@ project(indiestudio)
 
 add_subdirectory(lib/jfecs)
 
-add_compile_definitions(DO_NOT_SEND_SPECIFIC_KEY_EVENT=false)
+add_definitions(-D DO_NOT_SEND_SPECIFIC_KEY_EVENT=false)
 
 file(
         GLOB_RECURSE
