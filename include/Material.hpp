@@ -20,19 +20,13 @@ namespace indie {
 
     namespace components {
 
-        enum MaterialType
-        {
-            SOLID,
-            ADDITIVE
-        };
-
         class Material : public jf::components::Component {
         public:
-            explicit Material(jf::entities::Entity &entity, const std::string &materialTexture, components::MaterialType materialType, irr::video::E_MATERIAL_FLAG materialFlag);
+            explicit Material(jf::entities::Entity &entity, const std::string &materialTexture, irr::video::E_MATERIAL_TYPE materialType, irr::video::E_MATERIAL_FLAG materialFlag);
             ~Material() override;
 
-            components::MaterialType getMaterialType() const;
-            void setMaterialType(components::MaterialType type);
+            irr::video::E_MATERIAL_TYPE getMaterialType() const;
+            void setMaterialType(irr::video::E_MATERIAL_TYPE type);
 
             std::string getMaterialTexture() const;
             void setMaterialTexture(const std::string &textureName);
@@ -41,7 +35,7 @@ namespace indie {
             void setMaterialFlag(irr::video::E_MATERIAL_FLAG materialFlag);
 
         private:
-            components::MaterialType _materialType;
+            irr::video::E_MATERIAL_TYPE _materialType;
             std::string _materialTexture;
             irr::video::E_MATERIAL_FLAG _materialFlag;
         };

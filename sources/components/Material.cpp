@@ -13,7 +13,7 @@
 #include "Events.hpp"
 
 indie::components::Material::Material(jf::entities::Entity &entity, const std::string &materialTexture,
-                                      indie::components::MaterialType materialType,
+                                      irr::video::E_MATERIAL_TYPE materialType,
                                       irr::video::E_MATERIAL_FLAG materialFlag)
 : jf::components::Component(entity), _materialType(materialType), _materialTexture(materialTexture), _materialFlag(materialFlag)
 {
@@ -25,7 +25,7 @@ indie::components::Material::~Material()
     EMIT_DELETE(Material);
 }
 
-void indie::components::Material::setMaterialType(indie::components::MaterialType type)
+void indie::components::Material::setMaterialType(irr::video::E_MATERIAL_TYPE type)
 {
     _materialType = type;
 }
@@ -40,7 +40,7 @@ void indie::components::Material::setMaterialFlag(irr::video::E_MATERIAL_FLAG ma
     _materialFlag = materialFlag;
 }
 
-indie::components::MaterialType indie::components::Material::getMaterialType() const
+irr::video::E_MATERIAL_TYPE indie::components::Material::getMaterialType() const
 {
     return _materialType;
 }
