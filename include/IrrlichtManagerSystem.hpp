@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2018
 ** jfecs-irrlicht
 ** File description:
-** IrrlichtRendererSystem.hpp
+** IrrlichtManagerSystem.hpp
 */
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
@@ -23,10 +23,23 @@ namespace jf {
 
     namespace systems {
 
-        class IrrlichtRendererSystem : public ISystem {
+        class IrrlichtManagerSystem : public ISystem {
+        private:
+            class IrrlichtEventReceiver : public irr::IEventReceiver {
+            public:
+                bool OnEvent(const irr::SEvent &event) override;
+            private:
+                static void sendGUIEvent(const irr::SEvent &event);
+                static void sendMouseInputEvent(const irr::SEvent &event);
+                static void sendKeyInputEvent(const irr::SEvent &event);
+                static void sendJoystickInputEvent(const irr::SEvent &event);
+                static void sendLogTextEvent(const irr::SEvent &event);
+                static void sendUserEvent(const irr::SEvent &event);
+            };
+
         public:
-            IrrlichtRendererSystem();
-            ~IrrlichtRendererSystem();
+            IrrlichtManagerSystem();
+            ~IrrlichtManagerSystem();
 
         public:
             void onAwake() override;
@@ -50,16 +63,25 @@ namespace jf {
 
             bool isWindowOpen() const;
 
+            void activateJoysticks();
+            void reloadJoysticks();
+            const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
+
         private:
             void openWindow();
             void closeWindow();
             void reloadWindow();
 
         private:
+            IrrlichtEventReceiver _eventReceiver;
+
             irr::IrrlichtDevice *_device;
             irr::video::IVideoDriver *_driver;
             irr::scene::ISceneManager *_sceneManager;
             irr::gui::IGUIEnvironment *_guiEnvironment;
+
+            bool _joystickEnabled;
+            irr::core::array<irr::SJoystickInfo> _joystickInfos;
 
             bool _fullscreenEnabled;
             bool _vsyncEnabled;
