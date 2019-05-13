@@ -62,6 +62,8 @@ namespace jf {
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
 
             bool isWindowOpen() const;
+            irr::video::IVideoDriver *getVideoDriver() const;
+            irr::IrrlichtDevice *getDevice() const;
 
             void activateJoysticks();
             void reloadJoysticks();
