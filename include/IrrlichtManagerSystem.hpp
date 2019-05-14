@@ -49,6 +49,9 @@ namespace jf {
             void onTearDown() override;
 
         public:
+            irr::scene::ISceneManager *getSceneManager();
+
+        public:
             bool isFullScreenEnabled() const;
             void setFullScreenEnabled(bool enabled);
 

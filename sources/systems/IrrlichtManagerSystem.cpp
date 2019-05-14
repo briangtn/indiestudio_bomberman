@@ -14,6 +14,7 @@
 #include "IrrlichtJoystickInputEvent.hpp"
 #include "IrrlichtMouseInputEvent.hpp"
 #include "IrrlichtGUIEvent.hpp"
+#include "Transform.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -42,6 +43,11 @@ jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
         closeWindow();
 }
 
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
+{
+    return _sceneManager;
+}
+
 void jf::systems::IrrlichtManagerSystem::onAwake()
 {
 
@@ -57,6 +63,10 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+    ECSWrapper ecs;
+    ecs.entityManager.applyToEach<components::Transform>([&](entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr) {
+        std::cout << entity->getName() << " " << tr->getPosition().x << std::endl;
+    });
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
     _driver->endScene();
