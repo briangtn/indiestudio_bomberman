@@ -9,16 +9,22 @@
 #define MESH_HPP_
 
 #include "IrrlichtManagerSystem.hpp"
+#include "Component.hpp"
 
 namespace jf {
 
     namespace components {
 
-        class Mesh {
+        class Mesh : public Component {
             public:
-                Mesh(const std::string filename);
+                Mesh(entities::Entity &entity, const std::string filename);
                 ~Mesh();
 
+                void addToScene();
+                void changeVisibility(bool shouldBeSeen);
+                //other display settings
+                void changeMesh(const std::string filename, bool shouldBeSeen);
+                //
             protected:
             private:
                 irr::scene::IAnimatedMesh *_mesh;

@@ -65,7 +65,7 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
     ECSWrapper ecs;
     ecs.entityManager.applyToEach<components::Transform>([&](entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr) {
-        std::cout << entity->getName() << " " << tr->getPosition().x << std::endl;
+        //std::cout << entity->getName() << " " << tr->getPosition().x << std::endl;
     });
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
