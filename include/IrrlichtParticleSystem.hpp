@@ -33,9 +33,9 @@ namespace jf {
 
             void onTearDown() override;
 
-            void setPosition(int x, int y, int z);
+            void setPosition(irr::core::vector3df vector_pos);
 
-            void setScale(int x, int y, int z);
+            void setScale(irr::core::vector3df vector_sca);
 
             void setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, bool activate);
 

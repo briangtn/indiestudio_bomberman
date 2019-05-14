@@ -12,15 +12,18 @@
 
 #include "ECSWrapper.hpp"
 #include "Component.hpp"
+#include "irrlicht.h"
 
 namespace jf {
 
     class IrrlichtParticleComponent : public jf::components::Component {
         public:
-            IrrlichtParticleComponent();
-            ~IrrlichtParticleComponent();
 
-            
+        IrrlichtParticleComponent(entities::Entity &entity);
+
+        ~IrrlichtParticleComponent() {
+            EMIT_DELETE(IrrlichtParticleComponent);
+        }   
 
         protected:
         private:

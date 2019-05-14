@@ -18,7 +18,7 @@ jf::IrrlichtParticleSystem::IrrlichtParticleSystem()
 
 jf::IrrlichtParticleSystem::~IrrlichtParticleSystem()
 {
-    std::cour << "IrrlichtParticleSystem Destructor" << std::endl;
+    std::cout << "IrrlichtParticleSystem Destructor" << std::endl;
 }
 
 void jf::IrrlichtParticleSystem::onAwake()
@@ -46,14 +46,14 @@ void jf::IrrlichtParticleSystem::onTearDown()
     std::cout << "IrrlichtParticleSystem onTearDown" << std::endl;
 }
 
-void jf::IrrlichtParticleSystem::setPosition(int x, int y, int z)
+void jf::IrrlichtParticleSystem::setPosition(irr::core::vector3df vector_pos)
 {
-    std::cout << "IrrlichtParticleSystem setPosition: x=" << x << " y=" << y << " z=" << z << std::endl;
+    std::cout << "IrrlichtParticleSystem setPosition: x=" << vector_pos.X << " y=" << vector_pos.Y << " z=" << vector_pos.Z << std::endl;
 }
 
-void jf::IrrlichtParticleSystem::setScale(int x, int y, int z)
+void jf::IrrlichtParticleSystem::setScale(irr::core::vector3df vector_sca)
 {
-    std::cout << "IrrlichtParticleSystem setScale: x=" << x << " y=" << y << " z=" << z << std::endl;
+    std::cout << "IrrlichtParticleSystem setScale: x=" << vector_sca.X << " y=" << vector_sca.Y << " z=" << vector_sca.Z << std::endl;
 }
 
 void jf::IrrlichtParticleSystem::setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, bool activate)
