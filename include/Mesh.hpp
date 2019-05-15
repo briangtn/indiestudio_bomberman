@@ -22,14 +22,24 @@ namespace jf {
 
                 void addToScene();
                 void changeVisibility(bool shouldBeSeen);
-                //other display settings
-                void changeMesh(const std::string filename, bool shouldBeSeen);
-                //
+                //other display settings (SYNCPOSITION IN SYSTEM)
+                void changeMesh(const std::string &filename, bool shouldBeSeen, bool shouldAddToScene);
+                void setPos(irr::core::vector3df vector);
+                void setTexture(const std::string &filename);
             protected:
             private:
                 irr::scene::IAnimatedMesh *_mesh;
                 irr::scene::IAnimatedMeshSceneNode *_node;
         };
+    }
+}
+
+#else
+
+namespace jf {
+
+    namespace components {
+        class Mesh;
     }
 }
 

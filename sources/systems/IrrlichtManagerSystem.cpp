@@ -15,6 +15,8 @@
 #include "IrrlichtMouseInputEvent.hpp"
 #include "IrrlichtGUIEvent.hpp"
 #include "Transform.hpp"
+#include "Entity.hpp"
+#include "EntityHandler.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -58,15 +60,21 @@ void jf::systems::IrrlichtManagerSystem::onStart()
     openWindow();
 }
 
+void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
+{
+    //node->setPosition(irr::core::vector3df(0, 0, 0));
+    //ATM : créer le vector3df à partir du transform -> send a setpos de la mesh;
+}
+
 void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
     ECSWrapper ecs;
-    ecs.entityManager.applyToEach<components::Transform>([&](entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr) {
-        //std::cout << entity->getName() << " " << tr->getPosition().x << std::endl;
-    });
+    /* MODEL 3D */
+    ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
+    /* FIN MODEL 3D */
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
     _driver->endScene();

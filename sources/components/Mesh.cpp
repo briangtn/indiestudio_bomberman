@@ -5,6 +5,7 @@
 ** Mesh
 */
 
+#include "Entity.hpp"
 #include "Mesh.hpp"
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
@@ -26,7 +27,19 @@ jf::components::Mesh::~Mesh()
     EMIT_DELETE(Mesh);
 }
 
-void jf::components::Mesh::changeMesh(const std::string filename, bool shouldBeSeen)
+void jf::components::Mesh::setPos(irr::core::vector3df vector)
+{
+
+}
+
+void jf::components::Mesh::setTexture(const std::string &filename)
+{
+    ECSWrapper ecs;
+    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+    _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(filename.c_str()));
+}
+
+void jf::components::Mesh::changeMesh(const std::string &filename, bool shouldBeSeen, bool shouldAddToScene)
 {
     _node->drop();
     _mesh->drop();
@@ -37,17 +50,25 @@ void jf::components::Mesh::changeMesh(const std::string filename, bool shouldBeS
     _mesh = sceneManager->getMesh(filename.c_str());
     if (_mesh == nullptr)
         throw;
-    //DON'T FORGET TO ADDTOSCENE THE NEW MESH
+    if (shouldAddToScene) {
+        _node = sceneManager->addAnimatedMeshSceneNode(_mesh);
+        if (_node == nullptr)
+            throw;
+        _node->setVisible(true);
+    }
 }
 
 void jf::components::Mesh::addToScene()
 {
     ECSWrapper ecs;
     irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
-    if (sceneManager == nullptr || _mesh == nullptr || _node == nullptr)
+    if (sceneManager == nullptr || _mesh == nullptr)
         throw;
     _node = sceneManager->addAnimatedMeshSceneNode(_mesh);
+    if (_node == nullptr)
+        throw;
     _node->setVisible(true);
+    _node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
 void jf::components::Mesh::changeVisibility(bool shouldBeSeen)
