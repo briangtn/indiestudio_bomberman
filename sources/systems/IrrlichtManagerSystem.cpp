@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include <Camera.hpp>
 #include "IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "IrrlichtManagerSystem.hpp"
@@ -33,7 +34,6 @@ jf::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _windowCaption("Irrlicht window"),
       _windowDimension(800, 600)
 {
-
 }
 
 jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
@@ -49,6 +49,7 @@ void jf::systems::IrrlichtManagerSystem::onAwake()
 
 void jf::systems::IrrlichtManagerSystem::onStart()
 {
+    std::cout << "1" << std::endl;
     openWindow();
 }
 
@@ -57,6 +58,7 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+    updateCamera(elapsedTime);
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
     _driver->endScene();
@@ -140,6 +142,13 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
     _driver = _device->getVideoDriver();
     _sceneManager = _device->getSceneManager();
     _guiEnvironment = _device->getGUIEnvironment();
+
+
+
+
+
+
+
     reloadJoysticks();
 }
 
@@ -181,6 +190,21 @@ void jf::systems::IrrlichtManagerSystem::reloadJoysticks()
         }
         std::cout << "Joystick support is enabled and " << _joystickInfos.size() << " joystick(s) are present." << std::endl;
     }
+}
+
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const {
+    return _sceneManager;
+}
+
+void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanoseconds &elapsedTime)
+{
+    ECSWrapper ecs;
+
+    std::vector<jf::entities::EntityHandler> cameras;
+    cameras = ecs.entityManager.getEntitiesWith<jf::components::Camera, jf::components::Transform>();
+
+    if (!cameras.empty())
+        cameras[0]->getComponent<jf::components::Camera>()->update();
 }
 
 bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

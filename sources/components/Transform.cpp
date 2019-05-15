@@ -14,8 +14,9 @@
 /* ----------------------------------------------------Ctor&Dtor--------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::components::Transform::Transform(jf::entities::Entity &entity)
-    : Component(entity), _position(), _rotation(), _scale(1.0f, 1.0f, 1.0f)
+
+jf::components::Transform::Transform(jf::entities::Entity &entity, jf::maths::Vector3D position, jf::maths::Vector3D rotation, jf::maths::Vector3D scale)
+    : Component(entity), _position(position), _rotation(rotation), _scale(scale)
 {
     EMIT_CREATE(Transform);
 }

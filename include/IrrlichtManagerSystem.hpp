@@ -42,6 +42,8 @@ namespace jf {
             ~IrrlichtManagerSystem();
 
         public:
+            void updateCamera(const std::chrono::nanoseconds &elapsedTime);
+
             void onAwake() override;
             void onStart() override;
             void onUpdate(const std::chrono::nanoseconds &elapsedTime) override;
@@ -58,8 +60,12 @@ namespace jf {
             const std::string &getWindowCaption() const;
             void setWindowCaption(const std::string &str);
 
+
+
             const jf::maths::Vector2D &getWindowDimension() const;
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
+
+            irr::scene::ISceneManager *getSceneManager() const;
 
             bool isWindowOpen() const;
 
