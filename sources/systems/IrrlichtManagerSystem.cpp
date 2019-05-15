@@ -62,8 +62,11 @@ void jf::systems::IrrlichtManagerSystem::onStart()
 
 void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
 {
-    //node->setPosition(irr::core::vector3df(0, 0, 0));
-    //ATM : créer le vector3df à partir du transform -> send a setpos de la mesh;
+    if (jedoisassign)
+        assign;
+    auto pos = tr->getPosition();
+    irr::core::vector3df vector(pos.x, pos.y, pos.z);
+    mesh->setPos(vector);
 }
 
 void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)

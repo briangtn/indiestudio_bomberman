@@ -27,9 +27,19 @@ jf::components::Mesh::~Mesh()
     EMIT_DELETE(Mesh);
 }
 
-void jf::components::Mesh::setPos(irr::core::vector3df vector)
+void jf::components::Mesh::setPos(irr::core::vector3df &vector)
 {
+    _node->setPosition(vector);
+}
 
+void jf::components::Mesh::setScale(irr::core::vector3df &vector)
+{
+    _node->setScale(vector);
+}
+
+void jf::components::Mesh::rotate()
+{
+    
 }
 
 void jf::components::Mesh::setTexture(const std::string &filename)
