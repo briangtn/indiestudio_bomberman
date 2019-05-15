@@ -5,86 +5,88 @@
 ** ComponentParticle
 */
 
-/* Created the 14/05/2019 at 14:03 by Charlie Jeanneau */
-
 #include "ComponentParticle.hpp"
 
-jf::ComponentParticle::ComponentParticle(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
+jf::Particle::Particle(jf::entities::Entity &entity, std::string name)
+    : Component(entity)
+{
+    ECSWrapper ecs;
+
+    EMIT_CREATE(Particle);
+    _particle =  ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager()->addParticleSystemSceneNode(false);
+    _particleName = name;
+    _affector = _particle->createFadeOutParticleAffector();
+    _particle->addAffector(_affector);
+    _affector->drop();
+    _boxEmiterCreate = false;
+    _affectorCreate = false;
+    _particle->setVisible(false);
+    _isVisible = false;
+}
+
+void jf::Particle::createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
 irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
 irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
 std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize)
-    : Component(entity), _emiterSize(emiterSize), _initialDirection(initialDirection), _emitRate(emitRate),\
-_darkBrightColor(darkBrightColor), _minMaxAge(minMaxAge), _angle(angle), _minMaxSize(minMaxsize)
 {
-    EMIT_CREATE(ComponentParticle);
+    _emitter = _particle->createBoxEmitter(emiterSize, initialDirection,\
+emitRate.first, emitRate.second, darkBrightColor.first, darkBrightColor.second, minMaxAge.first, minMaxAge.second,\
+angle, minMaxsize.first, minMaxsize.second);
+    _boxEmiterCreate = true;
 }
 
-irr::core::aabbox3d<irr::f32> jf::ComponentParticle::getEmiterSize() const
+void jf::Particle::createFadeOutParticle(irr::video::SColor color, int time)
 {
-    return _emiterSize;
+    _affector = _particle->createFadeOutParticleAffector(color, time);
+    _affectorCreate = true;
 }
 
-void jf::ComponentParticle::setEmiterSize(irr::core::aabbox3d<irr::f32> emiterSize)
+void jf::Particle::Activate()
 {
-    _emiterSize = emiterSize;
+    if (_affectorCreate == true)
+        _particle->addAffector(_affector);
+    else {
+        _affector->drop();
+        std::cout << "throw error" << std::endl;
+    }
+    if (_boxEmiterCreate == true)
+        _particle->setEmitter(_emitter);
+    else {
+        _emitter->drop();
+        std::cout << "throw error" << std::endl;
+    }
+    _particle->setVisible(true);
+    _isVisible = true;
 }
 
-irr::core::vector3df jf::ComponentParticle::getInitialDirection() const
+void jf::Particle::Deactivate()
 {
-    return _initialDirection;
+    _particle->setVisible(false);
+    _isVisible = false;
 }
 
-void jf::ComponentParticle::setInitialDirection(irr::core::vector3df initialDirection)
+std::string jf::Particle::getTexturePath() const
 {
-    _initialDirection = initialDirection;
+    return _texturePath;
 }
 
-std::pair<int, int> jf::ComponentParticle::getEmitRate() const
+void jf::Particle::setTextureName(int layer, std::string texturePath)
 {
-    return _emitRate;
+    _texturePath = texturePath;
+//    _particle->setMaterialTexture(layer, irr::video::SMaterial::setTexture(texturePath));
 }
 
-void jf::ComponentParticle::setEmitRate(std::pair<int, int> emitRate)
+bool jf::Particle::getParticleVisible() const
 {
-    _emitRate = emitRate;
+    return _isVisible;
 }
 
-std::pair<irr::video::SColor, irr::video::SColor> jf::ComponentParticle::getDarkBrightColor() const
+std::string jf::Particle::getName() const
 {
-    return _darkBrightColor;
+    return _particleName;
 }
 
-void jf::ComponentParticle::setDarkBrightColor(std::pair<irr::video::SColor, irr::video::SColor> darkBrightColor)
+void jf::Particle::setName(std::string newName)
 {
-    _darkBrightColor = darkBrightColor;
-}
-
-std::pair<int, int> jf::ComponentParticle::getMinMaxAge() const
-{
-    return _minMaxAge;
-}
-
-void jf::ComponentParticle::setMinMaxAge(std::pair<int, int> minMaxAge)
-{
-    _minMaxAge = minMaxAge;
-}
-
-int jf::ComponentParticle::getAngle() const
-{
-    return _angle;
-}
-
-void jf::ComponentParticle::setAngle(int angle)
-{
-    _angle = angle;
-}
-
-std::pair<irr::core::dimension2df, irr::core::dimension2df> jf::ComponentParticle::getMinMaxSize() const
-{
-    return _minMaxSize;
-}
-
-void jf::ComponentParticle::setMinMaxSize(std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxSize)
-{
-    _minMaxSize = minMaxSize;
+    _particleName = newName;
 }

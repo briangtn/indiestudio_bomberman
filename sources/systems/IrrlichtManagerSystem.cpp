@@ -734,3 +734,8 @@ void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendUserEvent(co
 {
     (void)event;
 }
+
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const
+{
+    return _sceneManager;
+}

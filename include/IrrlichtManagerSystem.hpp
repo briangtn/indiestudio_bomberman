@@ -67,6 +67,8 @@ namespace jf {
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
+            irr::scene::ISceneManager *getSceneManager() const;
+
         private:
             void openWindow();
             void closeWindow();
@@ -87,6 +89,10 @@ namespace jf {
             bool _vsyncEnabled;
             std::string _windowCaption;
             jf::maths::Vector2D _windowDimension;
+
+        public:
+            
+        private:
         };
     }
 }

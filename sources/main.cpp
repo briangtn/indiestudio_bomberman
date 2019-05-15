@@ -13,6 +13,7 @@
 #include "IrrlichtKeyInputEvent.hpp"
 #include "IrrlichtMouseInputEvent.hpp"
 #include "ECSWrapper.hpp"
+#include "ComponentParticle.hpp"
 #include "Exceptions.hpp"
 
 int runBomberman()
