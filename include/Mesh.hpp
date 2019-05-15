@@ -27,11 +27,13 @@ namespace jf {
                 void setPos(irr::core::vector3df &vector);
                 void setTexture(const std::string &filename);
                 void setScale(irr::core::vector3df &vector);
-                void rotate();
+                void rotate(irr::core::vector3df &vector);
+                void linkFilenameToMesh();
             protected:
             private:
                 irr::scene::IAnimatedMesh *_mesh;
                 irr::scene::IAnimatedMeshSceneNode *_node;
+                std::string _filename;
         };
     }
 }

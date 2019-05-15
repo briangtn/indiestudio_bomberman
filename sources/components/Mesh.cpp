@@ -10,15 +10,8 @@
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
 
-jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename) : Component(entity), _mesh(nullptr), _node(nullptr)
+jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename) : Component(entity), _mesh(nullptr), _node(nullptr), _filename(filename)
 {
-    ECSWrapper ecs;
-    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
-    if (sceneManager == nullptr)
-        throw;
-    _mesh = sceneManager->getMesh(filename.c_str());
-    if (_mesh == nullptr)
-        throw;
     EMIT_CREATE(Mesh);
 }
 
@@ -27,19 +20,38 @@ jf::components::Mesh::~Mesh()
     EMIT_DELETE(Mesh);
 }
 
+void jf::components::Mesh::linkFilenameToMesh()
+{
+    if (_mesh != nullptr)
+        return;
+    ECSWrapper ecs;
+    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+    if (sceneManager == nullptr)
+        throw;
+    _mesh = sceneManager->getMesh(_filename.c_str());
+    if (_mesh == nullptr)
+        throw;
+}
+
 void jf::components::Mesh::setPos(irr::core::vector3df &vector)
 {
+    if (!_node)
+        throw;
     _node->setPosition(vector);
 }
 
 void jf::components::Mesh::setScale(irr::core::vector3df &vector)
 {
+    if (!_node)
+        throw;
     _node->setScale(vector);
 }
 
-void jf::components::Mesh::rotate()
+void jf::components::Mesh::rotate(irr::core::vector3df &vector)
 {
-    
+    if (!_node)
+        throw;
+    _node->setRotation(vector);
 }
 
 void jf::components::Mesh::setTexture(const std::string &filename)
@@ -70,6 +82,8 @@ void jf::components::Mesh::changeMesh(const std::string &filename, bool shouldBe
 
 void jf::components::Mesh::addToScene()
 {
+    if (_node != nullptr)
+        return;
     ECSWrapper ecs;
     irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
     if (sceneManager == nullptr || _mesh == nullptr)

@@ -62,11 +62,17 @@ void jf::systems::IrrlichtManagerSystem::onStart()
 
 void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
 {
-    if (jedoisassign)
-        assign;
+    mesh->linkFilenameToMesh();
+    mesh->addToScene();
     auto pos = tr->getPosition();
     irr::core::vector3df vector(pos.x, pos.y, pos.z);
     mesh->setPos(vector);
+    auto scale = tr->getScale();
+    irr::core::vector3df vectorScale(scale.x, scale.y, scale.z);
+    mesh->setScale(vectorScale);
+    auto rotate = tr->getRotation();
+    irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
+    mesh->rotate(vectorRotation);
 }
 
 void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
