@@ -23,10 +23,10 @@ jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filen
 
 jf::components::Mesh::~Mesh()
 {
-    if (_node)
-        _node->remove();
-    if (_mesh)
-        _mesh->drop();
+    //if (_node)
+    //    _node->remove();
+    //if (_mesh)
+    //    _mesh->drop();
     EMIT_DELETE(Mesh);
 }
 
@@ -97,10 +97,10 @@ void jf::components::Mesh::applyChange()
 
 void jf::components::Mesh::changeMesh(const std::string &filename)
 {
+    if (_node)
+        _node->remove();
     if (_mesh)
         _mesh->drop();
-    if (_node)
-        _node->drop();
     _node = nullptr;
     _mesh = nullptr;
     _shouldMeshChange = true;
