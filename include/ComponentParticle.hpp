@@ -21,20 +21,23 @@ namespace jf {
         class Particle
             : public jf::components::Component {
         public:
+
+            /* Particle Constructor */
+
             Particle(jf::entities::Entity &entity, const std::string &name);
+
+            /* Particle Destructor */
+
+            ~Particle();            
+
+            /* Init Funciton */
 
             void initParticle();
             bool isInit() const;
-
-            void createBoxEmitter(irr::core::aabbox3d<irr::f32> emiterSize, \
-irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor, \
-irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle, \
-std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
+         
             const irr::scene::IParticleEmitter *getEmitter() const;
 
-            void createFadeOutParticle(irr::video::SColor color, int time);
-
-            ~Particle();
+            /* Get And Set Assets */
 
             std::string getName() const;
             void setName(const std::string &newName);
@@ -42,11 +45,13 @@ std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
             std::string getTexturePath() const;
             void setTexture(int layer, const std::string &textureName);
 
+            /* Handling Display Particle */
+
             void activate();
-
             void deactivate();
-
             bool getIsVisible() const;
+
+            /* Get and Set For Transform */
 
             irr::core::vector3df getPosition() const;
             void setPosition(const irr::core::vector3df &newPos);
@@ -57,16 +62,90 @@ std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
             irr::core::vector3df getRotation() const;
             void setRotation(const irr::core::vector3df &newRotation);
 
+            /* Get and Set For Emitter */
+
+            irr::core::aabbox3d<irr::f32> getEmiterSize() const;
+            void setEmiterSize(const irr::core::aabbox3d<irr::f32> &newEmiterSize);
+
+            irr::core::vector3df getInitialDirection() const;
+            void setInitialDirection(const irr::core::vector3df &newInitialDirection);
+
+            std::pair<int, int> getEmitRate() const;
+            void setEmitRate(const std::pair<int, int> &newEmitRate);
+
+            std::pair<irr::video::SColor, irr::video::SColor> getDarkBrightColor() const;
+            void setDarkBrightColor(const std::pair<irr::video::SColor, irr::video::SColor> &newDarkBrightColor);
+
+            std::pair<int, int> getMinMaxAge() const;
+            void setMinMaxAge(const std::pair<int, int> &newMinMaxAge);
+
+            int getAngle() const;
+            void setAngle(const int &newAngle);
+
+            std::pair<irr::core::dimension2df, irr::core::dimension2df> getMinMaxSize() const;
+            void setMinMaxSize(const std::pair<irr::core::dimension2df, irr::core::dimension2df> &newMinMaxSize);
+
+            /* Get and Set For Fade */
+
+            irr::video::SColor getFadeColor() const;
+            void setFadeColor(const irr::video::SColor &newFadeColor);
+
+            int getFadeTime() const;
+            void setFadeTime(const int &newFadeTime);
+
         protected:
         private:
+
+            /* Init Function Emitter And Particle */
+
+            void createBoxEmitter();       
+            void createFadeOutParticle();    
+
+            /* Check Init Emitter And Affector */
+
+            bool isEmitterInit() const;
+            bool isAffectorInit() const;
+        
+
+            /* Bool is created / Visible */
 
             bool _boxEmiterCreated;
             bool _affectorCreated;
             bool _isVisible;
 
+            /* Particle Core*/
+
             irr::scene::IParticleSystemSceneNode *_particle;
             irr::scene::IParticleEmitter *_emitter;
             irr::scene::IParticleAffector *_affector;
+
+            /* BoxEmitter Info */
+
+            irr::core::aabbox3d<irr::f32> _emiterSize;
+            irr::core::vector3df _initialDirection;
+            std::pair<int, int> _emitRate;
+            std::pair<irr::video::SColor, irr::video::SColor> _darkBrightColor;
+            std::pair<int, int> _minMaxAge;
+            int _angle;
+            std::pair<irr::core::dimension2df, irr::core::dimension2df> _minMaxSize;
+
+            bool _emiterSizeInitialize;
+            bool _initialDirectionInitialize;
+            bool _emitRateInitialize;
+            bool _darkBrightColorInitialize;
+            bool _minMaxAgeInitialize;
+            bool _angleInitialize;
+            bool _minMaxSizeInitialize;
+
+            /* FadeOut Info */
+
+            irr::video::SColor _fadeColor;
+            int _fadeTime;
+
+            bool _fadeColorInitialize;
+            bool _fadeTimeInitialize;
+
+            /* Assets Particle */
 
             std::string _texturePath;
             std::string _name;
