@@ -21,18 +21,21 @@ jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filen
       _shouldTextureChange(false)
 {
     ECSWrapper ecs;
-    ecs.eventManager.addListener<Mesh, events::IrrlichtClosingWindowEvent>(this, [](Mesh *mesh, events::IrrlichtClosingWindowEvent e) {
+    _irrlichtClosingWindowEventID = ecs.eventManager.addListener<Mesh, events::IrrlichtClosingWindowEvent>(this, [](Mesh *mesh, events::IrrlichtClosingWindowEvent e) {
         mesh->_node->remove();
         mesh->_node = nullptr;
+        mesh->_mesh = nullptr;
     });
     EMIT_CREATE(Mesh);
 }
 
 jf::components::Mesh::~Mesh()
 {
+    EMIT_DELETE(Mesh);
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_irrlichtClosingWindowEventID);
     if (_node)
         _node->remove();
-    EMIT_DELETE(Mesh);
 }
 
 void jf::components::Mesh::linkFilenameToMesh()

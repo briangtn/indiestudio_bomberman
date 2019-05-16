@@ -37,6 +37,7 @@ namespace jf {
                 std::string _textureFilename;
                 bool _shouldMeshChange;
                 bool _shouldTextureChange;
+                jf::internal::ID _irrlichtClosingWindowEventID;
         };
     }
 }
