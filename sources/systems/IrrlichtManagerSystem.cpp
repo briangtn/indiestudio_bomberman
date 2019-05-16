@@ -15,6 +15,10 @@
 #include "IrrlichtJoystickInputEvent.hpp"
 #include "IrrlichtMouseInputEvent.hpp"
 #include "IrrlichtGUIEvent.hpp"
+#include "Transform.hpp"
+#include "Entity.hpp"
+#include "EntityHandler.hpp"
+#include "IrrlichtClosingWindowEvent.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -42,6 +46,11 @@ jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
         closeWindow();
 }
 
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
+{
+    return _sceneManager;
+}
+
 void jf::systems::IrrlichtManagerSystem::onAwake()
 {
 
@@ -53,14 +62,39 @@ void jf::systems::IrrlichtManagerSystem::onStart()
     openWindow();
 }
 
+void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
+{
+    mesh->linkFilenameToMesh();
+    mesh->applyChange();
+    mesh->addToScene();
+    auto pos = tr->getPosition();
+    irr::core::vector3df vector(pos.x, pos.y, pos.z);
+    mesh->setPos(vector);
+    auto scale = tr->getScale();
+    irr::core::vector3df vectorScale(scale.x, scale.y, scale.z);
+    mesh->setScale(vectorScale);
+    auto rotate = tr->getRotation();
+    irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
+    mesh->rotate(vectorRotation);
+}
+
 void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
+    ECSWrapper ecs;
+
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+
+    /* Camera */
     updateCamera(elapsedTime);
+    /* 3DModel */
+    ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
+    /* !3DModel */
+
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
+
     _driver->endScene();
 }
 
@@ -147,8 +181,11 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
 
 void jf::systems::IrrlichtManagerSystem::closeWindow()
 {
-    if (_device != nullptr)
+    if (_device != nullptr) {
+        ECSWrapper ecs;
+        ecs.eventManager.emit(events::IrrlichtClosingWindowEvent());
         _device->drop();
+    }
     _device = nullptr;
 }
 
