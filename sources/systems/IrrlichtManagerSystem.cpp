@@ -48,7 +48,10 @@ jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
 
 void jf::systems::IrrlichtManagerSystem::onAwake()
 {
-
+    ECSWrapper ecs;
+    ecs.eventManager.addListener<IrrlichtManagerSystem, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(this, [](IrrlichtManagerSystem *ms, auto e) {
+        ms->_device->closeDevice();
+    });
 }
 
 void jf::systems::IrrlichtManagerSystem::onStart()
@@ -211,8 +214,10 @@ void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanosec
     std::vector<jf::entities::EntityHandler> cameras;
     cameras = ecs.entityManager.getEntitiesWith<jf::components::Camera, jf::components::Transform>();
 
-    if (!cameras.empty())
-        cameras[0]->getComponent<jf::components::Camera>()->update();
+    if (!cameras.empty()) {
+        cameras[0]->getComponent<jf::components::Camera>()->updateCamera();
+        _sceneManager->setActiveCamera(cameras[0]->getComponent<jf::components::Camera>()->getCameraNode());
+    }
 }
 
 void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
