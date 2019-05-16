@@ -46,11 +46,6 @@ jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
         closeWindow();
 }
 
-irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
-{
-    return _sceneManager;
-}
-
 void jf::systems::IrrlichtManagerSystem::onAwake()
 {
 
@@ -59,22 +54,6 @@ void jf::systems::IrrlichtManagerSystem::onAwake()
 void jf::systems::IrrlichtManagerSystem::onStart()
 {
     openWindow();
-}
-
-void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
-{
-    mesh->linkFilenameToMesh();
-    mesh->applyChange();
-    mesh->addToScene();
-    auto pos = tr->getPosition();
-    irr::core::vector3df vector(pos.x, pos.y, pos.z);
-    mesh->setPos(vector);
-    auto scale = tr->getScale();
-    irr::core::vector3df vectorScale(scale.x, scale.y, scale.z);
-    mesh->setScale(vectorScale);
-    auto rotate = tr->getRotation();
-    irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
-    mesh->rotate(vectorRotation);
 }
 
 void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
@@ -89,7 +68,6 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     updateCamera(elapsedTime);
     /* 3DModel */
     ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
-    /* !3DModel */
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -149,6 +127,11 @@ void jf::systems::IrrlichtManagerSystem::setWindowDimension(const jf::maths::Vec
 {
     _windowDimension = dimensions;
     reloadWindow();
+}
+
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
+{
+    return _sceneManager;
 }
 
 bool jf::systems::IrrlichtManagerSystem::isWindowOpen() const
@@ -221,11 +204,6 @@ void jf::systems::IrrlichtManagerSystem::reloadJoysticks()
     }
 }
 
-irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const
-{
-    return _sceneManager;
-}
-
 void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanoseconds &elapsedTime)
 {
     ECSWrapper ecs;
@@ -235,6 +213,22 @@ void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanosec
 
     if (!cameras.empty())
         cameras[0]->getComponent<jf::components::Camera>()->update();
+}
+
+void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
+{
+    mesh->linkFilenameToMesh();
+    mesh->applyChange();
+    mesh->addToScene();
+    auto pos = tr->getPosition();
+    irr::core::vector3df vector(pos.x, pos.y, pos.z);
+    mesh->setPos(vector);
+    auto scale = tr->getScale();
+    irr::core::vector3df vectorScale(scale.x, scale.y, scale.z);
+    mesh->setScale(vectorScale);
+    auto rotate = tr->getRotation();
+    irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
+    mesh->rotate(vectorRotation);
 }
 
 bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

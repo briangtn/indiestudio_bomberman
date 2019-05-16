@@ -44,16 +44,11 @@ namespace jf {
             ~IrrlichtManagerSystem();
 
         public:
-            void updateCamera(const std::chrono::nanoseconds &elapsedTime);
-
             void onAwake() override;
             void onStart() override;
             void onUpdate(const std::chrono::nanoseconds &elapsedTime) override;
             void onStop() override;
             void onTearDown() override;
-
-        public:
-            irr::scene::ISceneManager *getSceneManager();
 
         public:
             bool isFullScreenEnabled() const;
@@ -64,10 +59,11 @@ namespace jf {
 
             const std::string &getWindowCaption() const;
             void setWindowCaption(const std::string &str);
+
             const jf::maths::Vector2D &getWindowDimension() const;
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
 
-            irr::scene::ISceneManager *getSceneManager() const;
+            irr::scene::ISceneManager *getSceneManager();
 
             bool isWindowOpen() const;
 
@@ -75,13 +71,15 @@ namespace jf {
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
-        public:
+        private:
             static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
 
         private:
             void openWindow();
             void closeWindow();
             void reloadWindow();
+
+            void updateCamera(const std::chrono::nanoseconds &elapsedTime);
 
         private:
             IrrlichtEventReceiver _eventReceiver;
