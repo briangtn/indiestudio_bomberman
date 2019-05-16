@@ -7,7 +7,7 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
-#include <Camera.hpp>
+#include "Camera.hpp"
 #include "IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "IrrlichtManagerSystem.hpp"
@@ -58,7 +58,6 @@ void jf::systems::IrrlichtManagerSystem::onAwake()
 
 void jf::systems::IrrlichtManagerSystem::onStart()
 {
-    std::cout << "1" << std::endl;
     openWindow();
 }
 
