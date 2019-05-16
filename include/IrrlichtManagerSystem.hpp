@@ -13,6 +13,8 @@
 #include <irrlicht.h>
 #include <string>
 #include "System.hpp"
+#include "ComponentParticle.hpp"
+#include "Transform.hpp"
 #include "Vectors.hpp"
 
 /*!
@@ -93,6 +95,7 @@ namespace jf {
             jf::maths::Vector2D _windowDimension;
 
         public:
+//            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
             
         private:
         };

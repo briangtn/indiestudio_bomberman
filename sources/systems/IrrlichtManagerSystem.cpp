@@ -744,3 +744,10 @@ irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver() c
 {
     return _driver;
 }
+
+/*
+void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle)
+{
+    // set scale and pos with particle function
+}
+*/
