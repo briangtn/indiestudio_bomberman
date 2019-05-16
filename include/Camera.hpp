@@ -31,6 +31,7 @@ namespace jf {
             ~Camera() override;
         protected:
             irr::scene::ICameraSceneNode *_sceneNode;
+            jf::internal::ID _eventCloseID;
             float _FOV;
         };
     };

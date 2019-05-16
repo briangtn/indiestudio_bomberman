@@ -17,7 +17,7 @@ jf::components::Camera::Camera(entities::Entity &entity, float FOV)
 {
     ECSWrapper ecs;
 
-    ecs.eventManager.addListener<Camera, events::IrrlichtClosingWindowEvent>(this, [](Camera *camera, events::IrrlichtClosingWindowEvent e){
+    _eventCloseID = ecs.eventManager.addListener<Camera, events::IrrlichtClosingWindowEvent>(this, [](Camera *camera, events::IrrlichtClosingWindowEvent e){
         camera->_sceneNode->drop();
         camera->_sceneNode = nullptr;
     });
@@ -26,6 +26,9 @@ jf::components::Camera::Camera(entities::Entity &entity, float FOV)
 
 jf::components::Camera::~Camera()
 {
+    ECSWrapper ecs;
+
+    ecs.eventManager.removeListener(_eventCloseID);
     if (_sceneNode != nullptr)
         _sceneNode->drop();
     EMIT_DELETE(Camera);
