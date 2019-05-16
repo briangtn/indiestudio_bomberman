@@ -26,6 +26,7 @@ namespace jf {
 irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
 irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
 std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
+                const irr::scene::IParticleEmitter *getEmitter() const;
 
                 void createFadeOutParticle(irr::video::SColor color, int time);
 

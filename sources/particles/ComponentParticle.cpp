@@ -35,6 +35,11 @@ angle, minMaxsize.first, minMaxsize.second);
     _boxEmiterCreate = true;
 }
 
+const irr::scene::IParticleEmitter *jf::components::Particle::getEmitter() const
+{
+    return _particle->getEmitter();
+}
+
 void jf::components::Particle::createFadeOutParticle(irr::video::SColor color, int time)
 {
     _affector = _particle->createFadeOutParticleAffector(color, time);
