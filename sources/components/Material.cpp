@@ -12,10 +12,14 @@
 #include "Material.hpp"
 #include "Events.hpp"
 
-indie::components::Material::Material(jf::entities::Entity &entity, const std::string &materialTexture,
+indie::components::Material::Material(jf::entities::Entity &entity,
+                                      const std::string &materialTexture,
                                       irr::video::E_MATERIAL_TYPE materialType,
                                       irr::video::E_MATERIAL_FLAG materialFlag)
-: jf::components::Component(entity), _materialType(materialType), _materialTexture(materialTexture), _materialFlag(materialFlag)
+: jf::components::Component(entity),
+  _materialType(materialType),
+  _materialTexture(materialTexture),
+  _materialFlag(materialFlag)
 {
     EMIT_CREATE(Material);
 }

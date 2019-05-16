@@ -22,7 +22,10 @@ namespace indie {
 
         class Material : public jf::components::Component {
         public:
-            explicit Material(jf::entities::Entity &entity, const std::string &materialTexture, irr::video::E_MATERIAL_TYPE materialType, irr::video::E_MATERIAL_FLAG materialFlag);
+            explicit Material(jf::entities::Entity &entity,
+                              const std::string &materialTexture,
+                              irr::video::E_MATERIAL_TYPE materialType,
+                              irr::video::E_MATERIAL_FLAG materialFlag);
             ~Material() override;
 
             irr::video::E_MATERIAL_TYPE getMaterialType() const;
