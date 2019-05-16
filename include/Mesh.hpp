@@ -22,7 +22,6 @@ namespace jf {
 
                 void addToScene();
                 void changeVisibility(bool shouldBeSeen);
-                //other display settings (SYNCPOSITION IN SYSTEM)
                 void changeMesh(const std::string &filename);
                 void setPos(irr::core::vector3df &vector);
                 void setTexture(const std::string &filename);
