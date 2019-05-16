@@ -24,7 +24,7 @@ target_include_directories(
 		lib/jfecs/include
         include
 )
-target_link_libraries(bomberman jfecs Irrlicht)
+target_link_libraries(bomberman jfecs Irrlicht IrrKlang)
 if (UNIX)
 	target_link_libraries(bomberman GL Xxf86vm Xext X11 Xcursor)
 endif (UNIX)
