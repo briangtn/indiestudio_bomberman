@@ -26,12 +26,12 @@ jf::components::Camera::Camera(entities::Entity &entity, float FOV)
 
 jf::components::Camera::~Camera()
 {
-    ECSWrapper ecs;
+    EMIT_DELETE(Camera);
 
+    ECSWrapper ecs;
     ecs.eventManager.removeListener(_eventCloseID);
     if (_sceneNode != nullptr)
         _sceneNode->drop();
-    EMIT_DELETE(Camera);
 }
 
 void jf::components::Camera::update()
