@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2018
+** indiestudio
+** File description:
+** Camera.cpp
+*/
+
 //
 // Created by brian on 5/14/19.
 //
