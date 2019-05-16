@@ -70,6 +70,26 @@ std::string jf::Particle::getTexturePath() const
     return _texturePath;
 }
 
+irr::core::vector3df jf::Particle::getPosition() const
+{
+    return _position;
+}
+
+void jf::Particle::setPosition(irr::core::vector3df newPos)
+{
+    _position = newPos;
+}
+
+irr::core::vector3df jf::Particle::getScale() const
+{
+    return _scale;
+}
+
+void jf::Particle::setScale(irr::core::vector3df newScale)
+{
+    _scale = newScale;
+}
+
 void jf::Particle::setTexture(int layer, std::string texturePath)
 {
     ECSWrapper ecs;

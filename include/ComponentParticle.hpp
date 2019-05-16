@@ -43,6 +43,12 @@ std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
 
             bool getParticleVisible() const;
 
+            irr::core::vector3df getPosition() const;
+            void setPosition(irr::core::vector3df newPos);
+
+            irr::core::vector3df getScale() const;
+            void setScale(irr::core::vector3df newScale);
+
         protected:
         private:
 
