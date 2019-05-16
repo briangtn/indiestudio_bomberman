@@ -95,7 +95,7 @@ namespace jf {
             jf::maths::Vector2D _windowDimension;
 
         public:
-//            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
+            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
             
         private:
         };

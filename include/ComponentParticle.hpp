@@ -16,55 +16,65 @@
 #include <iostream>
 
 namespace jf {
-    class Particle : public jf::components::Component {
-        public:
-            Particle(jf::entities::Entity &entity, std::string name);
+    namespace components {
+        class Particle : public jf::components::Component {
+            public:
+                Particle(jf::entities::Entity &entity, std::string name);
 
-            void createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
-irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
-irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
-std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
+                void createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
+    irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
+    irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
+    std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
 
-            void createFadeOutParticle(irr::video::SColor color, int time);
+                void createFadeOutParticle(irr::video::SColor color, int time);
 
-            ~Particle() {
-                EMIT_DELETE(Particle);
-            }
+                ~Particle() {
+                    EMIT_DELETE(Particle);
+                }
 
-            std::string getName() const;
-            void setName(std::string newName);
+                std::string getName() const;
+                void setName(std::string newName);
 
-            std::string getTexturePath() const;
-            void setTexture(int layer, std::string textureName);
+                std::string getTexturePath() const;
+                void setTexture(int layer, std::string textureName);
 
-            void Activate();
+                void Activate();
 
-            void Deactivate();
+                void Deactivate();
 
-            bool getParticleVisible() const;
+                bool getParticleVisible() const;
 
-            irr::core::vector3df getPosition() const;
-            void setPosition(irr::core::vector3df newPos);
+                irr::core::vector3df getPosition() const;
+                void setPosition(irr::core::vector3df newPos);
 
-            irr::core::vector3df getScale() const;
-            void setScale(irr::core::vector3df newScale);
+                irr::core::vector3df getScale() const;
+                void setScale(irr::core::vector3df newScale);
 
-        protected:
-        private:
+                irr::core::vector3df getRotation() const;
+                void setRotation(irr::core::vector3df newRotation);
 
-            bool _boxEmiterCreate;
-            bool _affectorCreate;
-            bool _isVisible;
+            protected:
+            private:
 
-            std::string _particleName;
-            irr::scene::IParticleSystemSceneNode *_particle;
-            irr::scene::IParticleEmitter *_emitter;
-            irr::scene::IParticleAffector *_affector;
+                bool _boxEmiterCreate;
+                bool _affectorCreate;
+                bool _isVisible;
 
-            irr::core::vector3df _position;
-            irr::core::vector3df _scale;
-            std::string _texturePath;
-    };
+                irr::scene::IParticleSystemSceneNode *_particle;
+                irr::scene::IParticleEmitter *_emitter;
+                irr::scene::IParticleAffector *_affector;
+
+                std::string _texturePath;
+        };
+    }
+}
+
+#else
+
+namespace jf {
+    namespace components {
+        class Particle;
+    }
 }
 
 #endif /* !COMPONENTPARTICLE_HPP_ */

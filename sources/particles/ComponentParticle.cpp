@@ -7,14 +7,14 @@
 
 #include "ComponentParticle.hpp"
 
-jf::Particle::Particle(jf::entities::Entity &entity, std::string name)
+jf::components::Particle::Particle(jf::entities::Entity &entity, std::string name)
     : Component(entity)
 {
     ECSWrapper ecs;
 
     EMIT_CREATE(Particle);
     _particle =  ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager()->addParticleSystemSceneNode(false);
-    _particleName = name;
+    _particle->setName(name.c_str());
     _affector = _particle->createFadeOutParticleAffector();
     _particle->addAffector(_affector);
     _affector->drop();
@@ -24,7 +24,7 @@ jf::Particle::Particle(jf::entities::Entity &entity, std::string name)
     _isVisible = false;
 }
 
-void jf::Particle::createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
+void jf::components::Particle::createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
 irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
 irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
 std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize)
@@ -35,13 +35,13 @@ angle, minMaxsize.first, minMaxsize.second);
     _boxEmiterCreate = true;
 }
 
-void jf::Particle::createFadeOutParticle(irr::video::SColor color, int time)
+void jf::components::Particle::createFadeOutParticle(irr::video::SColor color, int time)
 {
     _affector = _particle->createFadeOutParticleAffector(color, time);
     _affectorCreate = true;
 }
 
-void jf::Particle::Activate()
+void jf::components::Particle::Activate()
 {
     if (_affectorCreate == true)
         _particle->addAffector(_affector);
@@ -56,41 +56,52 @@ void jf::Particle::Activate()
         std::cout << "throw error" << std::endl;
     }
     _particle->setVisible(true);
+    _particle->render();
     _isVisible = true;
 }
 
-void jf::Particle::Deactivate()
+void jf::components::Particle::Deactivate()
 {
     _particle->setVisible(false);
     _isVisible = false;
 }
 
-std::string jf::Particle::getTexturePath() const
+std::string jf::components::Particle::getTexturePath() const
 {
     return _texturePath;
 }
 
-irr::core::vector3df jf::Particle::getPosition() const
+irr::core::vector3df jf::components::Particle::getPosition() const
 {
-    return _position;
+    return _particle->getPosition();
 }
 
-void jf::Particle::setPosition(irr::core::vector3df newPos)
+void jf::components::Particle::setPosition(irr::core::vector3df newPos)
 {
-    _position = newPos;
+    _particle->setPosition(newPos);
 }
 
-irr::core::vector3df jf::Particle::getScale() const
+irr::core::vector3df jf::components::Particle::getScale() const
 {
-    return _scale;
+    return _particle->getScale();
 }
 
-void jf::Particle::setScale(irr::core::vector3df newScale)
+void jf::components::Particle::setScale(irr::core::vector3df newScale)
 {
-    _scale = newScale;
+    _particle->setScale(newScale);
 }
 
-void jf::Particle::setTexture(int layer, std::string texturePath)
+irr::core::vector3df jf::components::Particle::getRotation() const
+{
+    return _particle->getRotation();
+}
+
+void jf::components::Particle::setRotation(irr::core::vector3df newRotation)
+{
+    _particle->setRotation(newRotation);
+}
+
+void jf::components::Particle::setTexture(int layer, std::string texturePath)
 {
     ECSWrapper ecs;
 
@@ -98,17 +109,17 @@ void jf::Particle::setTexture(int layer, std::string texturePath)
     _particle->setMaterialTexture(layer, ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTexture(texturePath.c_str()));
 }
 
-bool jf::Particle::getParticleVisible() const
+bool jf::components::Particle::getParticleVisible() const
 {
     return _isVisible;
 }
 
-std::string jf::Particle::getName() const
+std::string jf::components::Particle::getName() const
 {
-    return _particleName;
+    return _particle->getName();
 }
 
-void jf::Particle::setName(std::string newName)
+void jf::components::Particle::setName(std::string newName)
 {
-    _particleName = newName;
+    _particle->setName(newName.c_str());
 }

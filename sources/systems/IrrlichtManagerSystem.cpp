@@ -745,9 +745,23 @@ irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver() c
     return _driver;
 }
 
-/*
+
 void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle)
 {
-    // set scale and pos with particle function
+    irr::core::vector3df newPosition;
+    irr::core::vector3df newScale;
+    irr::core::vector3df newRotation;
+
+    newPosition.X = transf->getPosition().x;
+    newPosition.Y = transf->getPosition().y;
+    newPosition.Z = transf->getPosition().z;
+    particle->setPosition(newPosition);
+    newScale.X = transf->getScale().x;
+    newScale.Y = transf->getScale().y;
+    newScale.Z = transf->getScale().z;
+    particle->setScale(newScale);
+    newRotation.X = transf->getRotation().x;
+    newRotation.Y = transf->getRotation().y;
+    newRotation.Z = transf->getRotation().z;
+    particle->setRotation(newRotation);
 }
-*/
