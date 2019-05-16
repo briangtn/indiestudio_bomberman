@@ -56,7 +56,7 @@ void jf::components::Particle::Activate()
         _particle->setEmitter(_emitter);
     else {
         _emitter->drop();
-        throw jf::exceptions::IrrlichtParticleException("Impossible to create a particle without emitter.", "jf::components::Particle::createFadeOutParticle");
+        throw jf::exceptions::IrrlichtParticleException("Impossible to print a particle without emitter.", "jf::components::Particle::createFadeOutParticle");
     }
     if (_boxEmiterCreate == true) {
         _particle->setVisible(true);
