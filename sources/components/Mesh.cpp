@@ -9,6 +9,7 @@
 #include "Mesh.hpp"
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
+#include "IrrlichtClosingWindowEvent.hpp"
 
 jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename) 
     : Component(entity), 
@@ -18,13 +19,20 @@ jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filen
       _shouldMeshChange(false),
       _shouldTextureChange(false)
 {
+    ECSWrapper ecs;
+    ecs.eventManager.addListener<Mesh, events::IrrlichtClosingWindowEvent>(this, [](Mesh *mesh, events::IrrlichtClosingWindowEvent e) {
+        mesh->_node->remove();
+        mesh->_node = nullptr;
+        //mesh->_mesh->drop();
+        //mesh->_mesh = nullptr;
+    });
     EMIT_CREATE(Mesh);
 }
 
 jf::components::Mesh::~Mesh()
 {
-    //if (_node)
-    //    _node->remove();
+    if (_node)
+        _node->remove();
     //if (_mesh)
     //    _mesh->drop();
     EMIT_DELETE(Mesh);
@@ -99,8 +107,8 @@ void jf::components::Mesh::changeMesh(const std::string &filename)
 {
     if (_node)
         _node->remove();
-    if (_mesh)
-        _mesh->drop();
+    //if (_mesh)
+    //    _mesh->drop();
     _node = nullptr;
     _mesh = nullptr;
     _shouldMeshChange = true;

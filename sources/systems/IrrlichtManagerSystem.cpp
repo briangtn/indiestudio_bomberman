@@ -17,6 +17,7 @@
 #include "Transform.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
+#include "IrrlichtClosingWindowEvent.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -173,8 +174,11 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
 
 void jf::systems::IrrlichtManagerSystem::closeWindow()
 {
-    if (_device != nullptr)
+    if (_device != nullptr) {
+        ECSWrapper ecs;
+        ecs.eventManager.emit(events::IrrlichtClosingWindowEvent());
         _device->drop();
+    }
     _device = nullptr;
 }
 
