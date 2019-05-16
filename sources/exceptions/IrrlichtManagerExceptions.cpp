@@ -42,10 +42,3 @@ jf::exceptions::IrrlichtManagerGUIEnvironmentException::IrrlichtManagerGUIEnviro
 {
 
 }
-
-jf::exceptions::IrrlichtManagerCameraException::IrrlichtManagerCameraException(const std::string &err,
-                                                                               const std::string &where)
-    : IrrlichtManagerException(err, where)
-{
-
-}

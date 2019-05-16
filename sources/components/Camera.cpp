@@ -6,6 +6,7 @@
 */
 
 #include <IrrlichtManagerExceptions.hpp>
+#include "CameraException.hpp"
 #include "IrrlichtManagerSystem.hpp"
 #include "IrrlichtClosingWindowEvent.hpp"
 #include "ECSWrapper.hpp"
@@ -47,7 +48,7 @@ void jf::components::Camera::update()
     if (_sceneNode == nullptr && scene != nullptr)
         _sceneNode = scene->addCameraSceneNode(nullptr);
     if (_sceneNode == nullptr)
-        throw jf::exceptions::IrrlichtManagerCameraException("Cannot create scene node", "Camera");
+        throw jf::exceptions::CameraException("Cannot create scene node", "Camera");
     _sceneNode->setFOV(_FOV);
     _sceneNode->setPosition(position);
     _sceneNode->setRotation(rotation);
