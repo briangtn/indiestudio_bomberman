@@ -46,6 +46,8 @@ void jf::components::Particle::initParticle()
         return; //TODO throw
     _particle->addAffector(_affector);
     _particle->setVisible(_isVisible);
+    //createBoxEmitter(); TODO create setter and getters for params
+    //createFadeOutParticle(); TODO create getter and setters
 }
 
 bool jf::components::Particle::isInit() const

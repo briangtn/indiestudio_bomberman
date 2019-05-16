@@ -57,6 +57,8 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+    ECSWrapper ecs;
+    ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticle);
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
     _driver->endScene();
@@ -752,6 +754,8 @@ void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf:
     irr::core::vector3df newScale;
     irr::core::vector3df newRotation;
 
+    if (!particle->isInit())
+        particle->initParticle();
     newPosition.X = transf->getPosition().x;
     newPosition.Y = transf->getPosition().y;
     newPosition.Z = transf->getPosition().z;
