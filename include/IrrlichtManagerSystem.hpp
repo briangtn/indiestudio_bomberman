@@ -14,6 +14,8 @@
 #include <string>
 #include "System.hpp"
 #include "Vectors.hpp"
+#include "Mesh.hpp"
+#include "Transform.hpp"
 
 /*!
 * @namespace jf
@@ -49,6 +51,9 @@ namespace jf {
             void onTearDown() override;
 
         public:
+            irr::scene::ISceneManager *getSceneManager();
+
+        public:
             bool isFullScreenEnabled() const;
             void setFullScreenEnabled(bool enabled);
 
@@ -66,6 +71,9 @@ namespace jf {
             void activateJoysticks();
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
+
+        public:
+            static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
 
         private:
             void openWindow();
@@ -88,6 +96,15 @@ namespace jf {
             std::string _windowCaption;
             jf::maths::Vector2D _windowDimension;
         };
+    }
+}
+
+#else
+
+namespace jf {
+
+    namespace systems {
+        class IrrlichtManagerSystem;
     }
 }
 
