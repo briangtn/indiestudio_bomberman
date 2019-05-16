@@ -63,6 +63,7 @@ void jf::systems::IrrlichtManagerSystem::onStart()
 void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
 {
     mesh->linkFilenameToMesh();
+    mesh->applyChange();
     mesh->addToScene();
     auto pos = tr->getPosition();
     irr::core::vector3df vector(pos.x, pos.y, pos.z);
