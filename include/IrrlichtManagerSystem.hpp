@@ -94,7 +94,7 @@ namespace jf {
             std::string _windowCaption;
             jf::maths::Vector2D _windowDimension;
 
-        public:
+        private:
             static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
             
         private:
