@@ -59,9 +59,6 @@ namespace jf {
 
             const std::string &getWindowCaption() const;
             void setWindowCaption(const std::string &str);
-
-
-
             const jf::maths::Vector2D &getWindowDimension() const;
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
 

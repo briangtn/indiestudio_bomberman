@@ -46,6 +46,11 @@ namespace jf {
         public:
             explicit IrrlichtManagerGUIEnvironmentException(const std::string &err, const std::string &where = "");
         };
+
+        class IrrlichtManagerCameraException : public IrrlichtManagerException {
+        public:
+            explicit IrrlichtManagerCameraException(const std::string &err, const std::string &where = "");
+        };
     }
 }
 

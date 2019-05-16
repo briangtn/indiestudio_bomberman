@@ -142,13 +142,6 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
     _driver = _device->getVideoDriver();
     _sceneManager = _device->getSceneManager();
     _guiEnvironment = _device->getGUIEnvironment();
-
-
-
-
-
-
-
     reloadJoysticks();
 }
 
@@ -192,7 +185,8 @@ void jf::systems::IrrlichtManagerSystem::reloadJoysticks()
     }
 }
 
-irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const {
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const
+{
     return _sceneManager;
 }
 

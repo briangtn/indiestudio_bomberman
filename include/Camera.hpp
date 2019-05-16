@@ -2,17 +2,13 @@
 ** EPITECH PROJECT, 2018
 ** indiestudio
 ** File description:
-** Camera.cpp
+** Camera.hpp
 */
-
-//
-// Created by brian on 5/14/19.
-//
 
 #ifndef JFENTITYCOMPONENTSYSTEM_CAMERA_HPP
 #define JFENTITYCOMPONENTSYSTEM_CAMERA_HPP
 
-#include <Component.hpp>
+#include "Component.hpp"
 #include <irrlicht/ICameraSceneNode.h>
 #include "Vectors.hpp"
 #include "Transform.hpp"
@@ -29,9 +25,13 @@ namespace jf {
 
             void update();
 
+            void setFOV(float FOV);
+            float getFOV() const;
+
             ~Camera() override;
         protected:
             irr::scene::ICameraSceneNode *_sceneNode;
+            float _FOV;
         };
     };
 };
