@@ -55,9 +55,11 @@ void jf::components::Particle::Activate()
         _emitter->drop();
         std::cout << "throw error" << std::endl;
     }
-    _particle->setVisible(true);
-    _particle->render();
-    _isVisible = true;
+    if (_boxEmiterCreate == true) {
+        _particle->setVisible(true);
+        _particle->render();
+        _isVisible = true;
+    }    
 }
 
 void jf::components::Particle::Deactivate()
