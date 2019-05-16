@@ -70,10 +70,12 @@ std::string jf::Particle::getTexturePath() const
     return _texturePath;
 }
 
-void jf::Particle::setTextureName(int layer, std::string texturePath)
+void jf::Particle::setTexture(int layer, std::string texturePath)
 {
+    ECSWrapper ecs;
+
     _texturePath = texturePath;
-//    _particle->setMaterialTexture(layer, irr::video::SMaterial::setTexture(texturePath));
+    _particle->setMaterialTexture(layer, ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTexture(texturePath.c_str()));
 }
 
 bool jf::Particle::getParticleVisible() const

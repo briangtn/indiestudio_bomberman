@@ -739,3 +739,8 @@ irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
 {
     return _sceneManager;
 }
+
+irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver() const
+{
+    return _driver;
+}

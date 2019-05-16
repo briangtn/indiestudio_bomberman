@@ -35,7 +35,7 @@ std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
             void setName(std::string newName);
 
             std::string getTexturePath() const;
-            void setTextureName(int layer, std::string textureName);
+            void setTexture(int layer, std::string textureName);
 
             void Activate();
 

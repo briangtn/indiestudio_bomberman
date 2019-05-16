@@ -69,6 +69,8 @@ namespace jf {
 
             irr::scene::ISceneManager *getSceneManager() const;
 
+            irr::video::IVideoDriver *getVideoDriver() const;
+
         private:
             void openWindow();
             void closeWindow();
