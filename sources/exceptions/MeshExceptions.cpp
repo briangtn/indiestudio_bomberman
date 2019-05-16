@@ -7,10 +7,7 @@
 
 #include "MeshExceptions.hpp"
 
-jf::exceptions::MeshExceptions::MeshExceptions()
-{
-}
-
-jf::exceptions::MeshExceptions::~MeshExceptions()
+jf::exceptions::MeshExceptions::MeshExceptions(const std::string &err, const std::string &where)
+    : ECSException(err, where)
 {
 }
