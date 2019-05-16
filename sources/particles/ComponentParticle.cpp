@@ -45,21 +45,19 @@ void jf::components::Particle::Activate()
 {
     if (_affectorCreate == true)
         _particle->addAffector(_affector);
-    else {
+    else
         _affector->drop();
-        std::cout << "throw error" << std::endl;
-    }
     if (_boxEmiterCreate == true)
         _particle->setEmitter(_emitter);
     else {
         _emitter->drop();
-        std::cout << "throw error" << std::endl;
+        throw jf::exceptions::IrrlichtParticleException("Impossible to create a particle without emitter.", "jf::components::Particle::createFadeOutParticle");
     }
     if (_boxEmiterCreate == true) {
         _particle->setVisible(true);
         _particle->render();
         _isVisible = true;
-    }    
+    }
 }
 
 void jf::components::Particle::Deactivate()

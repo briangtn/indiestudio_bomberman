@@ -12,6 +12,7 @@
 #include "ComponentCreatedEvent.hpp"
 #include "irrlicht.h"
 #include "ECSWrapper.hpp"
+#include "ParticleException.hpp"
 #include "IrrlichtManagerSystem.hpp"
 #include <iostream>
 
@@ -22,14 +23,17 @@ namespace jf {
                 Particle(jf::entities::Entity &entity, std::string name);
 
                 void createBoxEmitter(jf::entities::Entity &entity, irr::core::aabbox3d<irr::f32> emiterSize,\
-    irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
-    irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
-    std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
+irr::core::vector3df initialDirection, std::pair<int, int> emitRate, std::pair<irr::video::SColor,\
+irr::video::SColor> darkBrightColor, std::pair<int, int> minMaxAge, int angle,\
+std::pair<irr::core::dimension2df, irr::core::dimension2df> minMaxsize);
 
                 void createFadeOutParticle(irr::video::SColor color, int time);
 
                 ~Particle() {
                     EMIT_DELETE(Particle);
+                    _affector->drop();
+                    _emitter->drop();
+                    _particle->drop();
                 }
 
                 std::string getName() const;
