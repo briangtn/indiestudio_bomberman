@@ -85,6 +85,10 @@ void jf::components::Mesh::applyChange()
             throw exceptions::MeshExceptions("no pass for texture available");
         ECSWrapper ecs;
         irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+        if (sceneManager == nullptr)
+            throw exceptions::MeshExceptions("no scene manager available");
+        if (!_node)
+            throw exceptions::MeshExceptions("Scene Node not available");
         _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(_meshFilename.c_str()));
         _shouldTextureChange = false;
     }
