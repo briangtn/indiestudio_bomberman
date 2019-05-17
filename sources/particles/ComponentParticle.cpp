@@ -16,6 +16,7 @@ jf::components::Particle::Particle(jf::entities::Entity &entity, const std::stri
       _particle(nullptr),
       _emitter(nullptr),
       _affector(nullptr),
+      _layer(0),
       _texturePath(),
       _name(name),
       _emiterSizeInitialize(false),
@@ -63,20 +64,14 @@ jf::components::Particle::~Particle()
 
 bool jf::components::Particle::isEmitterInit() const
 {
-    if (_emiterSizeInitialize == true && _initialDirectionInitialize == true &&\
-_emitRateInitialize == true && _darkBrightColorInitialize == true &&\
-_minMaxAgeInitialize == true && _angleInitialize == true && _minMaxSizeInitialize == true)
-        return true;
-    else
-        return false;
+    return _emiterSizeInitialize && _initialDirectionInitialize &&
+    _emitRateInitialize && _darkBrightColorInitialize &&
+    _minMaxAgeInitialize && _angleInitialize && _minMaxSizeInitialize;
 }
 
 bool jf::components::Particle::isAffectorInit() const
 {
-    if (_fadeColorInitialize == true && _fadeTimeInitialize == true)
-        return true;
-    else
-        return false;
+    return _fadeColorInitialize && _fadeTimeInitialize;
 }
 
 void jf::components::Particle::initParticle()
@@ -85,24 +80,21 @@ void jf::components::Particle::initParticle()
         throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::initParticle");
     ECSWrapper ecs;
     auto sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
-    if (sceneManager == nullptr)
+    auto videoDriver = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver();
+    if (sceneManager == nullptr || videoDriver == nullptr)
         throw jf::exceptions::IrrlichtParticleException("sceneManager not init.", "jf::components::Particle::initParticle");
     _particle = sceneManager->addParticleSystemSceneNode(false);
     if (_particle == nullptr)
         throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::initParticle");
-    _particle->setName(_name.c_str());
-    _affector = _particle->createFadeOutParticleAffector();
-    if (_affector == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Affector not init.", "jf::components::Particle::initParticle");
-    _particle->addAffector(_affector);
-    _affector->drop();
-    _affector = nullptr;
-    _particle->setVisible(_isVisible);
     createBoxEmitter();
-    if (isAffectorInit() == true)
-        createFadeOutParticle();
-    else
-        throw jf::exceptions::IrrlichtParticleException("Affector Not inir Can't init Particle.", "jf::components::Particle::initParticle");
+    createFadeOutAffector();
+    _particle->setName(_name.c_str());
+    _particle->setVisible(_isVisible);
+    _particle->setMaterialTexture(_layer, videoDriver->getTexture(_texturePath.c_str()));
+    _particle->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    _particle->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);
+    _particle->setMaterialType(irr::video::EMT_TRANSPARENT_ADD_COLOR);
+    activate();
 }
 
 bool jf::components::Particle::isInit() const
@@ -113,13 +105,35 @@ bool jf::components::Particle::isInit() const
 void jf::components::Particle::createBoxEmitter()
 {
     if (_particle == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::createBoxEmitter");    
-    _emitter = _particle->createBoxEmitter(_emiterSize, _initialDirection,\
-_emitRate.first, _emitRate.second, _darkBrightColor.first, _darkBrightColor.second, _minMaxAge.first, _minMaxAge.second,\
-_angle, _minMaxSize.first, _minMaxSize.second);
+        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::createBoxEmitter");
+    _emitter = _particle->createBoxEmitter(
+        _emiterSize,
+        _initialDirection,
+        _emitRate.first,
+        _emitRate.second,
+        _darkBrightColor.first,
+        _darkBrightColor.second,
+        _minMaxAge.first,
+        _minMaxAge.second,
+        _angle,
+        _minMaxSize.first,
+        _minMaxSize.second
+    );
     if (_emitter == nullptr)
         throw jf::exceptions::IrrlichtParticleException("Emitter not init.", "jf::components::Particle::createBoxEmitter");
+    _particle->setEmitter(_emitter);
     _boxEmiterCreated = true;
+}
+
+void jf::components::Particle::createFadeOutAffector()
+{
+    if (_particle == nullptr)
+        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::createFadeOutParticle");
+    _affector = _particle->createFadeOutParticleAffector(_fadeColor, _fadeTime);
+    if (_affector == nullptr)
+        throw jf::exceptions::IrrlichtParticleException("Affector not init.", "jf::components::Particle::createFadeOutParticle");
+    _particle->addAffector(_affector);
+    _affectorCreated = true;
 }
 
 const irr::scene::IParticleEmitter *jf::components::Particle::getEmitter() const
@@ -200,18 +214,8 @@ std::pair<irr::core::dimension2df, irr::core::dimension2df> jf::components::Part
 
 void jf::components::Particle::setMinMaxSize(const std::pair<irr::core::dimension2df, irr::core::dimension2df> &newMinMaxSize)
 {
-    _minMaxSize = _minMaxSize;
+    _minMaxSize = newMinMaxSize;
     _minMaxSizeInitialize = true;
-}
-
- void jf::components::Particle::createFadeOutParticle()
-{
-    if (_particle == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::createFadeOutParticle");
-    _affector = _particle->createFadeOutParticleAffector(_fadeColor, _fadeTime);
-    if (_affector == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Affector not init.", "jf::components::Particle::createFadeOutParticle");
-    _affectorCreated = true;
 }
 
 irr::video::SColor jf::components::Particle::getFadeColor() const
@@ -238,37 +242,17 @@ void jf::components::Particle::setFadeTime(const int &newFadeTime)
 
 void jf::components::Particle::activate()
 {
-    if (_affectorCreated == true)
-        _particle->addAffector(_affector);
-    else {
-        if (_affector != nullptr) {
-            _affector->drop();
-            _affector = nullptr;
-        }
-    }
-    if (_boxEmiterCreated == true)
-        _particle->setEmitter(_emitter);
-    else {
-        if (_emitter != nullptr) {
-            _emitter->drop();
-            _emitter = nullptr;
-        }
-        throw jf::exceptions::IrrlichtParticleException("Impossible to print a particle without emitter.", "jf::components::Particle::createFadeOutParticle");
-    }
-    if (_boxEmiterCreated == true) {
-        if (_particle != nullptr) {
-            _isVisible = true;
-            _particle->setVisible(_isVisible);
-            _particle->render();
-        }
+    _isVisible = true;
+    if (_particle != nullptr) {
+        _particle->setVisible(_isVisible);
     }
 }
 
 void jf::components::Particle::deactivate()
 {
-    if (_particle == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::deactivate");    
     _isVisible = false;
+    if (_particle == nullptr)
+        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::deactivate");
     _particle->setVisible(_isVisible);
 }
 
@@ -280,7 +264,7 @@ std::string jf::components::Particle::getTexturePath() const
 irr::core::vector3df jf::components::Particle::getPosition() const
 {
     if (_particle == nullptr)
-        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::getPosition");    
+        throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::getPosition");
     return _particle->getPosition();
 }
 
@@ -323,11 +307,12 @@ void jf::components::Particle::setTexture(int layer, const std::string &textureP
 {
     ECSWrapper ecs;
 
+    _layer = layer;
     _texturePath = texturePath;
     if (_particle != nullptr) {
         auto videoDriver = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver();
         if (videoDriver != nullptr)
-            _particle->setMaterialTexture(layer, videoDriver->getTexture(texturePath.c_str()));
+            _particle->setMaterialTexture(_layer, videoDriver->getTexture(texturePath.c_str()));
     }
 }
 
@@ -346,4 +331,12 @@ void jf::components::Particle::setName(const std::string &newName)
     _name = newName;
     if (_particle != nullptr)
         _particle->setName(_name.c_str());
+}
+
+void jf::components::Particle::render()
+{
+    if (_particle != nullptr) {
+        _particle->setVisible(_isVisible);
+        _particle->render();
+    }
 }

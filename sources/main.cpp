@@ -87,13 +87,14 @@ int runBomberman()
     auto sys = particleSystemEntity->assignComponent<jf::components::Particle, std::string>("p1");
     sys->setTexture(0, "../test_assets/particle_default.png");
     sys->setAngle(0);
-    sys->setDarkBrightColor(std::make_pair(irr::video::SColor(255, 255, 0, 0), irr::video::SColor(255, 0, 0, 255)));
-    sys->setEmiterSize(irr::core::aabbox3df());
-    sys->setEmitRate(std::make_pair(0, 1));
+    sys->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 255, 0, 0), irr::video::SColor(0, 0, 0, 255)));
+    sys->setEmiterSize(irr::core::aabbox3df(-7, 0, -7, 7, 1, 7));
+    sys->setEmitRate(std::make_pair(40, 80));
     sys->setFadeColor(irr::video::SColor(0, 0, 255, 0));
-    sys->setFadeTime(5);
-    sys->setMinMaxAge(std::make_pair(4, 6));
-    sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(1, 1)));
+    sys->setFadeTime(1000);
+    sys->setMinMaxAge(std::make_pair(800, 2000));
+    sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
+    sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
 
     while (ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

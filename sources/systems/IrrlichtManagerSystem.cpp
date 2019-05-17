@@ -65,7 +65,7 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
         return;
     ECSWrapper ecs;
 
-    _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+    _driver->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
     
     /* Camera */
     updateCamera(elapsedTime);
@@ -263,6 +263,7 @@ void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf:
     newRotation.Y = tr->getRotation().y;
     newRotation.Z = tr->getRotation().z;
     particle->setRotation(newRotation);
+    particle->render();
 }
 
 bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

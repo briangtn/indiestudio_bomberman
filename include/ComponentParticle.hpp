@@ -34,6 +34,7 @@ namespace jf {
 
             void initParticle();
             bool isInit() const;
+            void render();
          
             const irr::scene::IParticleEmitter *getEmitter() const;
 
@@ -99,7 +100,7 @@ namespace jf {
             /* Init Function Emitter And Particle */
 
             void createBoxEmitter();       
-            void createFadeOutParticle();    
+            void createFadeOutAffector();
 
             /* Check Init Emitter And Affector */
 
@@ -147,6 +148,7 @@ namespace jf {
 
             /* Assets Particle */
 
+            int _layer;
             std::string _texturePath;
             std::string _name;
 
