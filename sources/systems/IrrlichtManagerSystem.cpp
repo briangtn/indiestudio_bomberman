@@ -66,9 +66,11 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     ECSWrapper ecs;
 
     _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
-
+    
     /* Camera */
     updateCamera(elapsedTime);
+    /* Particle */
+    ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticle);
     /* 3DModel */
     ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
 
@@ -786,4 +788,37 @@ void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendLogTextEvent
 void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendUserEvent(const irr::SEvent &event)
 {
     (void)event;
+}
+
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const
+{
+    return _sceneManager;
+}
+
+irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver() const
+{
+    return _driver;
+}
+
+
+void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle)
+{
+    irr::core::vector3df newPosition;
+    irr::core::vector3df newScale;
+    irr::core::vector3df newRotation;
+
+    if (!particle->isInit())
+        particle->initParticle();
+    newPosition.X = transf->getPosition().x;
+    newPosition.Y = transf->getPosition().y;
+    newPosition.Z = transf->getPosition().z;
+    particle->setPosition(newPosition);
+    newScale.X = transf->getScale().x;
+    newScale.Y = transf->getScale().y;
+    newScale.Z = transf->getScale().z;
+    particle->setScale(newScale);
+    newRotation.X = transf->getRotation().x;
+    newRotation.Y = transf->getRotation().y;
+    newRotation.Z = transf->getRotation().z;
+    particle->setRotation(newRotation);
 }

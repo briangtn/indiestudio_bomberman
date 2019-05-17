@@ -13,6 +13,8 @@
 #include <irrlicht.h>
 #include <string>
 #include "System.hpp"
+#include "ComponentParticle.hpp"
+#include "Transform.hpp"
 #include "Vectors.hpp"
 #include "Mesh.hpp"
 #include "Transform.hpp"
@@ -71,6 +73,10 @@ namespace jf {
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
+            irr::scene::ISceneManager *getSceneManager() const;
+
+            irr::video::IVideoDriver *getVideoDriver() const;
+
         private:
             static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
 
@@ -96,6 +102,11 @@ namespace jf {
             bool _vsyncEnabled;
             std::string _windowCaption;
             jf::maths::Vector2D _windowDimension;
+
+        private:
+            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
+            
+        private:
         };
     }
 }
