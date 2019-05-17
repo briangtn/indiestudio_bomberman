@@ -6,6 +6,7 @@
 */
 
 #include "ComponentParticle.hpp"
+#include "IrrlichtClosingWindowEvent.hpp"
 
 jf::components::Particle::Particle(jf::entities::Entity &entity, const std::string &name)
     : Component(entity),
@@ -27,15 +28,37 @@ jf::components::Particle::Particle(jf::entities::Entity &entity, const std::stri
       _fadeColorInitialize(false),
       _fadeTimeInitialize(false)
 {
+    ECSWrapper ecs;
+    _irrlichtClosingWindowEventID = ecs.eventManager.addListener<Particle, events::IrrlichtClosingWindowEvent>(this,
+        [](Particle *particle, events::IrrlichtClosingWindowEvent e) {
+            if (particle->_affector) {
+                particle->_affector->drop();
+                particle->_affector = nullptr;
+            }
+            if (particle->_emitter) {
+                particle->_emitter->drop();
+                particle->_emitter = nullptr;
+            }
+            if (particle->_particle) {
+                particle->_particle->remove();
+                particle->_particle = nullptr;
+            }
+        }
+    );
     EMIT_CREATE(Particle);
 }
 
 jf::components::Particle::~Particle()
 {
     EMIT_DELETE(Particle);
-    _affector->drop();
-    _emitter->drop();
-    _particle->drop();
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_irrlichtClosingWindowEventID);
+    if (_affector)
+        _affector->drop();
+    if (_emitter)
+        _emitter->drop();
+    if (_particle)
+        _particle->remove();
 }
 
 bool jf::components::Particle::isEmitterInit() const
@@ -72,11 +95,10 @@ void jf::components::Particle::initParticle()
     if (_affector == nullptr)
         throw jf::exceptions::IrrlichtParticleException("Affector not init.", "jf::components::Particle::initParticle");
     _particle->addAffector(_affector);
+    _affector->drop();
+    _affector = nullptr;
     _particle->setVisible(_isVisible);
-    if (isEmitterInit() == true)
-        createBoxEmitter();
-    else
-        throw jf::exceptions::IrrlichtParticleException("Emitter Not Init Can't init Particle.", "jf::components::Particle::initParticle");
+    createBoxEmitter();
     if (isAffectorInit() == true)
         createFadeOutParticle();
     else

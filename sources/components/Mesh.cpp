@@ -22,9 +22,11 @@ jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filen
 {
     ECSWrapper ecs;
     _irrlichtClosingWindowEventID = ecs.eventManager.addListener<Mesh, events::IrrlichtClosingWindowEvent>(this, [](Mesh *mesh, events::IrrlichtClosingWindowEvent e) {
-        mesh->_node->remove();
-        mesh->_node = nullptr;
-        mesh->_mesh = nullptr;
+        if (mesh->_node != nullptr) {
+            mesh->_node->remove();
+            mesh->_node = nullptr;
+            mesh->_mesh = nullptr;
+        }
     });
     EMIT_CREATE(Mesh);
 }

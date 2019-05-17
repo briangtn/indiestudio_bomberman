@@ -66,6 +66,7 @@ namespace jf {
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
 
             irr::scene::ISceneManager *getSceneManager();
+            irr::video::IVideoDriver *getVideoDriver();
 
             bool isWindowOpen() const;
 
@@ -73,12 +74,9 @@ namespace jf {
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
-            irr::scene::ISceneManager *getSceneManager() const;
-
-            irr::video::IVideoDriver *getVideoDriver() const;
-
         private:
             static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
+            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Particle> particle);
 
         private:
             void openWindow();
@@ -102,11 +100,6 @@ namespace jf {
             bool _vsyncEnabled;
             std::string _windowCaption;
             jf::maths::Vector2D _windowDimension;
-
-        private:
-            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle);
-            
-        private:
         };
     }
 }

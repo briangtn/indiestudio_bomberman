@@ -139,6 +139,11 @@ irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
     return _sceneManager;
 }
 
+irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver()
+{
+    return _driver;
+}
+
 bool jf::systems::IrrlichtManagerSystem::isWindowOpen() const
 {
     if (_device != nullptr)
@@ -236,6 +241,28 @@ void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf:
     auto rotate = tr->getRotation();
     irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
     mesh->rotate(vectorRotation);
+}
+
+void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Particle> particle)
+{
+    irr::core::vector3df newPosition;
+    irr::core::vector3df newScale;
+    irr::core::vector3df newRotation;
+
+    if (!particle->isInit())
+        particle->initParticle();
+    newPosition.X = tr->getPosition().x;
+    newPosition.Y = tr->getPosition().y;
+    newPosition.Z = tr->getPosition().z;
+    particle->setPosition(newPosition);
+    newScale.X = tr->getScale().x;
+    newScale.Y = tr->getScale().y;
+    newScale.Z = tr->getScale().z;
+    particle->setScale(newScale);
+    newRotation.X = tr->getRotation().x;
+    newRotation.Y = tr->getRotation().y;
+    newRotation.Z = tr->getRotation().z;
+    particle->setRotation(newRotation);
 }
 
 bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
@@ -788,37 +815,4 @@ void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendLogTextEvent
 void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendUserEvent(const irr::SEvent &event)
 {
     (void)event;
-}
-
-irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager() const
-{
-    return _sceneManager;
-}
-
-irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver() const
-{
-    return _driver;
-}
-
-
-void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> transf, components::ComponentHandler<components::Particle> particle)
-{
-    irr::core::vector3df newPosition;
-    irr::core::vector3df newScale;
-    irr::core::vector3df newRotation;
-
-    if (!particle->isInit())
-        particle->initParticle();
-    newPosition.X = transf->getPosition().x;
-    newPosition.Y = transf->getPosition().y;
-    newPosition.Z = transf->getPosition().z;
-    particle->setPosition(newPosition);
-    newScale.X = transf->getScale().x;
-    newScale.Y = transf->getScale().y;
-    newScale.Z = transf->getScale().z;
-    particle->setScale(newScale);
-    newRotation.X = transf->getRotation().x;
-    newRotation.Y = transf->getRotation().y;
-    newRotation.Z = transf->getRotation().z;
-    particle->setRotation(newRotation);
 }

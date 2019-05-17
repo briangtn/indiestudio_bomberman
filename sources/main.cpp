@@ -73,14 +73,27 @@ int runBomberman()
 
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     cubeEntity->assignComponent<jf::components::Transform>();
-    cubeEntity->assignComponent<jf::components::Mesh, std::string>("cube.obj");
+    cubeEntity->assignComponent<jf::components::Mesh, std::string>("../test_assets/cube.obj");
 
     auto cubeEntity2 = ecs.entityManager.createEntity("cube");
     auto tr = cubeEntity2->assignComponent<jf::components::Transform>();
     tr->setPosition({10, 10, 10});
     tr->setScale({10, 10, 2});
     tr->setRotation({0, 0, 45});
-    cubeEntity2->assignComponent<jf::components::Mesh, std::string>("cube.obj");
+    cubeEntity2->assignComponent<jf::components::Mesh, std::string>("../test_assets/cube.obj");
+
+    auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
+    particleSystemEntity->assignComponent<jf::components::Transform, jf::maths::Vector3D>({0, 1, 0});
+    auto sys = particleSystemEntity->assignComponent<jf::components::Particle, std::string>("p1");
+    sys->setTexture(0, "../test_assets/particle_default.png");
+    sys->setAngle(0);
+    sys->setDarkBrightColor(std::make_pair(irr::video::SColor(255, 255, 0, 0), irr::video::SColor(255, 0, 0, 255)));
+    sys->setEmiterSize(irr::core::aabbox3df());
+    sys->setEmitRate(std::make_pair(0, 1));
+    sys->setFadeColor(irr::video::SColor(0, 0, 255, 0));
+    sys->setFadeTime(5);
+    sys->setMinMaxAge(std::make_pair(4, 6));
+    sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(1, 1)));
 
     while (ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

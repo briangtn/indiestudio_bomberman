@@ -30,7 +30,7 @@ namespace jf {
 
             ~Particle();            
 
-            /* Init Funciton */
+            /* Init Function */
 
             void initParticle();
             bool isInit() const;
@@ -149,6 +149,8 @@ namespace jf {
 
             std::string _texturePath;
             std::string _name;
+
+            jf::internal::ID _irrlichtClosingWindowEventID;
         };
     }
 }
