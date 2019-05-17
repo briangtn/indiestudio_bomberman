@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include "Camera.hpp"
 #include "IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "IrrlichtManagerSystem.hpp"
@@ -14,6 +15,10 @@
 #include "IrrlichtJoystickInputEvent.hpp"
 #include "IrrlichtMouseInputEvent.hpp"
 #include "IrrlichtGUIEvent.hpp"
+#include "Transform.hpp"
+#include "Entity.hpp"
+#include "EntityHandler.hpp"
+#include "IrrlichtClosingWindowEvent.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -33,7 +38,6 @@ jf::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _windowCaption("Irrlicht window"),
       _windowDimension(800, 600)
 {
-
 }
 
 jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
@@ -44,7 +48,10 @@ jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
 
 void jf::systems::IrrlichtManagerSystem::onAwake()
 {
-
+    ECSWrapper ecs;
+    ecs.eventManager.addListener<IrrlichtManagerSystem, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(this, [](IrrlichtManagerSystem *ms, auto e) {
+        ms->_device->closeDevice();
+    });
 }
 
 void jf::systems::IrrlichtManagerSystem::onStart()
@@ -56,11 +63,20 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
-    _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
     ECSWrapper ecs;
+
+    _driver->beginScene(true, true, irr::video::SColor(255, 100, 101, 140));
+    
+    /* Camera */
+    updateCamera(elapsedTime);
+    /* Particle */
     ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticle);
+    /* 3DModel */
+    ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
+
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
+
     _driver->endScene();
 }
 
@@ -118,6 +134,11 @@ void jf::systems::IrrlichtManagerSystem::setWindowDimension(const jf::maths::Vec
     reloadWindow();
 }
 
+irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
+{
+    return _sceneManager;
+}
+
 bool jf::systems::IrrlichtManagerSystem::isWindowOpen() const
 {
     if (_device != nullptr)
@@ -147,8 +168,11 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
 
 void jf::systems::IrrlichtManagerSystem::closeWindow()
 {
-    if (_device != nullptr)
+    if (_device != nullptr) {
+        ECSWrapper ecs;
+        ecs.eventManager.emit(events::IrrlichtClosingWindowEvent());
         _device->drop();
+    }
     _device = nullptr;
 }
 
@@ -183,6 +207,35 @@ void jf::systems::IrrlichtManagerSystem::reloadJoysticks()
         }
         std::cout << "Joystick support is enabled and " << _joystickInfos.size() << " joystick(s) are present." << std::endl;
     }
+}
+
+void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanoseconds &elapsedTime)
+{
+    ECSWrapper ecs;
+
+    std::vector<jf::entities::EntityHandler> cameras;
+    cameras = ecs.entityManager.getEntitiesWith<jf::components::Camera, jf::components::Transform>();
+
+    if (!cameras.empty()) {
+        cameras[0]->getComponent<jf::components::Camera>()->updateCamera();
+        _sceneManager->setActiveCamera(cameras[0]->getComponent<jf::components::Camera>()->getCameraNode());
+    }
+}
+
+void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
+{
+    mesh->linkFilenameToMesh();
+    mesh->applyChange();
+    mesh->addToScene();
+    auto pos = tr->getPosition();
+    irr::core::vector3df vector(pos.x, pos.y, pos.z);
+    mesh->setPos(vector);
+    auto scale = tr->getScale();
+    irr::core::vector3df vectorScale(scale.x, scale.y, scale.z);
+    mesh->setScale(vectorScale);
+    auto rotate = tr->getRotation();
+    irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
+    mesh->rotate(vectorRotation);
 }
 
 bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

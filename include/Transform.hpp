@@ -23,7 +23,8 @@ namespace jf {
 
         class Transform : public Component {
         public:
-            explicit Transform(jf::entities::Entity &entity);
+            explicit Transform(jf::entities::Entity &entity, maths::Vector3D position = maths::Vector3D(0, 0, 0),
+               maths::Vector3D rotation = maths::Vector3D(0, 0, 0), maths::Vector3D scale = maths::Vector3D(1, 1, 1));
             ~Transform() override;
 
         public:

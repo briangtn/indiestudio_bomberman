@@ -16,6 +16,8 @@
 #include "ComponentParticle.hpp"
 #include "Transform.hpp"
 #include "Vectors.hpp"
+#include "Mesh.hpp"
+#include "Transform.hpp"
 
 /*!
 * @namespace jf
@@ -63,6 +65,8 @@ namespace jf {
             const jf::maths::Vector2D &getWindowDimension() const;
             void setWindowDimension(const jf::maths::Vector2D &dimensions);
 
+            irr::scene::ISceneManager *getSceneManager();
+
             bool isWindowOpen() const;
 
             void activateJoysticks();
@@ -74,9 +78,14 @@ namespace jf {
             irr::video::IVideoDriver *getVideoDriver() const;
 
         private:
+            static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
+
+        private:
             void openWindow();
             void closeWindow();
             void reloadWindow();
+
+            void updateCamera(const std::chrono::nanoseconds &elapsedTime);
 
         private:
             IrrlichtEventReceiver _eventReceiver;
@@ -99,6 +108,15 @@ namespace jf {
             
         private:
         };
+    }
+}
+
+#else
+
+namespace jf {
+
+    namespace systems {
+        class IrrlichtManagerSystem;
     }
 }
 
