@@ -86,8 +86,16 @@ void jf::components::Particle::initParticle()
     _particle = sceneManager->addParticleSystemSceneNode(false);
     if (_particle == nullptr)
         throw jf::exceptions::IrrlichtParticleException("Particle not init.", "jf::components::Particle::initParticle");
-    createBoxEmitter();
-    createFadeOutAffector();
+    if (!isEmitterInit()) {
+        throw jf::exceptions::IrrlichtParticleException("Emitter not init.", "jf::components::Particle::initParticle");
+    } else {
+        createBoxEmitter();
+    }
+    if (!isAffectorInit()) {
+        throw jf::exceptions::IrrlichtParticleException("Affector not init.", "jf::components::Particle::initParticle");
+    } else {
+        createFadeOutAffector();
+    }
     _particle->setName(_name.c_str());
     _particle->setVisible(_isVisible);
     _particle->setMaterialTexture(_layer, videoDriver->getTexture(_texturePath.c_str()));
