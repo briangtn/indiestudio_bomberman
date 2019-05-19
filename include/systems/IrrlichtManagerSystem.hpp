@@ -19,6 +19,7 @@
 #include "components/Mesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Material.hpp"
+#include "components/PointLight.hpp"
 
 namespace indie {
 
@@ -82,10 +83,19 @@ namespace indie {
             static void syncModelPos(
                 jf::components::ComponentHandler<components::Transform> tr,
                 jf::components::ComponentHandler<components::Mesh> mesh);
+
             static void syncParticlePos(
                 jf::entities::EntityHandler entity,
                 jf::components::ComponentHandler<components::Transform> tr,
                 jf::components::ComponentHandler<components::Particle> particle);
+
+            static void syncPointLights(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::PointLight> pl);
+            static void syncPointLightsTransform(
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::PointLight> pl);
+            static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
         private:
             void openWindow();
