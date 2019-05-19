@@ -8,6 +8,7 @@
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
 #include <iostream>
+#include "components/Material.hpp"
 #include "components/Camera.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
@@ -74,6 +75,8 @@ int runBomberman()
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
+    auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
     auto cubeEntity2 = ecs.entityManager.createEntity("cube");
     auto tr = cubeEntity2->assignComponent<indie::components::Transform>();
@@ -81,6 +84,9 @@ int runBomberman()
     tr->setScale({10, 10, 2});
     tr->setRotation({0, 0, 45});
     cubeEntity2->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
+    auto mat2 = cubeEntity2->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
+    mat2->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    mat2->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
 
     auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
     particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({0, 1, 0});

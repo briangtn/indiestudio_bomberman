@@ -24,19 +24,19 @@ namespace indie {
             void changeVisibility(bool shouldBeSeen);
             void changeMesh(const std::string &filename);
             void setPos(irr::core::vector3df &vector);
-            void setTexture(const std::string &filename);
+            void setMaterialTexture(const std::string &filename);
+            void setMaterialType(irr::video::E_MATERIAL_TYPE type);
+            void setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, bool value);
             void setScale(irr::core::vector3df &vector);
             void rotate(irr::core::vector3df &vector);
             void linkFilenameToMesh();
-            void applyChange();
+            void applyChanges();
         protected:
         private:
             irr::scene::IAnimatedMesh *_mesh;
             irr::scene::IAnimatedMeshSceneNode *_node;
             std::string _meshFilename;
-            std::string _textureFilename;
             bool _shouldMeshChange;
-            bool _shouldTextureChange;
             jf::internal::ID _irrlichtClosingWindowEventID;
         };
     }

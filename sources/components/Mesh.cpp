@@ -17,8 +17,7 @@ indie::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string fi
       _mesh(nullptr), 
       _node(nullptr), 
       _meshFilename(filename),
-      _shouldMeshChange(false),
-      _shouldTextureChange(false)
+      _shouldMeshChange(false)
 {
     ECSWrapper ecs;
     _irrlichtClosingWindowEventID = ecs.eventManager.addListener<Mesh, events::IrrlichtClosingWindowEvent>(this, [](Mesh *mesh, events::IrrlichtClosingWindowEvent e) {
@@ -56,48 +55,57 @@ void indie::components::Mesh::linkFilenameToMesh()
 void indie::components::Mesh::setPos(irr::core::vector3df &vector)
 {
     if (!_node)
-        throw exceptions::MeshExceptions("Scene Node not available");
+        throw exceptions::MeshExceptions("Mesh Node not available");
     _node->setPosition(vector);
 }
 
 void indie::components::Mesh::setScale(irr::core::vector3df &vector)
 {
     if (!_node)
-        throw exceptions::MeshExceptions("Scene Node not available");
+        throw exceptions::MeshExceptions("Mesh Node not available");
     _node->setScale(vector);
 }
 
 void indie::components::Mesh::rotate(irr::core::vector3df &vector)
 {
     if (!_node)
-        throw exceptions::MeshExceptions("Scene Node not available");
+        throw exceptions::MeshExceptions("Mesh Node not available");
     _node->setRotation(vector);
 }
 
-void indie::components::Mesh::setTexture(const std::string &filename)
+void indie::components::Mesh::setMaterialTexture(const std::string &filename)
 {
-    _textureFilename = filename;
-    _shouldTextureChange = true;
+    if (!_node)
+        throw exceptions::MeshExceptions("Mesh Node not available");
+    ECSWrapper ecs;
+    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
+    if (sceneManager == nullptr)
+        throw exceptions::MeshExceptions("No scene manager available");
+    if (filename.c_str() == nullptr)
+        throw exceptions::MeshExceptions("No path for texture available");
+    _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(filename.c_str()));
 }
 
-void indie::components::Mesh::applyChange()
+void indie::components::Mesh::setMaterialType(irr::video::E_MATERIAL_TYPE type)
 {
-    if (_shouldTextureChange) {
-        if (_textureFilename.c_str() == nullptr)
-            throw exceptions::MeshExceptions("no pass for texture available");
-        ECSWrapper ecs;
-        irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
-        if (sceneManager == nullptr)
-            throw exceptions::MeshExceptions("no scene manager available");
-        if (!_node)
-            throw exceptions::MeshExceptions("Scene Node not available");
-        _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(_meshFilename.c_str()));
-        _shouldTextureChange = false;
-    }
+    if (!_node)
+        throw exceptions::MeshExceptions("Mesh Node not available");
+    _node->setMaterialType(type);
+}
 
+void indie::components::Mesh::setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, bool value)
+{
+    if (!_node)
+        throw exceptions::MeshExceptions("Mesh Node not available");
+    _node->setMaterialFlag(flag, value);
+    std::cout << "Updated flag" << std::endl;
+}
+
+void indie::components::Mesh::applyChanges()
+{
     if (_shouldMeshChange) {
         if (_meshFilename.c_str() == nullptr)
-            throw exceptions::MeshExceptions("no pass for mesh available");
+            throw exceptions::MeshExceptions("No path for mesh available");
         ECSWrapper ecs;
         irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
         if (sceneManager == nullptr)
@@ -129,14 +137,13 @@ void indie::components::Mesh::addToScene()
         throw exceptions::MeshExceptions("no scene manager or no mesh available");
     _node = sceneManager->addAnimatedMeshSceneNode(_mesh);
     if (_node == nullptr)
-        throw exceptions::MeshExceptions("no scene node available");
+        throw exceptions::MeshExceptions("no Mesh Node available");
     _node->setVisible(true);
-    _node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
 void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
 {
     if (_node == nullptr)
-        throw exceptions::MeshExceptions("no scene node available");
+        throw exceptions::MeshExceptions("no Mesh Node available");
     _node->setVisible(shouldBeSeen);
 }

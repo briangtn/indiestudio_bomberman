@@ -70,9 +70,9 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     /* Camera */
     updateCamera(elapsedTime);
     /* Particle */
-    ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticle);
+    ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticlePos);
     /* 3DModel */
-    ecs.entityManager.applyToEach<components::Transform, components::Mesh>(&syncModelPos);
+    ecs.entityManager.applyToEach<components::Mesh>(&syncModel);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -232,11 +232,47 @@ void indie::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nano
     }
 }
 
-void indie::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Mesh> mesh)
+void indie::systems::IrrlichtManagerSystem::syncModel(jf::entities::EntityHandler entity,
+                                                      jf::components::ComponentHandler<indie::components::Mesh> mesh)
 {
+    auto tr = entity->getComponent<components::Transform>();
+    auto mat = entity->getComponent<components::Material>();
+
     mesh->linkFilenameToMesh();
-    mesh->applyChange();
+    mesh->applyChanges();
     mesh->addToScene();
+    if (tr.isValid()) {
+        syncModelPos(tr, mesh);
+    }
+    if (mat.isValid()) {
+        syncModelMaterial(mat, mesh);
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::syncModelMaterial(
+    jf::components::ComponentHandler<indie::components::Material> mat,
+    jf::components::ComponentHandler<indie::components::Mesh> mesh)
+{
+    if (mat->hasMaterialChanged()) {
+        if (mat->hasMaterialTextureChanged()) {
+            mesh->setMaterialTexture(mat->getMaterialTexture());
+        }
+        if (mat->hasMaterialTypeChanged()) {
+            mesh->setMaterialType(mat->getMaterialType());
+        }
+        if (mat->hasMaterialFlagsChanged()) {
+            for (const auto &flag : mat->getMaterialFlags()) {
+                mesh->setMaterialFlag(flag.first, flag.second);
+            }
+        }
+        mat->resetHasMaterialChanged();
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::syncModelPos(
+    jf::components::ComponentHandler<components::Transform> tr,
+    jf::components::ComponentHandler<components::Mesh> mesh)
+{
     auto pos = tr->getPosition();
     irr::core::vector3df vector(pos.x, pos.y, pos.z);
     mesh->setPos(vector);
@@ -248,7 +284,9 @@ void indie::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))
     mesh->rotate(vectorRotation);
 }
 
-void indie::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Particle> particle)
+void indie::systems::IrrlichtManagerSystem::syncParticlePos(__attribute__((unused))jf::entities::EntityHandler entity,
+                                                            jf::components::ComponentHandler<components::Transform> tr,
+                                                            jf::components::ComponentHandler<components::Particle> particle)
 {
     irr::core::vector3df newPosition;
     irr::core::vector3df newScale;

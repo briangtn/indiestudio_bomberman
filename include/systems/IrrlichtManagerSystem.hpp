@@ -18,6 +18,7 @@
 #include "maths/Vectors.hpp"
 #include "components/Mesh.hpp"
 #include "components/Transform.hpp"
+#include "components/Material.hpp"
 
 namespace indie {
 
@@ -72,8 +73,19 @@ namespace indie {
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
         private:
-            static void syncModelPos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Mesh> mesh);
-            static void syncParticle(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Particle> particle);
+            static void syncModel(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncModelMaterial(
+                jf::components::ComponentHandler<components::Material> mat,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncModelPos(
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncParticlePos(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::Particle> particle);
 
         private:
             void openWindow();
