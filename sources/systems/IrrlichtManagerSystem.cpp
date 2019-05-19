@@ -69,6 +69,8 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     
     /* Camera */
     updateCamera(elapsedTime);
+    /* Light */
+    ecs.entityManager.applyToEach<components::PointLight>(&syncPointLights);
     /* Particle */
     ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticlePos);
     /* 3DModel */
@@ -307,6 +309,96 @@ void indie::systems::IrrlichtManagerSystem::syncParticlePos(__attribute__((unuse
     newRotation.Z = tr->getRotation().z;
     particle->setRotation(newRotation);
     particle->render();
+}
+
+void indie::systems::IrrlichtManagerSystem::syncPointLights(
+    jf::entities::EntityHandler entity,
+    jf::components::ComponentHandler<indie::components::PointLight> pl)
+{
+    ECSWrapper ecs;
+    auto tr = entity->getComponent<components::Transform>();
+    IrrlichtManagerSystem &sys = ecs.systemManager.getSystem<IrrlichtManagerSystem>();
+    auto sceneManager = sys.getSceneManager();
+    auto driver = sys.getVideoDriver();
+
+    if (sceneManager == nullptr || driver == nullptr)
+        return;
+    if (!pl->isInit()) {
+        irr::scene::ILightSceneNode *light = sceneManager->addLightSceneNode(
+            nullptr,
+            tr.isValid() ? irr::core::vector3df(tr->getPosition().x, tr->getPosition().y, tr->getPosition().z) : irr::core::vector3df(0, 0, 0),
+            pl->getLightColor(),
+            pl->getRadius()
+        );
+        light->enableCastShadow(pl->getCastShadows());
+        pl->setLightNode(light);
+        irr::scene::IBillboardSceneNode *billboard = sceneManager->addBillboardSceneNode(light, pl->getBillboardDimensions());
+        billboard->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+        billboard->setMaterialType(irr::video::EMT_TRANSPARENT_ADD_COLOR);
+        billboard->setMaterialTexture(0, driver->getTexture(pl->getBillboardTexture().c_str()));
+        pl->setBillboardNode(billboard);
+    }
+
+    if (tr.isValid())
+        syncPointLightsTransform(tr, pl);
+
+    if (pl->getChanges())
+        syncPointChanges(pl);
+}
+
+void indie::systems::IrrlichtManagerSystem::syncPointLightsTransform(
+    jf::components::ComponentHandler<indie::components::Transform> tr,
+    jf::components::ComponentHandler<indie::components::PointLight> pl)
+{
+    irr::core::vector3df newPosition;
+    irr::core::vector3df newScale;
+    irr::core::vector3df newRotation;
+
+    newPosition.X = tr->getPosition().x;
+    newPosition.Y = tr->getPosition().y;
+    newPosition.Z = tr->getPosition().z;
+    pl->getLightNode()->setPosition(newPosition);
+    newScale.X = tr->getScale().x;
+    newScale.Y = tr->getScale().y;
+    newScale.Z = tr->getScale().z;
+    pl->getLightNode()->setScale(newScale);
+    newRotation.X = tr->getRotation().x;
+    newRotation.Y = tr->getRotation().y;
+    newRotation.Z = tr->getRotation().z;
+    pl->getLightNode()->setRotation(newRotation);
+}
+
+void indie::systems::IrrlichtManagerSystem::syncPointChanges(jf::components::ComponentHandler<indie::components::PointLight> pl)
+{
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    auto lightData = pl->getLightNode()->getLightData();
+    if (pl->getChanges() & POINT_LIGHT_SHOW_SHADOWS_CHANGES) {
+        pl->getLightNode()->enableCastShadow(pl->getCastShadows());
+    }
+    if (pl->getChanges() & POINT_LIGHT_SHOW_BILLBOARD_CHANGES) {
+        pl->getBillboardNode()->setVisible(pl->getShowBillboard());
+    }
+    if (pl->getChanges() & POINT_LIGHT_SHOW_LIGHT_CHANGES) {
+        pl->getLightNode()->setVisible(pl->getShowLight());
+    }
+    if (pl->getChanges() & POINT_LIGHT_LIGHT_COLOR_CHANGES) {
+        lightData.DiffuseColor = pl->getLightColor();
+    }
+    if (pl->getChanges() & POINT_LIGHT_LIGHT_RADIUS_CHANGES) {
+        lightData.Radius = pl->getRadius();
+    }
+    if (pl->getChanges() & POINT_LIGHT_BILLBOARD_DIM_CHANGES) {
+        pl->getBillboardNode()->setSize(pl->getBillboardDimensions());
+    }
+    if (pl->getChanges() & POINT_LIGHT_BILLBOARD_TEX_CHANGES) {
+        pl->getBillboardNode()->setMaterialTexture(0, driver->getTexture(pl->getBillboardTexture().c_str()));
+    }
+    if (pl->getChanges() & (POINT_LIGHT_LIGHT_COLOR_CHANGES | POINT_LIGHT_LIGHT_RADIUS_CHANGES)) {
+        pl->getLightNode()->setLightData(lightData);
+    }
+    pl->resetChanges();
 }
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

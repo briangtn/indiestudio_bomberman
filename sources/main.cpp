@@ -72,11 +72,15 @@ int runBomberman()
         (*tr)->setPosition(oldPos);
     });
 
+    auto plEntity = ecs.entityManager.createEntity("pointLight");
+    auto plTr = plEntity->assignComponent<indie::components::Transform>();
+    plTr->setPosition({-1, -1, -1});
+    plEntity->assignComponent<indie::components::PointLight>();
+
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
     auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
     auto cubeEntity2 = ecs.entityManager.createEntity("cube");
     auto tr = cubeEntity2->assignComponent<indie::components::Transform>();
