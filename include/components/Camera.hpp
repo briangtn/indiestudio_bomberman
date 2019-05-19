@@ -10,18 +10,14 @@
 
 #include <irrlicht.h>
 #include "Component.hpp"
-#include "Vectors.hpp"
+#include "maths/Vectors.hpp"
 #include "Transform.hpp"
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
     namespace components {
-        class Camera : public Component {
+        class Camera : public jf::components::Component {
         public:
-            explicit Camera(entities::Entity &entity, float FOV = 45);
+            explicit Camera(jf::entities::Entity &entity, float FOV = 45);
             ~Camera() override;
 
             void updateCamera();

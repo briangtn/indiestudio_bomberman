@@ -13,11 +13,7 @@
 #define RAD2DEG(x) ((x) * 57.295754f)
 #define DEG2RAD(x) ((x) * 0.0174533f)
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     /*!
      * @namespace jf::maths

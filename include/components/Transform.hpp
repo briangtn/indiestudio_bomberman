@@ -11,17 +11,13 @@
 #define JFENTITYCOMPONENTSYSTEM_TRANSFORM_HPP
 
 #include "Component.hpp"
-#include "Vectors.hpp"
+#include "maths/Vectors.hpp"
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     namespace components {
 
-        class Transform : public Component {
+        class Transform : public jf::components::Component {
         public:
             explicit Transform(jf::entities::Entity &entity, maths::Vector3D position = maths::Vector3D(0, 0, 0),
                maths::Vector3D rotation = maths::Vector3D(0, 0, 0), maths::Vector3D scale = maths::Vector3D(1, 1, 1));
@@ -36,9 +32,9 @@ namespace jf {
             void setScale(const maths::Vector3D &scale);
 
         private:
-            jf::maths::Vector3D _position;
-            jf::maths::Vector3D _rotation; /*!< In euler angles */
-            jf::maths::Vector3D _scale;
+            maths::Vector3D _position;
+            maths::Vector3D _rotation; /*!< In euler angles */
+            maths::Vector3D _scale;
         };
     }
 }

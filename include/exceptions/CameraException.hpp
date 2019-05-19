@@ -8,9 +8,9 @@
 #include <string>
 #include "Exceptions.hpp"
 
-namespace jf {
+namespace indie {
     namespace exceptions {
-        class CameraException : public ECSException {
+        class CameraException : public jf::ECSException {
         public:
             explicit CameraException(const std::string &err, const std::string &where = "");
         };

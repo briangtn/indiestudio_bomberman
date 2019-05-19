@@ -13,21 +13,17 @@
 #include <irrlicht.h>
 #include <string>
 #include "System.hpp"
-#include "ComponentParticle.hpp"
-#include "Transform.hpp"
-#include "Vectors.hpp"
-#include "Mesh.hpp"
-#include "Transform.hpp"
+#include "components/ComponentParticle.hpp"
+#include "components/Transform.hpp"
+#include "maths/Vectors.hpp"
+#include "components/Mesh.hpp"
+#include "components/Transform.hpp"
 
-/*!
-* @namespace jf
-* @brief The jfecs library
-*/
-namespace jf {
+namespace indie {
 
     namespace systems {
 
-        class IrrlichtManagerSystem : public ISystem {
+        class IrrlichtManagerSystem : public jf::systems::ISystem {
         private:
             class IrrlichtEventReceiver : public irr::IEventReceiver {
             public:
@@ -62,23 +58,22 @@ namespace jf {
             const std::string &getWindowCaption() const;
             void setWindowCaption(const std::string &str);
 
-            const jf::maths::Vector2D &getWindowDimension() const;
-            void setWindowDimension(const jf::maths::Vector2D &dimensions);
+            const indie::maths::Vector2D &getWindowDimension() const;
+            void setWindowDimension(const indie::maths::Vector2D &dimensions);
 
             irr::scene::ISceneManager *getSceneManager();
             irr::video::IVideoDriver *getVideoDriver();
+            irr::IrrlichtDevice *getDevice();
 
             bool isWindowOpen() const;
-            irr::video::IVideoDriver *getVideoDriver() const;
-            irr::IrrlichtDevice *getDevice() const;
 
             void activateJoysticks();
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
         private:
-            static void syncModelPos(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh);
-            static void syncParticle(jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Particle> particle);
+            static void syncModelPos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncParticle(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Particle> particle);
 
         private:
             void openWindow();
@@ -101,14 +96,14 @@ namespace jf {
             bool _fullscreenEnabled;
             bool _vsyncEnabled;
             std::string _windowCaption;
-            jf::maths::Vector2D _windowDimension;
+            indie::maths::Vector2D _windowDimension;
         };
     }
 }
 
 #else
 
-namespace jf {
+namespace indie {
 
     namespace systems {
         class IrrlichtManagerSystem;

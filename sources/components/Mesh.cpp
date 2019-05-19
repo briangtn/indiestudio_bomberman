@@ -6,13 +6,13 @@
 */
 
 #include "Entity.hpp"
-#include "Mesh.hpp"
+#include "components/Mesh.hpp"
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
-#include "IrrlichtClosingWindowEvent.hpp"
-#include "MeshExceptions.hpp"
+#include "events/IrrlichtClosingWindowEvent.hpp"
+#include "exceptions/MeshExceptions.hpp"
 
-jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename) 
+indie::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename)
     : Component(entity), 
       _mesh(nullptr), 
       _node(nullptr), 
@@ -31,7 +31,7 @@ jf::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filen
     EMIT_CREATE(Mesh);
 }
 
-jf::components::Mesh::~Mesh()
+indie::components::Mesh::~Mesh()
 {
     EMIT_DELETE(Mesh);
     ECSWrapper ecs;
@@ -40,12 +40,12 @@ jf::components::Mesh::~Mesh()
         _node->remove();
 }
 
-void jf::components::Mesh::linkFilenameToMesh()
+void indie::components::Mesh::linkFilenameToMesh()
 {
     if (_mesh != nullptr)
         return;
     ECSWrapper ecs;
-    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
     if (sceneManager == nullptr)
         throw exceptions::MeshExceptions("No scene Manager available");
     _mesh = sceneManager->getMesh(_meshFilename.c_str());
@@ -53,40 +53,40 @@ void jf::components::Mesh::linkFilenameToMesh()
         throw exceptions::MeshExceptions("Mesh creation failed");
 }
 
-void jf::components::Mesh::setPos(irr::core::vector3df &vector)
+void indie::components::Mesh::setPos(irr::core::vector3df &vector)
 {
     if (!_node)
         throw exceptions::MeshExceptions("Scene Node not available");
     _node->setPosition(vector);
 }
 
-void jf::components::Mesh::setScale(irr::core::vector3df &vector)
+void indie::components::Mesh::setScale(irr::core::vector3df &vector)
 {
     if (!_node)
         throw exceptions::MeshExceptions("Scene Node not available");
     _node->setScale(vector);
 }
 
-void jf::components::Mesh::rotate(irr::core::vector3df &vector)
+void indie::components::Mesh::rotate(irr::core::vector3df &vector)
 {
     if (!_node)
         throw exceptions::MeshExceptions("Scene Node not available");
     _node->setRotation(vector);
 }
 
-void jf::components::Mesh::setTexture(const std::string &filename)
+void indie::components::Mesh::setTexture(const std::string &filename)
 {
     _textureFilename = filename;
     _shouldTextureChange = true;
 }
 
-void jf::components::Mesh::applyChange()
+void indie::components::Mesh::applyChange()
 {
     if (_shouldTextureChange) {
         if (_textureFilename.c_str() == nullptr)
             throw exceptions::MeshExceptions("no pass for texture available");
         ECSWrapper ecs;
-        irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+        irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
         if (sceneManager == nullptr)
             throw exceptions::MeshExceptions("no scene manager available");
         if (!_node)
@@ -99,7 +99,7 @@ void jf::components::Mesh::applyChange()
         if (_meshFilename.c_str() == nullptr)
             throw exceptions::MeshExceptions("no pass for mesh available");
         ECSWrapper ecs;
-        irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+        irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
         if (sceneManager == nullptr)
             throw exceptions::MeshExceptions("no scene manager available");
         _mesh = sceneManager->getMesh(_meshFilename.c_str());
@@ -109,7 +109,7 @@ void jf::components::Mesh::applyChange()
     }
 }
 
-void jf::components::Mesh::changeMesh(const std::string &filename)
+void indie::components::Mesh::changeMesh(const std::string &filename)
 {
     if (_node)
         _node->remove();
@@ -119,12 +119,12 @@ void jf::components::Mesh::changeMesh(const std::string &filename)
     _meshFilename = filename;
 }
 
-void jf::components::Mesh::addToScene()
+void indie::components::Mesh::addToScene()
 {
     if (_node != nullptr)
         return;
     ECSWrapper ecs;
-    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getSceneManager();
+    irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
     if (sceneManager == nullptr || _mesh == nullptr)
         throw exceptions::MeshExceptions("no scene manager or no mesh available");
     _node = sceneManager->addAnimatedMeshSceneNode(_mesh);
@@ -134,7 +134,7 @@ void jf::components::Mesh::addToScene()
     _node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
-void jf::components::Mesh::changeVisibility(bool shouldBeSeen)
+void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
 {
     if (_node == nullptr)
         throw exceptions::MeshExceptions("no scene node available");

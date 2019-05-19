@@ -8,29 +8,29 @@
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
 #include <iostream>
-#include "Camera.hpp"
-#include "IrrlichtManagerSystem.hpp"
-#include "IrrlichtManagerExceptions.hpp"
-#include "IrrlichtKeyInputEvent.hpp"
-#include "IrrlichtMouseInputEvent.hpp"
+#include "components/Camera.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
+#include "exceptions/IrrlichtManagerExceptions.hpp"
+#include "events/IrrlichtKeyInputEvent.hpp"
+#include "events/IrrlichtMouseInputEvent.hpp"
 #include "ECSWrapper.hpp"
-#include "ComponentParticle.hpp"
+#include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
 
 int runBomberman()
 {
     ECSWrapper ecs;
-    ecs.systemManager.addSystem<jf::systems::IrrlichtManagerSystem>();
-    ecs.systemManager.startSystem<jf::systems::IrrlichtManagerSystem>();
-    ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().activateJoysticks();
-    ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
+    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
+    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
     auto cameraEntity = ecs.entityManager.createEntity("camera");
-    auto cameraTr = cameraEntity->assignComponent<jf::components::Transform>();
+    auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
-    cameraEntity->assignComponent<jf::components::Camera>();
+    cameraEntity->assignComponent<indie::components::Camera>();
 
-    ecs.eventManager.addListener<jf::components::ComponentHandler<jf::components::Transform>, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(&cameraTr, [](auto *tr, auto e) {
+    ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(&cameraTr, [](auto *tr, auto e) {
         auto oldPos = (*tr)->getPosition();
         auto oldRot = (*tr)->getRotation();
         if (e.shiftActivated) {
@@ -41,7 +41,7 @@ int runBomberman()
         (*tr)->setPosition(oldPos);
         (*tr)->setRotation(oldRot);
     });
-    ecs.eventManager.addListener<jf::components::ComponentHandler<jf::components::Transform>, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_D>>(&cameraTr, [](auto *tr, auto e) {
+    ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_D>>(&cameraTr, [](auto *tr, auto e) {
         auto oldPos = (*tr)->getPosition();
         auto oldRot = (*tr)->getRotation();
         if (e.shiftActivated) {
@@ -52,7 +52,7 @@ int runBomberman()
         (*tr)->setPosition(oldPos);
         (*tr)->setRotation(oldRot);
     });
-    ecs.eventManager.addListener<jf::components::ComponentHandler<jf::components::Transform>, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Z>>(&cameraTr, [](auto *tr, auto e) {
+    ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Z>>(&cameraTr, [](auto *tr, auto e) {
         auto oldPos = (*tr)->getPosition();
         if (e.shiftActivated) {
             oldPos.y += 1;
@@ -61,7 +61,7 @@ int runBomberman()
         }
         (*tr)->setPosition(oldPos);
     });
-    ecs.eventManager.addListener<jf::components::ComponentHandler<jf::components::Transform>, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_S>>(&cameraTr, [](auto *tr, auto e) {
+    ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_S>>(&cameraTr, [](auto *tr, auto e) {
         auto oldPos = (*tr)->getPosition();
         if (e.shiftActivated) {
             oldPos.y -= 1;
@@ -72,19 +72,19 @@ int runBomberman()
     });
 
     auto cubeEntity = ecs.entityManager.createEntity("cube");
-    cubeEntity->assignComponent<jf::components::Transform>();
-    cubeEntity->assignComponent<jf::components::Mesh, std::string>("../test_assets/cube.obj");
+    cubeEntity->assignComponent<indie::components::Transform>();
+    cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
 
     auto cubeEntity2 = ecs.entityManager.createEntity("cube");
-    auto tr = cubeEntity2->assignComponent<jf::components::Transform>();
+    auto tr = cubeEntity2->assignComponent<indie::components::Transform>();
     tr->setPosition({10, 10, 10});
     tr->setScale({10, 10, 2});
     tr->setRotation({0, 0, 45});
-    cubeEntity2->assignComponent<jf::components::Mesh, std::string>("../test_assets/cube.obj");
+    cubeEntity2->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
 
     auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
-    particleSystemEntity->assignComponent<jf::components::Transform, jf::maths::Vector3D>({0, 1, 0});
-    auto sys = particleSystemEntity->assignComponent<jf::components::Particle, std::string>("p1");
+    particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({0, 1, 0});
+    auto sys = particleSystemEntity->assignComponent<indie::components::Particle, std::string>("p1");
     sys->setTexture(0, "../test_assets/particle_default.png");
     sys->setAngle(0);
     sys->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 255, 0, 0), irr::video::SColor(0, 0, 0, 255)));
@@ -96,9 +96,9 @@ int runBomberman()
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
     sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
 
-    while (ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
-           ecs.systemManager.getState<jf::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
-           ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().isWindowOpen()) {
+    while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
+           ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
+           ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
 
         auto crot = tr->getRotation();

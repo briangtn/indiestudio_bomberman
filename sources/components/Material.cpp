@@ -9,7 +9,7 @@
 // Created by romainfouyer on 5/13/19.
 //
 
-#include "Material.hpp"
+#include "components/Material.hpp"
 #include "Events.hpp"
 
 indie::components::Material::Material(jf::entities::Entity &entity,

@@ -8,18 +8,17 @@
 #ifndef COMPONENTPARTICLE_HPP_
 #define COMPONENTPARTICLE_HPP_
 
+#include <iostream>
+#include <irrlicht.h>
 #include "Component.hpp"
 #include "ComponentCreatedEvent.hpp"
-#include "irrlicht.h"
 #include "ECSWrapper.hpp"
-#include "ParticleException.hpp"
-#include "IrrlichtManagerSystem.hpp"
-#include <iostream>
+#include "exceptions/ParticleException.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
 
-namespace jf {
+namespace indie {
     namespace components {
-        class Particle
-            : public jf::components::Component {
+        class Particle : public jf::components::Component {
         public:
 
             /* Particle Constructor */
@@ -159,7 +158,7 @@ namespace jf {
 
 #else
 
-namespace jf {
+namespace indie {
     namespace components {
         class Particle;
     }

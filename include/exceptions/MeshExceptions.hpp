@@ -12,13 +12,13 @@
 #include <string>
 #include "Exceptions.hpp"
 
-namespace jf {
+namespace indie {
 
     namespace exceptions {
 
-        class MeshExceptions : public ECSException {
-            public:
-                explicit MeshExceptions(const std::string &err, const std::string &where = "");
+        class MeshExceptions : public jf::ECSException {
+        public:
+            explicit MeshExceptions(const std::string &err, const std::string &where = "");
         };
     }
 }

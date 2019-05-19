@@ -12,13 +12,9 @@
 
 #include <irrlicht.h>
 
-#define EMIT_SPECIFIC_KEY(key, pressed, shift, ctrl) (ecs.eventManager.emit(jf::events::IrrlichtSpecifiedKeyInputEvent<(key)>({(pressed), !(pressed), (shift), (ctrl)})))
+#define EMIT_SPECIFIC_KEY(key, pressed, shift, ctrl) (ecs.eventManager.emit(indie::events::IrrlichtSpecifiedKeyInputEvent<(key)>({(pressed), !(pressed), (shift), (ctrl)})))
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     namespace events {
 

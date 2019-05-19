@@ -12,9 +12,9 @@
 #ifndef INDIESTUDIO_MATERIAL_HPP
 #define INDIESTUDIO_MATERIAL_HPP
 
-#include "Component.hpp"
 #include <irrlicht.h>
 #include <string>
+#include "Component.hpp"
 
 namespace indie {
 

@@ -7,25 +7,25 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
-#include "Camera.hpp"
-#include "IrrlichtManagerExceptions.hpp"
+#include "components/Camera.hpp"
+#include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
-#include "IrrlichtManagerSystem.hpp"
-#include "IrrlichtKeyInputEvent.hpp"
-#include "IrrlichtJoystickInputEvent.hpp"
-#include "IrrlichtMouseInputEvent.hpp"
-#include "IrrlichtGUIEvent.hpp"
-#include "Transform.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
+#include "events/IrrlichtKeyInputEvent.hpp"
+#include "events/IrrlichtJoystickInputEvent.hpp"
+#include "events/IrrlichtMouseInputEvent.hpp"
+#include "events/IrrlichtGUIEvent.hpp"
+#include "components/Transform.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
-#include "IrrlichtClosingWindowEvent.hpp"
+#include "events/IrrlichtClosingWindowEvent.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-jf::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
+indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
     : _eventReceiver(),
       _device(nullptr),
       _driver(nullptr),
@@ -40,26 +40,26 @@ jf::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
 {
 }
 
-jf::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
+indie::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
 {
     if (isWindowOpen())
         closeWindow();
 }
 
-void jf::systems::IrrlichtManagerSystem::onAwake()
+void indie::systems::IrrlichtManagerSystem::onAwake()
 {
     ECSWrapper ecs;
-    ecs.eventManager.addListener<IrrlichtManagerSystem, jf::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(this, [](IrrlichtManagerSystem *ms, auto e) {
+    ecs.eventManager.addListener<IrrlichtManagerSystem, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(this, [](IrrlichtManagerSystem *ms, auto e) {
         ms->_device->closeDevice();
     });
 }
 
-void jf::systems::IrrlichtManagerSystem::onStart()
+void indie::systems::IrrlichtManagerSystem::onStart()
 {
     openWindow();
 }
 
-void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
+void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
@@ -80,88 +80,83 @@ void jf::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseconds
     _driver->endScene();
 }
 
-void jf::systems::IrrlichtManagerSystem::onStop()
+void indie::systems::IrrlichtManagerSystem::onStop()
 {
     closeWindow();
 }
 
-void jf::systems::IrrlichtManagerSystem::onTearDown()
+void indie::systems::IrrlichtManagerSystem::onTearDown()
 {
 
 }
 
-bool jf::systems::IrrlichtManagerSystem::isFullScreenEnabled() const
+bool indie::systems::IrrlichtManagerSystem::isFullScreenEnabled() const
 {
     return _fullscreenEnabled;
 }
 
-void jf::systems::IrrlichtManagerSystem::setFullScreenEnabled(bool enabled)
+void indie::systems::IrrlichtManagerSystem::setFullScreenEnabled(bool enabled)
 {
     _fullscreenEnabled = enabled;
     reloadWindow();
 }
 
-bool jf::systems::IrrlichtManagerSystem::isVSyncEnabled() const
+bool indie::systems::IrrlichtManagerSystem::isVSyncEnabled() const
 {
     return _vsyncEnabled;
 }
 
-void jf::systems::IrrlichtManagerSystem::setVSyncEnabled(bool enabled)
+void indie::systems::IrrlichtManagerSystem::setVSyncEnabled(bool enabled)
 {
     _vsyncEnabled = enabled;
     reloadWindow();
 }
 
-const std::string &jf::systems::IrrlichtManagerSystem::getWindowCaption() const
+const std::string &indie::systems::IrrlichtManagerSystem::getWindowCaption() const
 {
     return _windowCaption;
 }
 
-void jf::systems::IrrlichtManagerSystem::setWindowCaption(const std::string &str)
+void indie::systems::IrrlichtManagerSystem::setWindowCaption(const std::string &str)
 {
     _windowCaption = str;
     reloadWindow();
 }
 
-const jf::maths::Vector2D &jf::systems::IrrlichtManagerSystem::getWindowDimension() const
+const indie::maths::Vector2D &indie::systems::IrrlichtManagerSystem::getWindowDimension() const
 {
     return _windowDimension;
 }
 
-void jf::systems::IrrlichtManagerSystem::setWindowDimension(const jf::maths::Vector2D &dimensions)
+void indie::systems::IrrlichtManagerSystem::setWindowDimension(const indie::maths::Vector2D &dimensions)
 {
     _windowDimension = dimensions;
     reloadWindow();
 }
 
-irr::scene::ISceneManager *jf::systems::IrrlichtManagerSystem::getSceneManager()
+irr::scene::ISceneManager *indie::systems::IrrlichtManagerSystem::getSceneManager()
 {
     return _sceneManager;
 }
 
-irr::video::IVideoDriver *jf::systems::IrrlichtManagerSystem::getVideoDriver()
+irr::video::IVideoDriver *indie::systems::IrrlichtManagerSystem::getVideoDriver()
 {
     return _driver;
 }
 
-bool jf::systems::IrrlichtManagerSystem::isWindowOpen() const
+irr::IrrlichtDevice* indie::systems::IrrlichtManagerSystem::getDevice()
+{
+    return _device;
+}
+
+bool indie::systems::IrrlichtManagerSystem::isWindowOpen() const
 {
     if (_device != nullptr)
         return _device->run();
     return false;
 }
 
-irr::video::IVideoDriver* jf::systems::IrrlichtManagerSystem::getVideoDriver() const
-{
-    return _driver;
-}
-
-irr::IrrlichtDevice* jf::systems::IrrlichtManagerSystem::getDevice() const
-{
-    return _device;
-}
-
-void jf::systems::IrrlichtManagerSystem::openWindow()
+void indie::systems::IrrlichtManagerSystem::openWindow()
 {
     _device = irr::createDevice(
         irr::video::EDT_OPENGL,
@@ -173,7 +168,7 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
         &_eventReceiver
     );
     if (_device == nullptr)
-        throw exceptions::IrrlichtManagerDeviceException("Failed to create device", "jf::systems::IrrlichtManagerSystem::openWindow");
+        throw exceptions::IrrlichtManagerDeviceException("Failed to create device", "indie::systems::IrrlichtManagerSystem::openWindow");
     _device->setWindowCaption(std::wstring(_windowCaption.begin(), _windowCaption.end()).c_str());
     _driver = _device->getVideoDriver();
     _sceneManager = _device->getSceneManager();
@@ -181,7 +176,7 @@ void jf::systems::IrrlichtManagerSystem::openWindow()
     reloadJoysticks();
 }
 
-void jf::systems::IrrlichtManagerSystem::closeWindow()
+void indie::systems::IrrlichtManagerSystem::closeWindow()
 {
     if (_device != nullptr) {
         ECSWrapper ecs;
@@ -191,7 +186,7 @@ void jf::systems::IrrlichtManagerSystem::closeWindow()
     _device = nullptr;
 }
 
-void jf::systems::IrrlichtManagerSystem::reloadWindow()
+void indie::systems::IrrlichtManagerSystem::reloadWindow()
 {
     if (!isWindowOpen())
         return;
@@ -201,43 +196,43 @@ void jf::systems::IrrlichtManagerSystem::reloadWindow()
         openWindow();
 }
 
-void jf::systems::IrrlichtManagerSystem::activateJoysticks()
+void indie::systems::IrrlichtManagerSystem::activateJoysticks()
 {
     _joystickEnabled = true;
 }
 
-const irr::core::array<irr::SJoystickInfo> &jf::systems::IrrlichtManagerSystem::getJoystickInfos()
+const irr::core::array<irr::SJoystickInfo> &indie::systems::IrrlichtManagerSystem::getJoystickInfos()
 {
     return _joystickInfos;
 }
 
-void jf::systems::IrrlichtManagerSystem::reloadJoysticks()
+void indie::systems::IrrlichtManagerSystem::reloadJoysticks()
 {
     if (_joystickEnabled) {
         if (_device == nullptr) {
-            throw exceptions::IrrlichtManagerDeviceException("Device is not open.", "jf::systems::IrrlichtManagerSystem::reloadJoysticks");
+            throw exceptions::IrrlichtManagerDeviceException("Device is not open.", "indie::systems::IrrlichtManagerSystem::reloadJoysticks");
         }
         if (!_device->activateJoysticks(_joystickInfos)) {
-            throw exceptions::IrrlichtManagerDeviceException("Joystick support is not enabled.", "jf::systems::IrrlichtManagerSystem::reloadJoysticks");
+            throw exceptions::IrrlichtManagerDeviceException("Joystick support is not enabled.", "indie::systems::IrrlichtManagerSystem::reloadJoysticks");
         }
         std::cout << "Joystick support is enabled and " << _joystickInfos.size() << " joystick(s) are present." << std::endl;
     }
 }
 
-void jf::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanoseconds &elapsedTime)
+void indie::systems::IrrlichtManagerSystem::updateCamera(const std::chrono::nanoseconds &elapsedTime)
 {
     ECSWrapper ecs;
 
     std::vector<jf::entities::EntityHandler> cameras;
-    cameras = ecs.entityManager.getEntitiesWith<jf::components::Camera, jf::components::Transform>();
+    cameras = ecs.entityManager.getEntitiesWith<indie::components::Camera, indie::components::Transform>();
 
     if (!cameras.empty()) {
-        cameras[0]->getComponent<jf::components::Camera>()->updateCamera();
-        _sceneManager->setActiveCamera(cameras[0]->getComponent<jf::components::Camera>()->getCameraNode());
+        cameras[0]->getComponent<indie::components::Camera>()->updateCamera();
+        _sceneManager->setActiveCamera(cameras[0]->getComponent<indie::components::Camera>()->getCameraNode());
     }
 }
 
-void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Mesh> mesh)
+void indie::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Mesh> mesh)
 {
     mesh->linkFilenameToMesh();
     mesh->applyChange();
@@ -253,7 +248,7 @@ void jf::systems::IrrlichtManagerSystem::syncModelPos(__attribute__((unused))jf:
     mesh->rotate(vectorRotation);
 }
 
-void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, components::ComponentHandler<components::Transform> tr, components::ComponentHandler<components::Particle> particle)
+void indie::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::Particle> particle)
 {
     irr::core::vector3df newPosition;
     irr::core::vector3df newScale;
@@ -276,7 +271,7 @@ void jf::systems::IrrlichtManagerSystem::syncParticle(__attribute__((unused))jf:
     particle->render();
 }
 
-bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
+bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {
     switch (event.EventType) {
     case irr::EET_GUI_EVENT:
@@ -303,13 +298,13 @@ bool jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const ir
     return false;
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendGUIEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendGUIEvent(const irr::SEvent &event)
 {
     ECSWrapper ecs;
     ecs.eventManager.emit(events::IrrlichtGUIEvent({event.GUIEvent}));
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendMouseInputEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendMouseInputEvent(const irr::SEvent &event)
 {
     ECSWrapper ecs;
     ecs.eventManager.emit(events::IrrlichtMouseInputEvent({event.MouseInput}));
@@ -343,10 +338,10 @@ void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendMouseInputEv
     }
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendKeyInputEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendKeyInputEvent(const irr::SEvent &event)
 {
     ECSWrapper ecs;
-    ecs.eventManager.emit(jf::events::IrrlichtKeyInputEvent({
+    ecs.eventManager.emit(indie::events::IrrlichtKeyInputEvent({
         event.KeyInput.Key,
         event.KeyInput.PressedDown,
         !event.KeyInput.PressedDown,
@@ -812,18 +807,18 @@ void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendKeyInputEven
     }
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendJoystickInputEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendJoystickInputEvent(const irr::SEvent &event)
 {
     ECSWrapper ecs;
     ecs.eventManager.emit(events::IrrlichtJoystickEvent({event.JoystickEvent}));
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendLogTextEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendLogTextEvent(const irr::SEvent &event)
 {
     (void)event;
 }
 
-void jf::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendUserEvent(const irr::SEvent &event)
+void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendUserEvent(const irr::SEvent &event)
 {
     (void)event;
 }

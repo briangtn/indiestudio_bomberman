@@ -9,9 +9,9 @@
 // Created by romainfouyer on 5/13/19.
 //
 
-#include "IrrlichtManagerSystem.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
 #include "ECSWrapper.hpp"
-#include "Shaders.hpp"
+#include "shaders/Shaders.hpp"
 
 void indie::Shaders::OnSetConstants(irr::video::IMaterialRendererServices *services, irr::s32 userData)
 {
@@ -23,17 +23,17 @@ void indie::Shaders::OnSetConstants(irr::video::IMaterialRendererServices *servi
     irr::video::SColorf lightColor(0.0f,1.0f,1.0f,0.0f);
     irr::core::matrix4 invWorld;
 
-    invWorld = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
+    invWorld = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
     invWorld.makeInverse();
     services->setVertexShaderConstant("mInvWorld", invWorld.pointer(), 16);
-    viewProjection = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_PROJECTION);
-    viewProjection *= ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_VIEW);
-    viewProjection *= ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
+    viewProjection = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_PROJECTION);
+    viewProjection *= ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_VIEW);
+    viewProjection *= ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
     services->setVertexShaderConstant("mWorldViewProj", viewProjection.pointer(), 16);
-    camPos = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getDevice()->getSceneManager()->getActiveCamera()->getAbsolutePosition();
+    camPos = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getDevice()->getSceneManager()->getActiveCamera()->getAbsolutePosition();
     services->setVertexShaderConstant("mLightPos", reinterpret_cast<irr::f32 *>(&camPos), 3);
     services->setVertexShaderConstant("mLightColor", reinterpret_cast<irr::f32 *>(&lightColor), 4);
-    world = ecs.systemManager.getSystem<jf::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
+    world = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver()->getTransform(irr::video::ETS_WORLD);
     world = world.getTransposed();
     services->setVertexShaderConstant("mTransWorld", world.pointer(), 16);
     services->setPixelShaderConstant("myTexture", &TextureLayerID, 1);

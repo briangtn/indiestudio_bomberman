@@ -10,11 +10,7 @@
 #ifndef INDIESTUDIO_IRRLICHTCLOSINGWINDOWEVENT_HPP
 #define INDIESTUDIO_IRRLICHTCLOSINGWINDOWEVENT_HPP
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     namespace events {
 
