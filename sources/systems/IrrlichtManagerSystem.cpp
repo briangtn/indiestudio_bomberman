@@ -151,6 +151,16 @@ bool jf::systems::IrrlichtManagerSystem::isWindowOpen() const
     return false;
 }
 
+irr::video::IVideoDriver* jf::systems::IrrlichtManagerSystem::getVideoDriver() const
+{
+    return _driver;
+}
+
+irr::IrrlichtDevice* jf::systems::IrrlichtManagerSystem::getDevice() const
+{
+    return _device;
+}
+
 void jf::systems::IrrlichtManagerSystem::openWindow()
 {
     _device = irr::createDevice(

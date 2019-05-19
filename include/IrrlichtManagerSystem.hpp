@@ -69,6 +69,8 @@ namespace jf {
             irr::video::IVideoDriver *getVideoDriver();
 
             bool isWindowOpen() const;
+            irr::video::IVideoDriver *getVideoDriver() const;
+            irr::IrrlichtDevice *getDevice() const;
 
             void activateJoysticks();
             void reloadJoysticks();
