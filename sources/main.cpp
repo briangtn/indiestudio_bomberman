@@ -17,6 +17,7 @@
 #include "ECSWrapper.hpp"
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
+#include "input/InputManager.hpp"
 
 int runBomberman()
 {
@@ -25,6 +26,8 @@ int runBomberman()
     ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+
+    indie::InputManager::get()->registerInput("Keyboard1", indie::Input(std::map<std::string, indie::Axis>()));
 
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
