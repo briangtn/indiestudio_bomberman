@@ -11,18 +11,13 @@
 #define INDIESTUDIO_SOUND2DCOMPONENT_HPP
 
 #include <irrKlang.h>
-#include <bits/unique_ptr.h>
 #include "Component.hpp"
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     namespace components {
 
-        class Sound2DComponent : public Component {
+        class Sound2DComponent : public jf::components::Component {
         public:
             enum SoundType {
                 MUSIC,
@@ -54,9 +49,8 @@ namespace jf {
             void setShouldBePlayed(bool shouldBePlayed);
             bool getIsLooped() const;
             void setIsLooped(bool loop);
-
-        public:
-
+            unsigned int getPlayPosition() const;
+            void setPlayPosition(unsigned int position);
 
         private:
             Sound2DComponentState _state;

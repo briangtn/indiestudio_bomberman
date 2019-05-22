@@ -11,18 +11,14 @@
 #define INDIESTUDIO_IRRKLANGAUDIOSYSTEM_HPP
 
 #include <irrKlang.h>
-#include <bits/unique_ptr.h>
 #include "System.hpp"
+#include "Sound2DComponent.hpp"
 
-/*!
- * @namespace jf
- * @brief The jfecs library
- */
-namespace jf {
+namespace indie {
 
     namespace systems {
 
-        class IrrklangAudioSystem : public ISystem {
+        class IrrklangAudioSystem : public jf::systems::ISystem {
         public:
             IrrklangAudioSystem();
             ~IrrklangAudioSystem();
@@ -38,7 +34,13 @@ namespace jf {
             irrklang::ISound *add2DSound(const std::string &sourceFile);
             void removeSound(irrklang::ISound *sound);
             void playSounds(bool onlyEnabled = true);
-            void stopSounds(bool onlyEnabled = true);
+            void playSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void pauseSounds(bool onlyEnabled = true);
+            void pauseSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void restartSounds(bool onlyEnabled = true);
+            void restartSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void setSoundsVolume(float volume, bool onlyEnabled = true);
+            void setSoundsVolume(float volume, components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
 
         private:
             irrklang::ISoundEngine *_engine;

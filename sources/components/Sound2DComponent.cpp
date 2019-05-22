@@ -7,8 +7,8 @@
 
 /* Created the 13/05/2019 at 19:00 by jbulteau */
 
-#include <ECSWrapper.hpp>
-#include <IrrklangAudioSystem.hpp>
+#include "ECSWrapper.hpp"
+#include "IrrklangAudioSystem.hpp"
 #include "Events.hpp"
 #include "Sound2DComponent.hpp"
 
@@ -16,86 +16,121 @@
 /* ----------------------------------------------------Ctor&Dtor--------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::components::Sound2DComponent::Sound2DComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType)
-    : Component(entity), _state(STARTING), _sourceFile(sourceFile), _soundType(soundType), _shouldBePlayed(false)
+indie::components::Sound2DComponent::Sound2DComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType)
+    : Component(entity)
+    , _state(STARTING)
+    , _sound(nullptr)
+    , _sourceFile(sourceFile)
+    , _soundType(soundType)
+    , _shouldBePlayed(false)
 {
     EMIT_CREATE(Sound2DComponent);
 }
 
-jf::components::Sound2DComponent::~Sound2DComponent()
+indie::components::Sound2DComponent::~Sound2DComponent()
 {
     ECSWrapper ecs;
 
-    ecs.systemManager.getSystem<jf::systems::IrrklangAudioSystem>().removeSound(_sound);
     EMIT_DELETE(Sound2DComponent);
+    ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().removeSound(_sound);
 }
 
 /* ================================================================================================================ */
 /* -----------------------------------------------Setters and Getters---------------------------------------------- */
 /* ================================================================================================================ */
 
-const jf::components::Sound2DComponent::Sound2DComponentState jf::components::Sound2DComponent::getState() const
+const indie::components::Sound2DComponent::Sound2DComponentState indie::components::Sound2DComponent::getState() const
 {
     return _state;
 }
 
-const irrklang::ISound *jf::components::Sound2DComponent::getSound() const
+const irrklang::ISound *indie::components::Sound2DComponent::getSound() const
 {
     return _sound;
 }
 
-void jf::components::Sound2DComponent::setSound(irrklang::ISound *sound)
+void indie::components::Sound2DComponent::setSound(irrklang::ISound *sound)
 {
     _sound = sound;
     _state = STARTED;
 }
 
-const std::string &jf::components::Sound2DComponent::getSourceFile() const
+const std::string &indie::components::Sound2DComponent::getSourceFile() const
 {
     return _sourceFile;
 }
 
-jf::components::Sound2DComponent::SoundType jf::components::Sound2DComponent::getSoundType() const
+indie::components::Sound2DComponent::SoundType indie::components::Sound2DComponent::getSoundType() const
 {
     return _soundType;
 }
 
-bool jf::components::Sound2DComponent::getIsPaused() const
+bool indie::components::Sound2DComponent::getIsPaused() const
 {
-    return _sound->getIsPaused();
+    if (_sound) {
+        return _sound->getIsPaused();
+    }
+    return false;
 }
 
-void jf::components::Sound2DComponent::setIsPaused(bool isPaused)
+void indie::components::Sound2DComponent::setIsPaused(bool isPaused)
 {
-    _sound->setIsPaused(isPaused);
+    if (_sound) {
+        _sound->setIsPaused(isPaused);
+    }
 }
 
-float jf::components::Sound2DComponent::getVolume() const
+float indie::components::Sound2DComponent::getVolume() const
 {
-    return _sound->getVolume();
+    if (_sound) {
+        return _sound->getVolume();
+    }
+    return 0;
 }
 
-void jf::components::Sound2DComponent::setVolume(float volume)
+void indie::components::Sound2DComponent::setVolume(float volume)
 {
-    _sound->setVolume(volume);
+    if (_sound) {
+        _sound->setVolume(volume);
+    }
 }
 
-bool jf::components::Sound2DComponent::getShouldBePlayed() const
+bool indie::components::Sound2DComponent::getShouldBePlayed() const
 {
     return _shouldBePlayed;
 }
 
-void jf::components::Sound2DComponent::setShouldBePlayed(bool shouldBePlayed)
+void indie::components::Sound2DComponent::setShouldBePlayed(bool shouldBePlayed)
 {
     _shouldBePlayed = shouldBePlayed;
 }
 
-bool jf::components::Sound2DComponent::getIsLooped() const
+bool indie::components::Sound2DComponent::getIsLooped() const
 {
-    return _sound->isLooped();
+    if (_sound) {
+        return _sound->isLooped();
+    }
+    return false;
 }
 
-void jf::components::Sound2DComponent::setIsLooped(bool loop)
+void indie::components::Sound2DComponent::setIsLooped(bool loop)
 {
-    _sound->setIsLooped(loop);
+    if (_sound) {
+        _sound->setIsLooped(loop);
+    }
+}
+
+unsigned int indie::components::Sound2DComponent::getPlayPosition() const
+{
+    if (_sound) {
+        return _sound->getPlayPosition();
+    }
+    return 0;
+}
+
+void indie::components::Sound2DComponent::setPlayPosition(unsigned int position)
+{
+    if (_sound) {
+        _sound->setPlayPosition(position);
+    }
 }
