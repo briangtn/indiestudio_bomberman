@@ -12,7 +12,7 @@
 
 #include <irrKlang.h>
 #include "System.hpp"
-#include "Sound2DComponent.hpp"
+#include "ASoundComponent.hpp"
 
 namespace indie {
 
@@ -32,15 +32,16 @@ namespace indie {
 
         public:
             irrklang::ISound *add2DSound(const std::string &sourceFile);
+            irrklang::ISound *add3DSound(const std::string &sourceFile, jf::maths::Vector3D position);
             void removeSound(irrklang::ISound *sound);
             void playSounds(bool onlyEnabled = true);
-            void playSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void playSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
             void pauseSounds(bool onlyEnabled = true);
-            void pauseSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void pauseSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
             void restartSounds(bool onlyEnabled = true);
-            void restartSounds(components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void restartSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
             void setSoundsVolume(float volume, bool onlyEnabled = true);
-            void setSoundsVolume(float volume, components::Sound2DComponent::SoundType soundType, bool onlyEnabled = true);
+            void setSoundsVolume(float volume, components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
 
         private:
             irrklang::ISoundEngine *_engine;
