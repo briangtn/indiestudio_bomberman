@@ -28,7 +28,8 @@ int runBomberman()
     indie::scenes::SceneManager::changeScene("test");
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
-        indie::scenes::SceneManager::changeScene("test");
+        if (e.wasPressed)
+            indie::scenes::SceneManager::changeScene("test");
     });
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||

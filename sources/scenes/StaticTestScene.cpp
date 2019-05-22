@@ -19,7 +19,6 @@
 
 void indie::scenes::StaticTestScene::onStart()
 {
-    std::cout << "START TEST SCENE" << std::endl;
     ECSWrapper ecs;
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
@@ -121,5 +120,5 @@ void indie::scenes::StaticTestScene::onStop()
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
-    std::cout << "STOP TEST SCENE" << std::endl;
+    _listeners.clear();
 }
