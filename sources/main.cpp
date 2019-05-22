@@ -78,9 +78,11 @@ int runBomberman()
     plEntity->assignComponent<indie::components::PointLight>();
 
     auto cubeEntity = ecs.entityManager.createEntity("cube");
-    cubeEntity->assignComponent<indie::components::Transform>();
+    auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
     auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
+    mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
     auto cubeEntity2 = ecs.entityManager.createEntity("cube");
     auto tr = cubeEntity2->assignComponent<indie::components::Transform>();
@@ -111,8 +113,8 @@ int runBomberman()
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
 
-        auto crot = tr->getRotation();
-        tr->setRotation({crot.x + 1, crot.y + 1, crot.z + 1});
+        auto crot = tr2->getRotation();
+        tr2->setRotation({crot.x + 1, crot.y + 1, crot.z + 1});
 
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {
