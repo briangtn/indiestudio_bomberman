@@ -32,6 +32,7 @@ namespace indie {
         irr::u16 axis;
         bool invert = false;
         float deadZone = 0.25;
+        float offset = 0;
     };
 
     using InputSetting = std::map<std::string, KeyAxis>;

@@ -64,6 +64,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
                     break;
                 if (finded->second.id == e.data.Joystick) {
                     joystick.second = e.data.Axis[finded->second.axis] / 32767.0f * (finded->second.invert ? -1 : 1);
+                    joystick.second += finded->second.offset;
                     if (abs(joystick.second) < finded->second.deadZone)
                         joystick.second = 0;
                 }
