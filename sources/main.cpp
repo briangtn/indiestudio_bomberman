@@ -13,6 +13,7 @@
 #include "scenes/StaticTestScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 int runBomberman()
 {
@@ -21,6 +22,9 @@ int runBomberman()
     ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+
+    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
+    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
