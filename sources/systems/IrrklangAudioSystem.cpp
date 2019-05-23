@@ -7,11 +7,11 @@
 
 /* Created the 13/05/2019 at 15:41 by jbulteau */
 
-#include "SoundComponent.hpp"
+#include "components/SoundComponent.hpp"
 #include "ECSWrapper.hpp"
-#include "Vectors.hpp"
-#include "IrrklangAudioExceptions.hpp"
-#include "IrrklangAudioSystem.hpp"
+#include "maths/Vectors.hpp"
+#include "exceptions/IrrklangAudioExceptions.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 indie::systems::IrrklangAudioSystem::IrrklangAudioSystem()
 {
@@ -23,6 +23,15 @@ indie::systems::IrrklangAudioSystem::IrrklangAudioSystem()
 
 indie::systems::IrrklangAudioSystem::~IrrklangAudioSystem()
 {
+    ECSWrapper ecs;
+
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+        [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+            if (component->getState() == components::SoundComponent::STARTED) {
+                ECSWrapper ecs;
+                ecs.systemManager.getSystem<IrrklangAudioSystem>().removeSound(component);
+            }
+        }, false);
     _engine->drop();
 }
 
@@ -74,24 +83,24 @@ irrklang::ISound *indie::systems::IrrklangAudioSystem::add2DSound(const std::str
     return _engine->play2D(sourceFile.c_str(), false, true);
 }
 
-irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::string &sourceFile, jf::maths::Vector3D position)
+irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::string &sourceFile, indie::maths::Vector3D position)
 {
     return _engine->play3D(sourceFile.c_str(), irrklang::vec3df(position.x, position.y, position.z), false, true);
 }
 
-void indie::systems::IrrklangAudioSystem::removeSound(irrklang::ISound *sound)
+void indie::systems::IrrklangAudioSystem::removeSound(jf::components::ComponentHandler<components::SoundComponent> component)
 {
-    sound->drop();
+    if (component->getSound() != nullptr)
+        component->getSound()->drop();
+    component->setSound(nullptr);
 }
 
 void indie::systems::IrrklangAudioSystem::playSounds(bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    std::cout << "playing sounds" << std::boolalpha << onlyEnabled << std::endl;
     ecs.entityManager.applyToEach<components::SoundComponent>(
             [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
-                std::cout << "starting" << std::endl;
                 if (component->getState() == components::SoundComponent::STARTED) {
                     component->setShouldBePlayed(true);
                 }

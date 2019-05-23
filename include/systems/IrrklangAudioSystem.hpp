@@ -12,7 +12,7 @@
 
 #include <irrKlang.h>
 #include "System.hpp"
-#include "SoundComponent.hpp"
+#include "components/SoundComponent.hpp"
 
 namespace indie {
 
@@ -21,7 +21,7 @@ namespace indie {
         class IrrklangAudioSystem : public jf::systems::ISystem {
         public:
             IrrklangAudioSystem();
-            ~IrrklangAudioSystem();
+            ~IrrklangAudioSystem() override;
 
         public:
             void onAwake() override;
@@ -32,8 +32,8 @@ namespace indie {
 
         public:
             irrklang::ISound *add2DSound(const std::string &sourceFile);
-            irrklang::ISound *add3DSound(const std::string &sourceFile, jf::maths::Vector3D position);
-            void removeSound(irrklang::ISound *sound);
+            irrklang::ISound *add3DSound(const std::string &sourceFile, indie::maths::Vector3D position);
+            void removeSound(jf::components::ComponentHandler<components::SoundComponent> component);
             void playSounds(bool onlyEnabled = true);
             void playSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
             void pauseSounds(bool onlyEnabled = true);

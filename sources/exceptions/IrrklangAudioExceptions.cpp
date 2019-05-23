@@ -7,7 +7,7 @@
 
 /* Created the 22/05/2019 at 18:41 by jbulteau */
 
-#include "IrrklangAudioExceptions.hpp"
+#include "exceptions/IrrklangAudioExceptions.hpp"
 
 indie::exceptions::IrrklangAudioException::IrrklangAudioException(const std::string &err, const std::string &where)
     : ECSException(err, where)

@@ -17,6 +17,7 @@
 #include "ECSWrapper.hpp"
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 int runBomberman()
 {
@@ -25,6 +26,9 @@ int runBomberman()
     ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+
+    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
+    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
 
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();

@@ -12,7 +12,7 @@
 
 #include <irrKlang.h>
 #include "Component.hpp"
-#include "Vectors.hpp"
+#include "maths/Vectors.hpp"
 
 namespace indie {
 
@@ -34,12 +34,12 @@ namespace indie {
 
         public:
             explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType);
-            explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType, jf::maths::Vector3D position);
+            explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType, indie::maths::Vector3D position);
             ~SoundComponent() override;
 
         public:
             const SoundComponentState getState() const;
-            const irrklang::ISound *getSound() const;
+            irrklang::ISound *getSound();
             void setSound(irrklang::ISound *sound);
             const std::string &getSourceFile() const;
             SoundType getSoundType() const;
@@ -56,10 +56,10 @@ namespace indie {
             void setPlayPosition(unsigned int position);
 
         public:
-            virtual const jf::maths::Vector3D getPosition() const;
-            virtual void setPosition(const jf::maths::Vector3D &position);
-            virtual const jf::maths::Vector3D getVelocity() const;
-            virtual void setVelocity(const jf::maths::Vector3D &velocity);
+            virtual const indie::maths::Vector3D getPosition() const;
+            virtual void setPosition(const indie::maths::Vector3D &position);
+            virtual const indie::maths::Vector3D getVelocity() const;
+            virtual void setVelocity(const indie::maths::Vector3D &velocity);
 
         private:
             SoundComponentState _state;
@@ -71,7 +71,7 @@ namespace indie {
             bool _spatialization;
             bool _shouldBePlayed;
 
-            jf::maths::Vector3D _position;
+            indie::maths::Vector3D _position;
         };
     }
 }
