@@ -34,6 +34,9 @@ namespace indie {
     public:
         static void CreateAxis(const std::string &name, KeyAxis);
         static void CreateAxis(const std::string &name, JoystickAxis);
+        static void CreateAxis(const std::string &name, KeyAxis, JoystickAxis);
+
+
         static float GetAxis(const std::string &name);
 
         //static bool IsKeyPressed(irr::EKEY_CODE keyCode) const;

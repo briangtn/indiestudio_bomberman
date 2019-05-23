@@ -69,6 +69,12 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
     }
 }
 
+void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis keyAxis, indie::JoystickAxis joyAxis)
+{
+    CreateAxis(name, keyAxis);
+    CreateAxis(name, joyAxis);
+}
+
 float indie::InputManager::GetAxis(const std::string &name)
 {
     float result = 0;
