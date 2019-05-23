@@ -156,3 +156,13 @@ void indie::InputManager::RegisterKey(irr::u8 controllerId, irr::u8 keyId)
     controllerKeyStates.emplace((controllerId << 8) + keyId, false);
 }
 
+bool indie::InputManager::IsKeyPressed(irr::EKEY_CODE key)
+{
+    return keysStates[key];
+}
+
+bool indie::InputManager::IsKeyPressed(irr::u8 controllerId, irr::u8 keyId)
+{
+    return controllerKeyStates[(controllerId << 8) + keyId];
+}
+
