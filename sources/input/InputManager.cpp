@@ -14,6 +14,7 @@
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
+#include "exceptions/InputManagerException.hpp"
 
 std::map<std::string, indie::KeyAxis> indie::InputManager::keyAxes;
 std::map<std::string, indie::JoystickAxis> indie::InputManager::joystickAxes;
@@ -26,6 +27,8 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axi
 {
     ECSWrapper ecs;
 
+    if (keyAxes.find(name) != keyAxes.end())
+        throw AxisAlreadyExistException(name);
     keyAxes.emplace(name, axis);
     if (axis.positiveKey != irr::EKEY_CODE::KEY_KEY_CODES_COUNT)
         keysStates.emplace(axis.positiveKey, false);
@@ -44,6 +47,9 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axi
 void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxis axis)
 {
     ECSWrapper ecs;
+
+    if (joystickAxes.find(name) != joystickAxes.end())
+        throw AxisAlreadyExistException(name);
     joystickAxes.emplace(name, axis);
     joysticksStates.emplace(name, 0.0f);
 
@@ -68,6 +74,7 @@ float indie::InputManager::GetAxis(const std::string &name)
     float result = 0;
     auto findedKeyAxis = keyAxes.find(name);
     auto findedJoystickAxis = joystickAxes.find(name);
+    bool finded = false;
 
     if (findedKeyAxis != keyAxes.end()) {
         auto finded = keysStates.find(findedKeyAxis->second.positiveKey);
@@ -77,6 +84,7 @@ float indie::InputManager::GetAxis(const std::string &name)
         finded = keysStates.find(findedKeyAxis->second.negativeKey);
         if (finded != keysStates.end())
             result -= finded->second;
+        finded = true;
     }
     if (findedJoystickAxis != joystickAxes.end()) {
         ECSWrapper ecs;
@@ -86,6 +94,9 @@ float indie::InputManager::GetAxis(const std::string &name)
         if (finded != joysticksStates.end()) {
             result += finded->second;
         }
+        finded = true;
     }
+    if (!finded)
+        throw AxisNotFoundException(name);
     return result;
 }

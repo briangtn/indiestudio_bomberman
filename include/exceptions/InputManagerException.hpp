@@ -24,9 +24,9 @@ namespace indie {
         std::string _what;
     };
 
-    class InputNotFoundException : public InputManagerException {
+    class AxisNotFoundException : public InputManagerException {
     public:
-        InputNotFoundException(const std::string &inputName);
+        AxisNotFoundException(const std::string &inputName);
 
         std::string getInputName() const;
 
@@ -34,9 +34,9 @@ namespace indie {
         std::string _inputName;
     };
 
-    class InputAlreadyExistException : public InputManagerException {
+    class AxisAlreadyExistException : public InputManagerException {
     public:
-        InputAlreadyExistException(const std::string &inputName);
+        AxisAlreadyExistException(const std::string &inputName);
 
         std::string getInputName() const;
 

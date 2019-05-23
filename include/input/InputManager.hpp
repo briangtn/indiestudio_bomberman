@@ -25,7 +25,7 @@ namespace indie {
         irr::u8 id;
         irr::u16 axis;
         bool invert = false;
-        float deadZone = 0.05;
+        float deadZone = 0.25;
     };
 
     using InputSetting = std::map<std::string, KeyAxis>;
@@ -35,6 +35,8 @@ namespace indie {
         static void CreateAxis(const std::string &name, KeyAxis);
         static void CreateAxis(const std::string &name, JoystickAxis);
         static float GetAxis(const std::string &name);
+
+        //static bool IsKeyPressed(irr::EKEY_CODE keyCode) const;
 
     private:
         static std::map<std::string, KeyAxis> keyAxes;

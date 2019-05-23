@@ -20,24 +20,24 @@ const char *indie::InputManagerException::what() const noexcept
     return _what.c_str();
 }
 
-indie::InputNotFoundException::InputNotFoundException(const std::string &inputName)
+indie::AxisNotFoundException::AxisNotFoundException(const std::string &inputName)
     : InputManagerException("Input not found."), _inputName(inputName)
 {
 
 }
 
-std::string indie::InputNotFoundException::getInputName() const
+std::string indie::AxisNotFoundException::getInputName() const
 {
     return _inputName;
 }
 
-indie::InputAlreadyExistException::InputAlreadyExistException(const std::string &inputName)
+indie::AxisAlreadyExistException::AxisAlreadyExistException(const std::string &inputName)
     : InputManagerException("Input already exist."), _inputName(inputName)
 {
 
 }
 
-std::string indie::InputAlreadyExistException::getInputName() const
+std::string indie::AxisAlreadyExistException::getInputName() const
 {
     return _inputName;
 }
