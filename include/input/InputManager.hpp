@@ -17,8 +17,14 @@
 namespace indie {
 
     struct KeyAxis {
-        irr::EKEY_CODE positiveKey = irr::KEY_KEY_CODES_COUNT;
-        irr::EKEY_CODE negativeKey = irr::KEY_KEY_CODES_COUNT;
+        irr::EKEY_CODE positiveKey;
+        irr::EKEY_CODE negativeKey;
+    };
+
+    struct ControllerKeyAxis {
+        irr::u8 id;
+        irr::u8 positiveKey;
+        irr::u8 negativeKey;
     };
 
     struct JoystickAxis {
@@ -34,6 +40,7 @@ namespace indie {
     public:
         static void CreateAxis(const std::string &name, KeyAxis);
         static void CreateAxis(const std::string &name, JoystickAxis);
+        static void CreateAxis(const std::string &name, ControllerKeyAxis);
         static void CreateAxis(const std::string &name, KeyAxis, JoystickAxis);
 
 
@@ -44,10 +51,13 @@ namespace indie {
     private:
         static std::map<std::string, KeyAxis> keyAxes;
         static std::map<std::string, JoystickAxis> joystickAxes;
+        static std::map<std::string, ControllerKeyAxis> controllerKeyAxes;
         static std::map<irr::EKEY_CODE, bool> keysStates;
         static std::map<std::string, float> joysticksStates;
+        static std::map<irr::u16, bool> controllerKeyStates;
         static jf::internal::ID eventKeyInputID;
         static jf::internal::ID eventJoystickInputID;
+        static jf::internal::ID eventControlleKeyInputID;
     };
 }
 

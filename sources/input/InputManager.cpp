@@ -18,10 +18,13 @@
 
 std::map<std::string, indie::KeyAxis> indie::InputManager::keyAxes;
 std::map<std::string, indie::JoystickAxis> indie::InputManager::joystickAxes;
+std::map<std::string, indie::ControllerKeyAxis> indie::InputManager::controllerKeyAxes;
 std::map<irr::EKEY_CODE, bool> indie::InputManager::keysStates;
 std::map<std::string, float> indie::InputManager::joysticksStates;
+std::map<irr::u16, bool> indie::InputManager::controllerKeyStates;
 jf::internal::ID indie::InputManager::eventKeyInputID;
 jf::internal::ID indie::InputManager::eventJoystickInputID;
+jf::internal::ID indie::InputManager::eventControlleKeyInputID;
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axis)
 {
@@ -54,7 +57,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
     joysticksStates.emplace(name, 0.0f);
 
     if (!eventJoystickInputID.isValid()) {
-        eventJoystickInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e){
+        eventJoystickInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
             for (auto &joystick : InputManager::joysticksStates) {
                 auto finded = joystickAxes.find(joystick.first);
                 if (finded == joystickAxes.end())
@@ -64,6 +67,28 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
                     if (abs(joystick.second) < finded->second.deadZone)
                         joystick.second = 0;
                 }
+            }
+        });
+    }
+}
+
+void indie::InputManager::CreateAxis(const std::string &name, indie::ControllerKeyAxis axis)
+{
+    ECSWrapper ecs;
+
+    if (controllerKeyAxes.find(name) != controllerKeyAxes.end())
+        throw AxisAlreadyExistException(name);
+    controllerKeyAxes.emplace(name, axis);
+    controllerKeyStates.emplace((axis.id << 8) + axis.positiveKey, false);
+    controllerKeyStates.emplace((axis.id << 8) + axis.negativeKey, false);
+
+    if (!eventControlleKeyInputID.isValid()) {
+        eventControlleKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
+            for (auto &key : InputManager::controllerKeyStates) {
+                irr::u8 id = key.first >> 8;
+                irr::u8 keyId = key.first & 0x0f;
+                if (id == e.data.Joystick)
+                    key.second = e.data.IsButtonPressed(keyId);
             }
         });
     }
@@ -80,7 +105,8 @@ float indie::InputManager::GetAxis(const std::string &name)
     float result = 0;
     auto findedKeyAxis = keyAxes.find(name);
     auto findedJoystickAxis = joystickAxes.find(name);
-    bool finded = false;
+    auto findedControllerKeyAxis = controllerKeyAxes.find(name);
+    bool isFinded = false;
 
     if (findedKeyAxis != keyAxes.end()) {
         auto finded = keysStates.find(findedKeyAxis->second.positiveKey);
@@ -90,7 +116,20 @@ float indie::InputManager::GetAxis(const std::string &name)
         finded = keysStates.find(findedKeyAxis->second.negativeKey);
         if (finded != keysStates.end())
             result -= finded->second;
-        finded = true;
+        isFinded = true;
+    }
+    if (findedControllerKeyAxis != controllerKeyAxes.end()) {
+        irr::u8 controllerId = findedControllerKeyAxis->second.id;
+        irr::u8 keyId = findedControllerKeyAxis->second.positiveKey;
+        auto finded = controllerKeyStates.find((controllerId << 8) + keyId);
+
+        if (finded != controllerKeyStates.end())
+            result += finded->second;
+        keyId = findedControllerKeyAxis->second.negativeKey;
+        finded = controllerKeyStates.find((controllerId << 8) + keyId);
+        if (finded != controllerKeyStates.end())
+            result -= finded->second;
+        isFinded = true;
     }
     if (findedJoystickAxis != joystickAxes.end()) {
         ECSWrapper ecs;
@@ -100,9 +139,10 @@ float indie::InputManager::GetAxis(const std::string &name)
         if (finded != joysticksStates.end()) {
             result += finded->second;
         }
-        finded = true;
+        isFinded = true;
     }
-    if (!finded)
+    if (!isFinded)
         throw AxisNotFoundException(name);
     return result;
 }
+
