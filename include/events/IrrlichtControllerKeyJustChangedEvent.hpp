@@ -12,8 +12,6 @@
 
 #include <irrlicht.h>
 
-#define EMIT_SPECIFIC_KEY(key, pressed, shift, ctrl) (ecs.eventManager.emit(indie::events::IrrlichtSpecifiedKeyInputEvent<(key)>({(pressed), !(pressed), (shift), (ctrl)})))
-
 namespace indie {
 
     namespace events {

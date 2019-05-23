@@ -21,7 +21,7 @@ const char *indie::InputManagerException::what() const noexcept
 }
 
 indie::AxisNotFoundException::AxisNotFoundException(const std::string &inputName)
-    : InputManagerException("Input not found."), _inputName(inputName)
+    : InputManagerException("Axis not found."), _inputName(inputName)
 {
 
 }
@@ -32,7 +32,7 @@ std::string indie::AxisNotFoundException::getInputName() const
 }
 
 indie::AxisAlreadyExistException::AxisAlreadyExistException(const std::string &inputName)
-    : InputManagerException("Input already exist."), _inputName(inputName)
+    : InputManagerException("Axis already exist."), _inputName(inputName)
 {
 
 }
