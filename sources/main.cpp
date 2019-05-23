@@ -27,14 +27,22 @@ int runBomberman()
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
-    indie::InputManager::get()->registerInput("Keyboard1", indie::Input(std::map<std::string, indie::Axis>()));
+    indie::InputManager::CreateAxis("Vertical", {.positiveKey = irr::EKEY_CODE::KEY_KEY_Z, .negativeKey = irr::EKEY_CODE ::KEY_KEY_S});
+    indie::InputManager::CreateAxis("Vertical", {.id = 0, .axis = 1, .invert = true});
+
+    indie::InputManager::CreateAxis("Horizontal", {.positiveKey = irr::EKEY_CODE::KEY_KEY_D, .negativeKey = irr::EKEY_CODE ::KEY_KEY_Q});
+    indie::InputManager::CreateAxis("Horizontal", {.id = 0, .axis = 0});
+
+    indie::InputManager::CreateAxis("RotationHorizontal", {.id = 0, .axis = 3});
+    indie::InputManager::CreateAxis("RotationVertical", {.id = 0, .axis = 4});
+
 
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
     cameraEntity->assignComponent<indie::components::Camera>();
 
-    ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(&cameraTr, [](auto *tr, auto e) {
+    /*ecs.eventManager.addListener<jf::components::ComponentHandler<indie::components::Transform>, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(&cameraTr, [](auto *tr, auto e) {
         auto oldPos = (*tr)->getPosition();
         auto oldRot = (*tr)->getRotation();
         if (e.shiftActivated) {
@@ -73,7 +81,9 @@ int runBomberman()
             oldPos.z -= 1;
         }
         (*tr)->setPosition(oldPos);
-    });
+    });*/
+
+
 
     auto plEntity = ecs.entityManager.createEntity("pointLight");
     auto plTr = plEntity->assignComponent<indie::components::Transform>();
@@ -113,6 +123,13 @@ int runBomberman()
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
+
+        auto cameraPos = cameraTr->getPosition();
+        auto cameraRot = cameraTr->getRotation();
+        float speed = 1;
+        float rotSpeed = 1.5;
+        cameraTr->setPosition({cameraPos.x + (indie::InputManager::GetAxis("Horizontal") * speed), cameraPos.y + (indie::InputManager::GetAxis("Vertical") * speed), cameraPos.z});
+        cameraTr->setRotation({cameraRot.x + (indie::InputManager::GetAxis("RotationVertical") * rotSpeed), cameraRot.y + (indie::InputManager::GetAxis("RotationHorizontal") * rotSpeed), cameraRot.z});
 
         auto crot = tr->getRotation();
         tr->setRotation({crot.x + 1, crot.y + 1, crot.z + 1});

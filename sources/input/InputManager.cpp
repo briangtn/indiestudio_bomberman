@@ -5,42 +5,87 @@
 ** InputManager.cpp
 */
 
-/* Created the 21/05/2019 at 19:35 by brian */
+/* Created the 22/05/2019 at 15:57 by brian */
 
+#include <string>
+#include <map>
 #include "input/InputManager.hpp"
-#include "exceptions/InputManagerException.hpp"
+#include "ECSWrapper.hpp"
+#include "events/IrrlichtKeyInputEvent.hpp"
+#include "events/IrrlichtJoystickInputEvent.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
 
-indie::InputManager *indie::InputManager::instance = nullptr;
+std::map<std::string, indie::KeyAxis> indie::InputManager::keyAxes;
+std::map<std::string, indie::JoystickAxis> indie::InputManager::joystickAxes;
+std::map<irr::EKEY_CODE, bool> indie::InputManager::keysStates;
+std::map<std::string, float> indie::InputManager::joysticksStates;
+jf::internal::ID indie::InputManager::eventKeyInputID;
+jf::internal::ID indie::InputManager::eventJoystickInputID;
 
-indie::InputManager::InputManager()
+void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axis)
 {
+    ECSWrapper ecs;
 
+    keyAxes.emplace(name, axis);
+    if (axis.positiveKey != irr::EKEY_CODE::KEY_KEY_CODES_COUNT)
+        keysStates.emplace(axis.positiveKey, false);
+    if (axis.negativeKey != irr::EKEY_CODE::KEY_KEY_CODES_COUNT)
+        keysStates.emplace(axis.negativeKey, false);
+
+    if (!eventKeyInputID.isValid())
+        eventKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a, events::IrrlichtKeyInputEvent e){
+            for (auto &key : InputManager::keysStates) {
+                if (key.first == e.keyCode)
+                    key.second = e.wasPressed;
+            }
+        });
 }
 
-indie::InputManager *indie::InputManager::get()
+void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxis axis)
 {
-    if (InputManager::instance == nullptr)
-        InputManager::instance = new InputManager();
-    return InputManager::instance;
+    ECSWrapper ecs;
+    joystickAxes.emplace(name, axis);
+    joysticksStates.emplace(name, 0.0f);
+
+    if (!eventJoystickInputID.isValid()) {
+        eventJoystickInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e){
+            for (auto &joystick : InputManager::joysticksStates) {
+                auto finded = joystickAxes.find(joystick.first);
+                if (finded == joystickAxes.end())
+                    break;
+                if (finded->second.id == e.data.Joystick) {
+                    joystick.second = e.data.Axis[finded->second.axis] / 32767.0f * (finded->second.invert ? -1 : 1);
+                    if (abs(joystick.second) < finded->second.deadZone)
+                        joystick.second = 0;
+                }
+            }
+        });
+    }
 }
 
-indie::Input indie::InputManager::getInput(const std::string &inputName) const
+float indie::InputManager::GetAxis(const std::string &name)
 {
-    auto finded = _inputs.find(inputName);
+    float result = 0;
+    auto findedKeyAxis = keyAxes.find(name);
+    auto findedJoystickAxis = joystickAxes.find(name);
 
-    if (finded == _inputs.end())
-        throw InputNotFoundException(inputName);
-    return finded->second;
-}
+    if (findedKeyAxis != keyAxes.end()) {
+        auto finded = keysStates.find(findedKeyAxis->second.positiveKey);
 
-float indie::InputManager::getAxis(const std::string &inputName, const std::string &axisName) const
-{
-    return 0;
-}
+        if (finded != keysStates.end())
+            result += finded->second;
+        finded = keysStates.find(findedKeyAxis->second.negativeKey);
+        if (finded != keysStates.end())
+            result -= finded->second;
+    }
+    if (findedJoystickAxis != joystickAxes.end()) {
+        ECSWrapper ecs;
 
-void indie::InputManager::registerInput(const std::string &inputName, const indie::Input &input)
-{
-    if (_inputs.find(inputName) != _inputs.end())
-        throw InputAlreadyExistException(inputName);
-    _inputs.emplace(std::pair<std::string, indie::Input>(inputName, input));
+        auto finded = joysticksStates.find(name);
+
+        if (finded != joysticksStates.end()) {
+            result += finded->second;
+        }
+    }
+    return result;
 }
