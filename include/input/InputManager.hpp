@@ -52,6 +52,10 @@ namespace indie {
 
         static float GetAxis(const std::string &name);
 
+    private:
+        static void RegisterKeyInputEvent();
+        static void RegisterJoystickInputInputEvent();
+        static void RegisterControllerKeyInputEvent();
 
     private:
         static std::map<std::string, KeyAxis> keyAxes;

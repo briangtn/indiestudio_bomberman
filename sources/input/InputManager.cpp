@@ -13,6 +13,8 @@
 #include "ECSWrapper.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
+#include "events/IrrlichtControllerKeyJustChangedEvent.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "exceptions/InputManagerException.hpp"
 
@@ -38,13 +40,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axi
     if (axis.negativeKey != irr::EKEY_CODE::KEY_KEY_CODES_COUNT)
         keysStates.emplace(axis.negativeKey, false);
 
-    if (!eventKeyInputID.isValid())
-        eventKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a, events::IrrlichtKeyInputEvent e){
-            for (auto &key : InputManager::keysStates) {
-                if (key.first == e.keyCode)
-                    key.second = e.wasPressed;
-            }
-        });
+    RegisterKeyInputEvent();
 }
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxis axis)
@@ -56,21 +52,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
     joystickAxes.emplace(name, axis);
     joysticksStates.emplace(name, 0.0f);
 
-    if (!eventJoystickInputID.isValid()) {
-        eventJoystickInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
-            for (auto &joystick : InputManager::joysticksStates) {
-                auto finded = joystickAxes.find(joystick.first);
-                if (finded == joystickAxes.end())
-                    break;
-                if (finded->second.id == e.data.Joystick) {
-                    joystick.second = e.data.Axis[finded->second.axis] / 32767.0f * (finded->second.invert ? -1 : 1);
-                    joystick.second += finded->second.offset;
-                    if (abs(joystick.second) < finded->second.deadZone)
-                        joystick.second = 0;
-                }
-            }
-        });
-    }
+    RegisterJoystickInputInputEvent();
 }
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::ControllerKeyAxis axis)
@@ -83,16 +65,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::ControllerK
     controllerKeyStates.emplace((axis.id << 8) + axis.positiveKey, false);
     controllerKeyStates.emplace((axis.id << 8) + axis.negativeKey, false);
 
-    if (!eventControlleKeyInputID.isValid()) {
-        eventControlleKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
-            for (auto &key : InputManager::controllerKeyStates) {
-                irr::u8 id = key.first >> 8;
-                irr::u8 keyId = key.first & 0x0f;
-                if (id == e.data.Joystick)
-                    key.second = e.data.IsButtonPressed(keyId);
-            }
-        });
-    }
+    RegisterControllerKeyInputEvent();
 }
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis keyAxis, indie::JoystickAxis joyAxis)
@@ -150,11 +123,15 @@ float indie::InputManager::GetAxis(const std::string &name)
 void indie::InputManager::RegisterKey(irr::EKEY_CODE key)
 {
     keysStates.emplace(key, false);
+
+    RegisterKeyInputEvent();
 }
 
 void indie::InputManager::RegisterKey(irr::u8 controllerId, irr::u8 keyId)
 {
     controllerKeyStates.emplace((controllerId << 8) + keyId, false);
+
+    RegisterControllerKeyInputEvent();
 }
 
 bool indie::InputManager::IsKeyPressed(irr::EKEY_CODE key)
@@ -165,5 +142,65 @@ bool indie::InputManager::IsKeyPressed(irr::EKEY_CODE key)
 bool indie::InputManager::IsKeyPressed(irr::u8 controllerId, irr::u8 keyId)
 {
     return controllerKeyStates[(controllerId << 8) + keyId];
+}
+
+void indie::InputManager::RegisterKeyInputEvent()
+{
+    ECSWrapper ecs;
+    if (!eventKeyInputID.isValid())
+        eventKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a, events::IrrlichtKeyInputEvent e){
+            ECSWrapper ecs;
+
+            for (auto &key : InputManager::keysStates) {
+                if (key.first == e.keyCode) {
+                    if (key.second != e.wasPressed) {
+                        ecs.eventManager.emit(events::IrrlichtKeyJustChangedEvent({key.first, e.wasPressed}));
+                    }
+                    key.second = e.wasPressed;
+                }
+            }
+        });
+}
+
+void indie::InputManager::RegisterJoystickInputInputEvent()
+{
+    ECSWrapper ecs;
+
+    if (!eventJoystickInputID.isValid()) {
+        eventJoystickInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
+            for (auto &joystick : InputManager::joysticksStates) {
+                auto finded = joystickAxes.find(joystick.first);
+                if (finded == joystickAxes.end())
+                    break;
+                if (finded->second.id == e.data.Joystick) {
+                    joystick.second = e.data.Axis[finded->second.axis] / 32767.0f * (finded->second.invert ? -1 : 1);
+                    joystick.second += finded->second.offset;
+                    if (abs(joystick.second) < finded->second.deadZone)
+                        joystick.second = 0;
+                }
+            }
+        });
+    }
+}
+
+void indie::InputManager::RegisterControllerKeyInputEvent()
+{
+    ECSWrapper ecs;
+
+    if (!eventControlleKeyInputID.isValid()) {
+        eventControlleKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
+            ECSWrapper ecs;
+            for (auto &key : InputManager::controllerKeyStates) {
+                irr::u8 id = key.first >> 8;
+                irr::u8 keyId = key.first & 0x0f;
+                if (id == e.data.Joystick) {
+                    bool pressed = e.data.IsButtonPressed(keyId);
+                    if (key.second != pressed)
+                        ecs.eventManager.emit(events::IrrlichtControllerKeyJustChangedEvent({id, keyId, pressed}));
+                    key.second = pressed;
+                }
+            }
+        });
+    }
 }
 
