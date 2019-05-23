@@ -43,6 +43,8 @@ namespace indie {
         static void CreateAxis(const std::string &name, ControllerKeyAxis);
         static void CreateAxis(const std::string &name, KeyAxis, JoystickAxis);
 
+        static void RegisterKey(irr::EKEY_CODE key);
+        static void RegisterKey(irr::u8 controllerId, irr::u8 keyId);
 
         static float GetAxis(const std::string &name);
 

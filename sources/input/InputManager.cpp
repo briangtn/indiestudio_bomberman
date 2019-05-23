@@ -146,3 +146,13 @@ float indie::InputManager::GetAxis(const std::string &name)
     return result;
 }
 
+void indie::InputManager::RegisterKey(irr::EKEY_CODE key)
+{
+    keysStates.emplace(key, false);
+}
+
+void indie::InputManager::RegisterKey(irr::u8 controllerId, irr::u8 keyId)
+{
+    controllerKeyStates.emplace((controllerId << 8) + keyId, false);
+}
+
