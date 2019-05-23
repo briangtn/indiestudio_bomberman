@@ -14,7 +14,7 @@
 #include "components/Camera.hpp"
 
 indie::components::Camera::Camera(jf::entities::Entity &entity, float FOV)
-    : Component(entity), _FOV(FOV)
+    : Component(entity), _cameraNode(nullptr), _FOV(FOV)
 {
     ECSWrapper ecs;
 

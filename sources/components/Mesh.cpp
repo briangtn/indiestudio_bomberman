@@ -98,7 +98,6 @@ void indie::components::Mesh::setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, 
     if (!_node)
         throw exceptions::MeshExceptions("Mesh Node not available");
     _node->setMaterialFlag(flag, value);
-    std::cout << "Updated flag" << std::endl;
 }
 
 void indie::components::Mesh::applyChanges()
