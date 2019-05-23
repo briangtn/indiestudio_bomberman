@@ -12,11 +12,7 @@
 
 #include "Vectors.hpp"
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     /*!
      * @namespace jf::maths

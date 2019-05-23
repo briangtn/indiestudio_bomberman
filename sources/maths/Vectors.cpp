@@ -1,15 +1,15 @@
 /*
 ** EPITECH PROJECT, 2018
-** JFEntityComponentSystem
+** indieEntityComponentSystem
 ** File description:
 ** Vectors.cpp
 */
 
-/* Created the 24/04/2019 at 23:23 by jfrabel */
+/* Created the 24/04/2019 at 23:23 by indierabel */
 
-#include "Vectors.hpp"
 #include <cmath>
 #include <cfloat>
+#include "maths/Vectors.hpp"
 
 #define CMP(x, y)  (fabsf((x) - (y)) <= FLT_EPSILON * fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y))))
 
@@ -17,132 +17,132 @@
 /* ----------------------------------------------------Vector2D---------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::maths::Vector2D::Vector2D(): x(0), y(0)
+indie::maths::Vector2D::Vector2D(): x(0), y(0)
 {
 
 }
 
-jf::maths::Vector2D::Vector2D(float value): x(value), y(value)
+indie::maths::Vector2D::Vector2D(float value): x(value), y(value)
 {
 
 }
 
-jf::maths::Vector2D::Vector2D(float _x, float _y): x(_x), y(_y)
+indie::maths::Vector2D::Vector2D(float _x, float _y): x(_x), y(_y)
 {
 
 }
 
-float &jf::maths::Vector2D::operator[](int i)
-{
-    return asArray[i];
-}
-
-const float &jf::maths::Vector2D::operator[](int i) const
+float &indie::maths::Vector2D::operator[](int i)
 {
     return asArray[i];
 }
 
-float jf::maths::Vector2D::magnitude() const
+const float &indie::maths::Vector2D::operator[](int i) const
+{
+    return asArray[i];
+}
+
+float indie::maths::Vector2D::magnitude() const
 {
     return Magnitude(*this);
 }
 
-float jf::maths::Vector2D::magnitudeSq() const
+float indie::maths::Vector2D::magnitudeSq() const
 {
     return MagnitudeSq(*this);
 }
 
-void jf::maths::Vector2D::normalize()
+void indie::maths::Vector2D::normalize()
 {
     Normalize(*this);
 }
 
-jf::maths::Vector2D jf::maths::Vector2D::normalized() const
+indie::maths::Vector2D indie::maths::Vector2D::normalized() const
 {
     return Normalized(*this);
 }
 
-float jf::maths::Vector2D::Dot(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+float indie::maths::Vector2D::Dot(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
-float jf::maths::Vector2D::Magnitude(const jf::maths::Vector2D &vec)
+float indie::maths::Vector2D::Magnitude(const indie::maths::Vector2D &vec)
 {
     return sqrtf(Dot(vec, vec));
 }
 
-float jf::maths::Vector2D::MagnitudeSq(const jf::maths::Vector2D &vec)
+float indie::maths::Vector2D::MagnitudeSq(const indie::maths::Vector2D &vec)
 {
     return Dot(vec, vec);
 }
 
-float jf::maths::Vector2D::Distance(const jf::maths::Vector2D &p1, const jf::maths::Vector2D &p2)
+float indie::maths::Vector2D::Distance(const indie::maths::Vector2D &p1, const indie::maths::Vector2D &p2)
 {
     Vector2D t = p1 - p2;
     return Magnitude(t);
 }
 
-void jf::maths::Vector2D::Normalize(jf::maths::Vector2D &vec)
+void indie::maths::Vector2D::Normalize(indie::maths::Vector2D &vec)
 {
     vec = vec * (1.0f / Magnitude(vec));
 }
 
-jf::maths::Vector2D jf::maths::Vector2D::Normalized(const jf::maths::Vector2D &vec)
+indie::maths::Vector2D indie::maths::Vector2D::Normalized(const indie::maths::Vector2D &vec)
 {
     return vec * (1.0f / Magnitude(vec));
 }
 
-float jf::maths::Vector2D::Angle(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+float indie::maths::Vector2D::Angle(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     float m = sqrtf(MagnitudeSq(lhs) * MagnitudeSq(rhs));
     return acos(Dot(lhs, rhs) / m);
 }
 
-jf::maths::Vector2D jf::maths::Vector2D::Project(const jf::maths::Vector2D &len, const jf::maths::Vector2D &dir)
+indie::maths::Vector2D indie::maths::Vector2D::Project(const indie::maths::Vector2D &len, const indie::maths::Vector2D &dir)
 {
     float dot = Dot(len, dir);
     float magSq = MagnitudeSq(dir);
     return dir * (dot / magSq);
 }
 
-jf::maths::Vector2D jf::maths::Vector2D::Perpendicular(const jf::maths::Vector2D &len, const jf::maths::Vector2D &dir)
+indie::maths::Vector2D indie::maths::Vector2D::Perpendicular(const indie::maths::Vector2D &len, const indie::maths::Vector2D &dir)
 {
     return len - Project(len, dir);
 }
 
-jf::maths::Vector2D jf::maths::Vector2D::Reflection(const jf::maths::Vector2D &vec, const jf::maths::Vector2D &normal)
+indie::maths::Vector2D indie::maths::Vector2D::Reflection(const indie::maths::Vector2D &vec, const indie::maths::Vector2D &normal)
 {
     float d = Dot(vec, normal);
     return vec - normal * (d * 2.0f);
 }
 
-jf::maths::Vector2D jf::maths::operator+(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+indie::maths::Vector2D indie::maths::operator+(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return {lhs.x + rhs.x, lhs.y + rhs.y};
 }
 
-jf::maths::Vector2D jf::maths::operator-(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+indie::maths::Vector2D indie::maths::operator-(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return {lhs.x - rhs.x, lhs.y - rhs.y};
 }
 
-jf::maths::Vector2D jf::maths::operator*(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+indie::maths::Vector2D indie::maths::operator*(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return {lhs.x * rhs.x, lhs.y * rhs.y};
 }
 
-jf::maths::Vector2D jf::maths::operator*(const jf::maths::Vector2D &lhs, float rhs)
+indie::maths::Vector2D indie::maths::operator*(const indie::maths::Vector2D &lhs, float rhs)
 {
     return {lhs.x * rhs, lhs.y * rhs};
 }
 
-bool jf::maths::operator==(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+bool indie::maths::operator==(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return CMP(lhs.x, rhs.x) && CMP(lhs.y, rhs.y);
 }
 
-bool jf::maths::operator!=(const jf::maths::Vector2D &lhs, const jf::maths::Vector2D &rhs)
+bool indie::maths::operator!=(const indie::maths::Vector2D &lhs, const indie::maths::Vector2D &rhs)
 {
     return !(lhs == rhs);
 }
@@ -151,83 +151,83 @@ bool jf::maths::operator!=(const jf::maths::Vector2D &lhs, const jf::maths::Vect
 /* ----------------------------------------------------Vector3D---------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::maths::Vector3D::Vector3D(): x(0), y(0), z(0)
+indie::maths::Vector3D::Vector3D(): x(0), y(0), z(0)
 {
 
 }
 
-jf::maths::Vector3D::Vector3D(float value): x(value), y(value), z(value)
+indie::maths::Vector3D::Vector3D(float value): x(value), y(value), z(value)
 {
 
 }
 
-jf::maths::Vector3D::Vector3D(float _x, float _y, float _z): x(_x), y(_y), z(_z)
+indie::maths::Vector3D::Vector3D(float _x, float _y, float _z): x(_x), y(_y), z(_z)
 {
 
 }
 
-float &jf::maths::Vector3D::operator[](int i)
-{
-    return asArray[i];
-}
-
-const float &jf::maths::Vector3D::operator[](int i) const
+float &indie::maths::Vector3D::operator[](int i)
 {
     return asArray[i];
 }
 
-float jf::maths::Vector3D::magnitude() const
+const float &indie::maths::Vector3D::operator[](int i) const
+{
+    return asArray[i];
+}
+
+float indie::maths::Vector3D::magnitude() const
 {
     return Magnitude(*this);
 }
 
-float jf::maths::Vector3D::magnitudeSq() const
+float indie::maths::Vector3D::magnitudeSq() const
 {
     return MagnitudeSq(*this);
 }
 
-void jf::maths::Vector3D::normalize()
+void indie::maths::Vector3D::normalize()
 {
     Normalize(*this);
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::normalized() const
+indie::maths::Vector3D indie::maths::Vector3D::normalized() const
 {
     return Normalized(*this);
 }
 
-float jf::maths::Vector3D::Dot(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+float indie::maths::Vector3D::Dot(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
-float jf::maths::Vector3D::Magnitude(const jf::maths::Vector3D &vec)
+float indie::maths::Vector3D::Magnitude(const indie::maths::Vector3D &vec)
 {
     return sqrtf(Dot(vec, vec));
 }
 
-float jf::maths::Vector3D::MagnitudeSq(const jf::maths::Vector3D &vec)
+float indie::maths::Vector3D::MagnitudeSq(const indie::maths::Vector3D &vec)
 {
     return Dot(vec, vec);
 }
 
-float jf::maths::Vector3D::Distance(const jf::maths::Vector3D &p1, const jf::maths::Vector3D &p2)
+float indie::maths::Vector3D::Distance(const indie::maths::Vector3D &p1, const indie::maths::Vector3D &p2)
 {
     Vector3D t = p1 - p2;
     return Magnitude(t);
 }
 
-void jf::maths::Vector3D::Normalize(jf::maths::Vector3D &vec)
+void indie::maths::Vector3D::Normalize(indie::maths::Vector3D &vec)
 {
     vec = vec * (1.0f / Magnitude(vec));
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::Normalized(const jf::maths::Vector3D &vec)
+indie::maths::Vector3D indie::maths::Vector3D::Normalized(const indie::maths::Vector3D &vec)
 {
     return vec * (1.0f / Magnitude(vec));
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::Cross(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+indie::maths::Vector3D indie::maths::Vector3D::Cross(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     Vector3D result;
     result.x = lhs.y * rhs.z - lhs.z * rhs.y;
@@ -236,56 +236,56 @@ jf::maths::Vector3D jf::maths::Vector3D::Cross(const jf::maths::Vector3D &lhs, c
     return result;
 }
 
-float jf::maths::Vector3D::Angle(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+float indie::maths::Vector3D::Angle(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     float m = sqrtf(MagnitudeSq(lhs) * MagnitudeSq(rhs));
     return acos(Dot(lhs, rhs) / m);
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::Project(const jf::maths::Vector3D &len, const jf::maths::Vector3D &dir)
+indie::maths::Vector3D indie::maths::Vector3D::Project(const indie::maths::Vector3D &len, const indie::maths::Vector3D &dir)
 {
     float dot = Dot(len, dir);
     float magSq = MagnitudeSq(dir);
     return dir * (dot / magSq);
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::Perpendicular(const jf::maths::Vector3D &len, const jf::maths::Vector3D &dir)
+indie::maths::Vector3D indie::maths::Vector3D::Perpendicular(const indie::maths::Vector3D &len, const indie::maths::Vector3D &dir)
 {
     return len - Project(len, dir);
 }
 
-jf::maths::Vector3D jf::maths::Vector3D::Reflection(const jf::maths::Vector3D &vec, const jf::maths::Vector3D &normal)
+indie::maths::Vector3D indie::maths::Vector3D::Reflection(const indie::maths::Vector3D &vec, const indie::maths::Vector3D &normal)
 {
     float d = Dot(vec, normal);
     return vec - normal * (d * 2.0f);
 }
 
-jf::maths::Vector3D jf::maths::operator+(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+indie::maths::Vector3D indie::maths::operator+(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
 }
 
-jf::maths::Vector3D jf::maths::operator-(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+indie::maths::Vector3D indie::maths::operator-(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
 }
 
-jf::maths::Vector3D jf::maths::operator*(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+indie::maths::Vector3D indie::maths::operator*(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
 }
 
-jf::maths::Vector3D jf::maths::operator*(const jf::maths::Vector3D &lhs, float rhs)
+indie::maths::Vector3D indie::maths::operator*(const indie::maths::Vector3D &lhs, float rhs)
 {
     return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
 }
 
-bool jf::maths::operator==(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+bool indie::maths::operator==(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return CMP(lhs.x, rhs.x) && CMP(lhs.y, rhs.y) && CMP(lhs.z, rhs.z);
 }
 
-bool jf::maths::operator!=(const jf::maths::Vector3D &lhs, const jf::maths::Vector3D &rhs)
+bool indie::maths::operator!=(const indie::maths::Vector3D &lhs, const indie::maths::Vector3D &rhs)
 {
     return !(lhs == rhs);
 }

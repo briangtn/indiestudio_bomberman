@@ -1,15 +1,15 @@
 /*
 ** EPITECH PROJECT, 2018
-** JFEntityComponentSystem
+** indieEntityComponentSystem
 ** File description:
 ** Matrices.cpp
 */
 
-/* Created the 25/04/2019 at 18:42 by jfrabel */
+/* Created the 25/04/2019 at 18:42 by indierabel */
 
-#include "Matrices.hpp"
 #include <cmath>
 #include <cfloat>
+#include "maths/Matrices.hpp"
 
 #define CMP(x, y)  (fabsf((x) - (y)) <= FLT_EPSILON * fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y))))
 
@@ -17,13 +17,13 @@
 /* ----------------------------------------------------Matrix2----------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::maths::Matrix2::Matrix2()
+indie::maths::Matrix2::Matrix2()
 {
     _11 = _22 = 1.0f;
     _12 = _21 = 0.0f;
 }
 
-jf::maths::Matrix2::Matrix2(float f11, float f12, float f21, float f22)
+indie::maths::Matrix2::Matrix2(float f11, float f12, float f21, float f22)
 {
     _11 = f11;
     _12 = f12;
@@ -31,51 +31,51 @@ jf::maths::Matrix2::Matrix2(float f11, float f12, float f21, float f22)
     _22 = f22;
 }
 
-float *jf::maths::Matrix2::operator[](int i)
+float *indie::maths::Matrix2::operator[](int i)
 {
     return &asArray[i * 2];
 }
 
-const float *jf::maths::Matrix2::operator[](int i) const
+const float *indie::maths::Matrix2::operator[](int i) const
 {
     return &asArray[i * 2];
 }
 
-float jf::maths::Matrix2::det() const
+float indie::maths::Matrix2::det() const
 {
     return Determinant(*this);
 }
 
-jf::maths::Matrix2 jf::maths::Matrix2::Transpose(const jf::maths::Matrix2 &mat)
+indie::maths::Matrix2 indie::maths::Matrix2::Transpose(const indie::maths::Matrix2 &mat)
 {
     Matrix2 res;
-    jf::maths::Transpose(mat.asArray, res.asArray, 2, 2);
+    indie::maths::Transpose(mat.asArray, res.asArray, 2, 2);
     return res;
 }
 
-float jf::maths::Matrix2::Determinant(const jf::maths::Matrix2 &mat)
+float indie::maths::Matrix2::Determinant(const indie::maths::Matrix2 &mat)
 {
     return mat._11 * mat._22 - mat._12 * mat._21;
 }
 
-jf::maths::Matrix2 jf::maths::Matrix2::Minor(const jf::maths::Matrix2 &mat)
+indie::maths::Matrix2 indie::maths::Matrix2::Minor(const indie::maths::Matrix2 &mat)
 {
     return Matrix2(mat._22, mat._21, mat._12, mat._11);
 }
 
-jf::maths::Matrix2 jf::maths::Matrix2::Cofactor(const jf::maths::Matrix2 &mat)
+indie::maths::Matrix2 indie::maths::Matrix2::Cofactor(const indie::maths::Matrix2 &mat)
 {
     Matrix2 result;
-    jf::maths::Cofactor(result.asArray, Minor(mat).asArray, 2, 2);
+    indie::maths::Cofactor(result.asArray, Minor(mat).asArray, 2, 2);
     return result;
 }
 
-jf::maths::Matrix2 jf::maths::Matrix2::Adjugate(const jf::maths::Matrix2 &mat)
+indie::maths::Matrix2 indie::maths::Matrix2::Adjugate(const indie::maths::Matrix2 &mat)
 {
     return Transpose(Cofactor(mat));
 }
 
-jf::maths::Matrix2 jf::maths::Matrix2::Inverse(const jf::maths::Matrix2 &mat)
+indie::maths::Matrix2 indie::maths::Matrix2::Inverse(const indie::maths::Matrix2 &mat)
 {
     float det = Determinant(mat);
     if (CMP(det, 0.0f)) {
@@ -84,7 +84,7 @@ jf::maths::Matrix2 jf::maths::Matrix2::Inverse(const jf::maths::Matrix2 &mat)
     return Adjugate(mat) * (1.0f / det);
 }
 
-jf::maths::Matrix2 jf::maths::operator*(const jf::maths::Matrix2 &matrix, float scalar)
+indie::maths::Matrix2 indie::maths::operator*(const indie::maths::Matrix2 &matrix, float scalar)
 {
     Matrix2 result;
     for (int i = 0; i < 4; i++) {
@@ -93,10 +93,10 @@ jf::maths::Matrix2 jf::maths::operator*(const jf::maths::Matrix2 &matrix, float 
     return result;
 }
 
-jf::maths::Matrix2 jf::maths::operator*(const jf::maths::Matrix2 &matA, const jf::maths::Matrix2 &matB)
+indie::maths::Matrix2 indie::maths::operator*(const indie::maths::Matrix2 &matA, const indie::maths::Matrix2 &matB)
 {
     Matrix2 result;
-    jf::maths::Multiply(result.asArray, matA.asArray, 2, 2, matB.asArray, 2, 2);
+    indie::maths::Multiply(result.asArray, matA.asArray, 2, 2, matB.asArray, 2, 2);
     return result;
 }
 
@@ -104,13 +104,13 @@ jf::maths::Matrix2 jf::maths::operator*(const jf::maths::Matrix2 &matA, const jf
 /* ----------------------------------------------------Matrix3----------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::maths::Matrix3::Matrix3()
+indie::maths::Matrix3::Matrix3()
 {
     _11 = _22 = _33 = 1.0f;
     _12 = _13 = _21 = _23 = _31 = _32 = 0.0f;
 }
 
-jf::maths::Matrix3::Matrix3(
+indie::maths::Matrix3::Matrix3(
     float f11, float f12, float f13,
     float f21, float f22, float f23,
     float f31, float f32, float f33)
@@ -126,24 +126,24 @@ jf::maths::Matrix3::Matrix3(
     _33 = f33;
 }
 
-float *jf::maths::Matrix3::operator[](int i)
+float *indie::maths::Matrix3::operator[](int i)
 {
     return &asArray[i * 3];
 }
 
-const float *jf::maths::Matrix3::operator[](int i) const
+const float *indie::maths::Matrix3::operator[](int i) const
 {
     return &asArray[i * 3];
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Transpose(const jf::maths::Matrix3 &mat)
+indie::maths::Matrix3 indie::maths::Matrix3::Transpose(const indie::maths::Matrix3 &mat)
 {
     Matrix3 res;
-    jf::maths::Transpose(mat.asArray, res.asArray, 3, 3);
+    indie::maths::Transpose(mat.asArray, res.asArray, 3, 3);
     return res;
 }
 
-jf::maths::Matrix2 jf::maths::Matrix3::Cut(const jf::maths::Matrix3 &mat, int row, int col)
+indie::maths::Matrix2 indie::maths::Matrix3::Cut(const indie::maths::Matrix3 &mat, int row, int col)
 {
     Matrix2 result;
     int index = 0;
@@ -160,7 +160,7 @@ jf::maths::Matrix2 jf::maths::Matrix3::Cut(const jf::maths::Matrix3 &mat, int ro
     return result;
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Minor(const jf::maths::Matrix3 &mat)
+indie::maths::Matrix3 indie::maths::Matrix3::Minor(const indie::maths::Matrix3 &mat)
 {
     Matrix3 result;
     for (int i = 0; i < 3; ++i) {
@@ -171,14 +171,14 @@ jf::maths::Matrix3 jf::maths::Matrix3::Minor(const jf::maths::Matrix3 &mat)
     return result;
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Cofactor(const jf::maths::Matrix3 &mat)
+indie::maths::Matrix3 indie::maths::Matrix3::Cofactor(const indie::maths::Matrix3 &mat)
 {
     Matrix3 result;
-    jf::maths::Cofactor(result.asArray, Minor(mat).asArray, 3, 3);
+    indie::maths::Cofactor(result.asArray, Minor(mat).asArray, 3, 3);
     return result;
 }
 
-float jf::maths::Matrix3::Determinant(const jf::maths::Matrix3 &mat)
+float indie::maths::Matrix3::Determinant(const indie::maths::Matrix3 &mat)
 {
     float result = 0.0f;
     Matrix3 cofactor = Cofactor(mat);
@@ -189,12 +189,12 @@ float jf::maths::Matrix3::Determinant(const jf::maths::Matrix3 &mat)
     return result;
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Adjugate(const jf::maths::Matrix3 &mat)
+indie::maths::Matrix3 indie::maths::Matrix3::Adjugate(const indie::maths::Matrix3 &mat)
 {
     return Transpose(Cofactor(mat));
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Inverse(const jf::maths::Matrix3 &mat)
+indie::maths::Matrix3 indie::maths::Matrix3::Inverse(const indie::maths::Matrix3 &mat)
 {
     float det = Determinant(mat);
     if (CMP(det, 0.0f)) {
@@ -203,30 +203,30 @@ jf::maths::Matrix3 jf::maths::Matrix3::Inverse(const jf::maths::Matrix3 &mat)
     return Adjugate(mat) * (1.0f / det);
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::Rotation(float pitch, float yaw, float roll)
+indie::maths::Matrix3 indie::maths::Matrix3::Rotation(float pitch, float yaw, float roll)
 {
     return ZRotation(roll) * XRotation(pitch) * YRotation(yaw);
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::ZRotation(float angle)
+indie::maths::Matrix3 indie::maths::Matrix3::ZRotation(float angle)
 {
     angle = DEG2RAD(angle);
-    return jf::maths::Matrix3(
+    return indie::maths::Matrix3(
          cosf(angle), sinf(angle), 0.0f,
         -sinf(angle), cosf(angle), 0.0f,
                 0.0f,        0.0f, 1.0f);
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::XRotation(float angle)
+indie::maths::Matrix3 indie::maths::Matrix3::XRotation(float angle)
 {
     angle = DEG2RAD(angle);
-    return jf::maths::Matrix3(
+    return indie::maths::Matrix3(
         1.0f,         0.0f,        0.0f,
         0.0f,  cosf(angle), sinf(angle),
         0.0f, -sinf(angle), cosf(angle));
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::YRotation(float angle)
+indie::maths::Matrix3 indie::maths::Matrix3::YRotation(float angle)
 {
     angle = DEG2RAD(angle);
     return Matrix3(
@@ -235,7 +235,7 @@ jf::maths::Matrix3 jf::maths::Matrix3::YRotation(float angle)
         sinf(angle), 0.0f,  cosf(angle));
 }
 
-jf::maths::Matrix3 jf::maths::Matrix3::AxisAngle(const Vector3D &axis, float angle)
+indie::maths::Matrix3 indie::maths::Matrix3::AxisAngle(const Vector3D &axis, float angle)
 {
     angle = DEG2RAD(angle);
     float c = cosf(angle);
@@ -257,7 +257,7 @@ jf::maths::Matrix3 jf::maths::Matrix3::AxisAngle(const Vector3D &axis, float ang
     );
 }
 
-jf::maths::Vector3D jf::maths::Matrix3::MultiplyVector(const jf::maths::Vector3D &vec, const jf::maths::Matrix3 &mat)
+indie::maths::Vector3D indie::maths::Matrix3::MultiplyVector(const indie::maths::Vector3D &vec, const indie::maths::Matrix3 &mat)
 {
     Vector3D result;
     result.x = Vector3D::Dot(vec, Vector3D(mat._11, mat._21, mat._31));
@@ -266,7 +266,7 @@ jf::maths::Vector3D jf::maths::Matrix3::MultiplyVector(const jf::maths::Vector3D
     return result;
 }
 
-jf::maths::Matrix3 jf::maths::operator*(const jf::maths::Matrix3 &matrix, float scalar)
+indie::maths::Matrix3 indie::maths::operator*(const indie::maths::Matrix3 &matrix, float scalar)
 {
     Matrix3 result;
     for (int i = 0; i < 9; i++) {
@@ -275,10 +275,10 @@ jf::maths::Matrix3 jf::maths::operator*(const jf::maths::Matrix3 &matrix, float 
     return result;
 }
 
-jf::maths::Matrix3 jf::maths::operator*(const jf::maths::Matrix3 &matA, const jf::maths::Matrix3 &matB)
+indie::maths::Matrix3 indie::maths::operator*(const indie::maths::Matrix3 &matA, const indie::maths::Matrix3 &matB)
 {
     Matrix3 result;
-    jf::maths::Multiply(result.asArray, matA.asArray, 3, 3, matB.asArray, 3, 3);
+    indie::maths::Multiply(result.asArray, matA.asArray, 3, 3, matB.asArray, 3, 3);
     return result;
 }
 
@@ -286,7 +286,7 @@ jf::maths::Matrix3 jf::maths::operator*(const jf::maths::Matrix3 &matA, const jf
 /* ----------------------------------------------------Matrix4----------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::maths::Matrix4::Matrix4()
+indie::maths::Matrix4::Matrix4()
 {
     _11 = _22 = _33 = _44 = 1.0f;
     _12 = _13 = _14 = 0.0f;
@@ -295,7 +295,7 @@ jf::maths::Matrix4::Matrix4()
     _41 = _42 = _43 = 0.0f;
 }
 
-jf::maths::Matrix4::Matrix4(
+indie::maths::Matrix4::Matrix4(
     float f11, float f12, float f13, float f14,
     float f21, float f22, float f23, float f24,
     float f31, float f32, float f33, float f34,
@@ -319,24 +319,24 @@ jf::maths::Matrix4::Matrix4(
     _44 = f44;
 }
 
-float *jf::maths::Matrix4::operator[](int i)
+float *indie::maths::Matrix4::operator[](int i)
 {
     return &asArray[i * 4];
 }
 
-const float *jf::maths::Matrix4::operator[](int i) const
+const float *indie::maths::Matrix4::operator[](int i) const
 {
     return &asArray[i * 4];
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Transpose(const jf::maths::Matrix4 &mat)
+indie::maths::Matrix4 indie::maths::Matrix4::Transpose(const indie::maths::Matrix4 &mat)
 {
     Matrix4 res;
-    jf::maths::Transpose(mat.asArray, res.asArray, 4, 4);
+    indie::maths::Transpose(mat.asArray, res.asArray, 4, 4);
     return res;
 }
 
-jf::maths::Matrix3 jf::maths::Matrix4::Cut(const jf::maths::Matrix4 &mat, int row, int col)
+indie::maths::Matrix3 indie::maths::Matrix4::Cut(const indie::maths::Matrix4 &mat, int row, int col)
 {
     Matrix3 result;
     int index = 0;
@@ -352,7 +352,7 @@ jf::maths::Matrix3 jf::maths::Matrix4::Cut(const jf::maths::Matrix4 &mat, int ro
     return result;
 }
 
-float jf::maths::Matrix4::Determinant(const jf::maths::Matrix4 &mat)
+float indie::maths::Matrix4::Determinant(const indie::maths::Matrix4 &mat)
 {
     float result = 0.0f;
     Matrix4 cofactor = Cofactor(mat);
@@ -362,7 +362,7 @@ float jf::maths::Matrix4::Determinant(const jf::maths::Matrix4 &mat)
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Minor(const jf::maths::Matrix4 &mat)
+indie::maths::Matrix4 indie::maths::Matrix4::Minor(const indie::maths::Matrix4 &mat)
 {
     Matrix4 result;
     for (int i = 0; i <4; ++i) {
@@ -373,19 +373,19 @@ jf::maths::Matrix4 jf::maths::Matrix4::Minor(const jf::maths::Matrix4 &mat)
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Cofactor(const jf::maths::Matrix4 &mat)
+indie::maths::Matrix4 indie::maths::Matrix4::Cofactor(const indie::maths::Matrix4 &mat)
 {
     Matrix4 result;
-    jf::maths::Cofactor(result.asArray, Minor(mat).asArray, 4, 4);
+    indie::maths::Cofactor(result.asArray, Minor(mat).asArray, 4, 4);
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Adjugate(const jf::maths::Matrix4 &mat)
+indie::maths::Matrix4 indie::maths::Matrix4::Adjugate(const indie::maths::Matrix4 &mat)
 {
     return Transpose(Cofactor(mat));
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Inverse(const jf::maths::Matrix4 &mat)
+indie::maths::Matrix4 indie::maths::Matrix4::Inverse(const indie::maths::Matrix4 &mat)
 {
     float det = Determinant(mat);
     if (CMP(det, 0.0f)) {
@@ -394,78 +394,78 @@ jf::maths::Matrix4 jf::maths::Matrix4::Inverse(const jf::maths::Matrix4 &mat)
     return Adjugate(mat) * (1.0f / det);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Translation(float x, float y, float z)
+indie::maths::Matrix4 indie::maths::Matrix4::Translation(float x, float y, float z)
 {
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
            x,    y,    z, 0.0f);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Translation(const jf::maths::Vector3D &vec)
+indie::maths::Matrix4 indie::maths::Matrix4::Translation(const indie::maths::Vector3D &vec)
 {
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
         00.0f, 00.0f, 00.0f, 0.0f,
         00.0f, 00.0f, 00.0f, 0.0f,
         00.0f, 00.0f, 00.0f, 0.0f,
         vec.x, vec.y, vec.z, 0.0f);
 }
 
-jf::maths::Vector3D jf::maths::Matrix4::GetTranslation(const jf::maths::Matrix4 &mat)
+indie::maths::Vector3D indie::maths::Matrix4::GetTranslation(const indie::maths::Matrix4 &mat)
 {
-    return jf::maths::Vector3D(mat._41, mat._42, mat._43);
+    return indie::maths::Vector3D(mat._41, mat._42, mat._43);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Scale(float x, float y, float z)
+indie::maths::Matrix4 indie::maths::Matrix4::Scale(float x, float y, float z)
 {
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
            x, 0.0f, 0.0f, 0.0f,
         0.0f,    y, 0.0f, 0.0f,
         0.0f, 0.0f,    z, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Scale(const jf::maths::Vector3D &vec)
+indie::maths::Matrix4 indie::maths::Matrix4::Scale(const indie::maths::Vector3D &vec)
 {
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
         vec.x, 00.0f, 00.0f, 00.0f,
         00.0f, vec.y, 00.0f, 00.0f,
         00.0f, 00.0f, vec.z, 00.0f,
         00.0f, 00.0f, 00.0f, 00.0f);
 }
 
-jf::maths::Vector3D jf::maths::Matrix4::GetScale(const jf::maths::Matrix4 &mat)
+indie::maths::Vector3D indie::maths::Matrix4::GetScale(const indie::maths::Matrix4 &mat)
 {
-    return jf::maths::Vector3D(mat._11, mat._22, mat._33);
+    return indie::maths::Vector3D(mat._11, mat._22, mat._33);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Rotation(float pitch, float yaw, float roll)
+indie::maths::Matrix4 indie::maths::Matrix4::Rotation(float pitch, float yaw, float roll)
 {
     return ZRotation(roll) * XRotation(pitch) * YRotation(yaw);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::ZRotation(float angle)
+indie::maths::Matrix4 indie::maths::Matrix4::ZRotation(float angle)
 {
     angle = DEG2RAD(angle);
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
          cosf(angle), sinf(angle), 0.0f, 0.0f,
         -sinf(angle), cosf(angle), 0.0f, 0.0f,
                 0.0f,        0.0f, 1.0f, 0.0f,
                 0.0f,        0.0f, 0.0f, 1.0f);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::XRotation(float angle)
+indie::maths::Matrix4 indie::maths::Matrix4::XRotation(float angle)
 {
     angle = DEG2RAD(angle);
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
         1.0f,         0.0f,        0.0f, 0.0f,
         0.0f,  cosf(angle), sinf(angle), 0.0f,
         0.0f, -sinf(angle), cosf(angle), 0.0f,
         0.0f,         0.0f,        0.0f, 1.0f);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::YRotation(float angle)
+indie::maths::Matrix4 indie::maths::Matrix4::YRotation(float angle)
 {
     angle = DEG2RAD(angle);
     return Matrix4(
@@ -475,7 +475,7 @@ jf::maths::Matrix4 jf::maths::Matrix4::YRotation(float angle)
                0.0f, 0.0f,         0.0f, 1.0f);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::AxisAngle(const jf::maths::Vector3D &axis, float angle)
+indie::maths::Matrix4 indie::maths::Matrix4::AxisAngle(const indie::maths::Vector3D &axis, float angle)
 {
     angle = DEG2RAD(angle);
     float c = cosf(angle);
@@ -498,7 +498,7 @@ jf::maths::Matrix4 jf::maths::Matrix4::AxisAngle(const jf::maths::Vector3D &axis
     );
 }
 
-jf::maths::Vector3D jf::maths::Matrix4::MultiplyPoint(const jf::maths::Vector3D &vec, const jf::maths::Matrix4 &mat)
+indie::maths::Vector3D indie::maths::Matrix4::MultiplyPoint(const indie::maths::Vector3D &vec, const indie::maths::Matrix4 &mat)
 {
     Vector3D result;
     result.x = vec.x * mat._11 + vec.y * mat._21 + vec.z * mat._31 + 1.0f * mat._41;
@@ -507,7 +507,7 @@ jf::maths::Vector3D jf::maths::Matrix4::MultiplyPoint(const jf::maths::Vector3D 
     return result;
 }
 
-jf::maths::Vector3D jf::maths::Matrix4::MultiplyVector(const jf::maths::Vector3D &vec, const jf::maths::Matrix4 &mat)
+indie::maths::Vector3D indie::maths::Matrix4::MultiplyVector(const indie::maths::Vector3D &vec, const indie::maths::Matrix4 &mat)
 {
     Vector3D result;
     result.x = vec.x * mat._11 + vec.y * mat._21 + vec.z * mat._31;
@@ -516,32 +516,32 @@ jf::maths::Vector3D jf::maths::Matrix4::MultiplyVector(const jf::maths::Vector3D
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Transform(
-    const jf::maths::Vector3D &scale,
-    const jf::maths::Vector3D &eulerRotation,
-    const jf::maths::Vector3D &translation)
+indie::maths::Matrix4 indie::maths::Matrix4::Transform(
+    const indie::maths::Vector3D &scale,
+    const indie::maths::Vector3D &eulerRotation,
+    const indie::maths::Vector3D &translation)
 {
     return Scale(scale) * Rotation(eulerRotation.x, eulerRotation.y, eulerRotation.z) * Translation(translation);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Transform(
-    const jf::maths::Vector3D &scale,
-    const jf::maths::Vector3D &rotationAxis, float rotationAngle,
-    const jf::maths::Vector3D &translation)
+indie::maths::Matrix4 indie::maths::Matrix4::Transform(
+    const indie::maths::Vector3D &scale,
+    const indie::maths::Vector3D &rotationAxis, float rotationAngle,
+    const indie::maths::Vector3D &translation)
 {
     return Scale(scale) * AxisAngle(rotationAxis, rotationAngle) * Translation(translation);
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::LookAt(
-    const jf::maths::Vector3D &position,
-    const jf::maths::Vector3D &target,
-    const jf::maths::Vector3D &up)
+indie::maths::Matrix4 indie::maths::Matrix4::LookAt(
+    const indie::maths::Vector3D &position,
+    const indie::maths::Vector3D &target,
+    const indie::maths::Vector3D &up)
 {
     Vector3D forward = Vector3D::Normalized(target - position);
     Vector3D right = Vector3D::Normalized(Vector3D::Cross(up, forward));
     Vector3D newUp = Vector3D::Cross(forward, right);
 
-    return jf::maths::Matrix4(
+    return indie::maths::Matrix4(
         right.x, newUp.x, forward.x, 0.0f,
         right.y, newUp.y, forward.y, 0.0f,
         right.z, newUp.z, forward.z, 0.0f,
@@ -549,7 +549,7 @@ jf::maths::Matrix4 jf::maths::Matrix4::LookAt(
     );
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Projection(float fov, float aspect, float zNear, float zFar)
+indie::maths::Matrix4 indie::maths::Matrix4::Projection(float fov, float aspect, float zNear, float zFar)
 {
     float tanHalfFov = tanf(DEG2RAD((fov * 0.5f)));
     float fovY = 1.0f / tanHalfFov;
@@ -564,7 +564,7 @@ jf::maths::Matrix4 jf::maths::Matrix4::Projection(float fov, float aspect, float
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::Matrix4::Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+indie::maths::Matrix4 indie::maths::Matrix4::Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
 {
     float _11 = 2.0f / (right - left);
     float _22 = 2.0f / (top - bottom);
@@ -580,7 +580,7 @@ jf::maths::Matrix4 jf::maths::Matrix4::Ortho(float left, float right, float bott
     );
 }
 
-jf::maths::Matrix4 jf::maths::operator*(const jf::maths::Matrix4 &matrix, float scalar)
+indie::maths::Matrix4 indie::maths::operator*(const indie::maths::Matrix4 &matrix, float scalar)
 {
     Matrix4 result;
     for (int i = 0; i < 16; i++) {
@@ -589,10 +589,10 @@ jf::maths::Matrix4 jf::maths::operator*(const jf::maths::Matrix4 &matrix, float 
     return result;
 }
 
-jf::maths::Matrix4 jf::maths::operator*(const jf::maths::Matrix4 &matA, const jf::maths::Matrix4 &matB)
+indie::maths::Matrix4 indie::maths::operator*(const indie::maths::Matrix4 &matA, const indie::maths::Matrix4 &matB)
 {
     Matrix4 result;
-    jf::maths::Multiply(result.asArray, matA.asArray, 4, 4, matB.asArray, 4, 4);
+    indie::maths::Multiply(result.asArray, matA.asArray, 4, 4, matB.asArray, 4, 4);
     return result;
 }
 
@@ -600,7 +600,7 @@ jf::maths::Matrix4 jf::maths::operator*(const jf::maths::Matrix4 &matA, const jf
 /* ----------------------------------------------------General----------------------------------------------------- */
 /* ================================================================================================================ */
 
-void jf::maths::Transpose(const float *srcMat, float *destMat, int srcRows, int srcCols)
+void indie::maths::Transpose(const float *srcMat, float *destMat, int srcRows, int srcCols)
 {
     for (int i = 0; i < srcRows * srcCols; i++) {
         int row = i / srcRows;
@@ -609,7 +609,7 @@ void jf::maths::Transpose(const float *srcMat, float *destMat, int srcRows, int 
     }
 }
 
-bool jf::maths::Multiply(float *out, const float *matA, int aRows, int aCols, const float *matB, int bRows, int bCols)
+bool indie::maths::Multiply(float *out, const float *matA, int aRows, int aCols, const float *matB, int bRows, int bCols)
 {
     if (aCols != bRows) {
         return false;
@@ -627,7 +627,7 @@ bool jf::maths::Multiply(float *out, const float *matA, int aRows, int aCols, co
     return true;
 }
 
-void jf::maths::Cofactor(float *out, const float *minor, int rows, int cols)
+void indie::maths::Cofactor(float *out, const float *minor, int rows, int cols)
 {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {

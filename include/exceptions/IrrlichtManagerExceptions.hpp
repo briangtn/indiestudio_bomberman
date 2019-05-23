@@ -14,15 +14,11 @@
 #include <string>
 #include "Exceptions.hpp"
 
-/*!
-* @namespace jf
-* @brief The jfecs library
-*/
-namespace jf {
+namespace indie {
 
     namespace exceptions {
 
-        class IrrlichtManagerException : public ECSException {
+        class IrrlichtManagerException : public jf::ECSException {
         public:
             explicit IrrlichtManagerException(const std::string &err, const std::string &where = "");
         };

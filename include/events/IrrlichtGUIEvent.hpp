@@ -12,11 +12,7 @@
 
 #include <irrlicht.h>
 
-/*!
- * @namespace jf
- * @brief The jfecs library namespace
- */
-namespace jf {
+namespace indie {
 
     namespace events {
 

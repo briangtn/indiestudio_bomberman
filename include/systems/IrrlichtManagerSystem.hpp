@@ -13,17 +13,19 @@
 #include <irrlicht.h>
 #include <string>
 #include "System.hpp"
-#include "Vectors.hpp"
+#include "components/ComponentParticle.hpp"
+#include "components/Transform.hpp"
+#include "maths/Vectors.hpp"
+#include "components/Mesh.hpp"
+#include "components/Transform.hpp"
+#include "components/Material.hpp"
+#include "components/PointLight.hpp"
 
-/*!
-* @namespace jf
-* @brief The jfecs library
-*/
-namespace jf {
+namespace indie {
 
     namespace systems {
 
-        class IrrlichtManagerSystem : public ISystem {
+        class IrrlichtManagerSystem : public jf::systems::ISystem {
         private:
             class IrrlichtEventReceiver : public irr::IEventReceiver {
             public:
@@ -58,8 +60,12 @@ namespace jf {
             const std::string &getWindowCaption() const;
             void setWindowCaption(const std::string &str);
 
-            const jf::maths::Vector2D &getWindowDimension() const;
-            void setWindowDimension(const jf::maths::Vector2D &dimensions);
+            const indie::maths::Vector2D &getWindowDimension() const;
+            void setWindowDimension(const indie::maths::Vector2D &dimensions);
+
+            irr::scene::ISceneManager *getSceneManager();
+            irr::video::IVideoDriver *getVideoDriver();
+            irr::IrrlichtDevice *getDevice();
 
             bool isWindowOpen() const;
 
@@ -68,9 +74,35 @@ namespace jf {
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
         private:
+            static void syncModel(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncModelMaterial(
+                jf::components::ComponentHandler<components::Material> mat,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncModelPos(
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+
+            static void syncParticlePos(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::Particle> particle);
+
+            static void syncPointLights(
+                jf::entities::EntityHandler entity,
+                jf::components::ComponentHandler<components::PointLight> pl);
+            static void syncPointLightsTransform(
+                jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::PointLight> pl);
+            static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
+
+        private:
             void openWindow();
             void closeWindow();
             void reloadWindow();
+
+            void updateCamera(const std::chrono::nanoseconds &elapsedTime);
 
         private:
             IrrlichtEventReceiver _eventReceiver;
@@ -86,8 +118,17 @@ namespace jf {
             bool _fullscreenEnabled;
             bool _vsyncEnabled;
             std::string _windowCaption;
-            jf::maths::Vector2D _windowDimension;
+            indie::maths::Vector2D _windowDimension;
         };
+    }
+}
+
+#else
+
+namespace indie {
+
+    namespace systems {
+        class IrrlichtManagerSystem;
     }
 }
 
