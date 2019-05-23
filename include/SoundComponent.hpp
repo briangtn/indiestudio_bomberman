@@ -2,13 +2,13 @@
 ** EPITECH PROJECT, 2018
 ** indiestudio
 ** File description:
-** ASoundComponent.hpp
+** SoundComponent.hpp
 */
 
 /* Created the 13/05/2019 at 19:00 by jbulteau */
 
-#ifndef INDIESTUDIO_ASOUNDCOMPONENT_HPP
-#define INDIESTUDIO_ASOUNDCOMPONENT_HPP
+#ifndef INDIESTUDIO_SOUNDCOMPONENT_HPP
+#define INDIESTUDIO_SOUNDCOMPONENT_HPP
 
 #include <irrKlang.h>
 #include "Component.hpp"
@@ -18,7 +18,7 @@ namespace indie {
 
     namespace components {
 
-        class ASoundComponent : public jf::components::Component {
+        class SoundComponent : public jf::components::Component {
         public:
             enum SoundType {
                 MUSIC,
@@ -33,8 +33,9 @@ namespace indie {
             };
 
         public:
-            explicit ASoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType);
-            ~ASoundComponent() override;
+            explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType);
+            explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType, jf::maths::Vector3D position);
+            ~SoundComponent() override;
 
         public:
             const SoundComponentState getState() const;
@@ -42,6 +43,7 @@ namespace indie {
             void setSound(irrklang::ISound *sound);
             const std::string &getSourceFile() const;
             SoundType getSoundType() const;
+            bool getSpatialization() const;
             bool getIsPaused() const;
             void setIsPaused(bool isPaused);
             float getVolume() const;
@@ -59,16 +61,19 @@ namespace indie {
             virtual const jf::maths::Vector3D getVelocity() const;
             virtual void setVelocity(const jf::maths::Vector3D &velocity);
 
-        protected:
+        private:
             SoundComponentState _state;
 
             irrklang::ISound *_sound;
 
             std::string _sourceFile;
             SoundType _soundType;
+            bool _spatialization;
             bool _shouldBePlayed;
+
+            jf::maths::Vector3D _position;
         };
     }
 }
 
-#endif //INDIESTUDIO_ASOUNDCOMPONENT_HPP
+#endif //INDIESTUDIO_SOUNDCOMPONENT_HPP

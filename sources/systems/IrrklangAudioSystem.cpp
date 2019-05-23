@@ -7,9 +7,7 @@
 
 /* Created the 13/05/2019 at 15:41 by jbulteau */
 
-#include "ASoundComponent.hpp"
-#include "Sound2DComponent.hpp"
-#include "Sound3DComponent.hpp"
+#include "SoundComponent.hpp"
 #include "ECSWrapper.hpp"
 #include "Vectors.hpp"
 #include "IrrklangAudioExceptions.hpp"
@@ -42,22 +40,15 @@ void indie::systems::IrrklangAudioSystem::onUpdate(const std::chrono::nanosecond
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::Sound2DComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Sound2DComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTING) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTING && !component->getSpatialization()) {
                     ECSWrapper ecs;
                     component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile()));
-                }
-            });
-    ecs.entityManager.applyToEach<components::Sound3DComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Sound3DComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTING) {
+                } else if (component->getState() == components::SoundComponent::STARTING && component->getSpatialization()) {
                     ECSWrapper ecs;
                     component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition()));
                 }
-            });
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
                 if (component->getShouldBePlayed() && component->getIsPaused()) {
                     component->setIsPaused(false);
                 }
@@ -97,21 +88,23 @@ void indie::systems::IrrklangAudioSystem::playSounds(bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED) {
+    std::cout << "playing sounds" << std::boolalpha << onlyEnabled << std::endl;
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                std::cout << "starting" << std::endl;
+                if (component->getState() == components::SoundComponent::STARTED) {
                     component->setShouldBePlayed(true);
                 }
             }, onlyEnabled);
 }
 
-void indie::systems::IrrklangAudioSystem::playSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled)
+void indie::systems::IrrklangAudioSystem::playSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED && component->getSoundType() == soundType) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
                     component->setShouldBePlayed(true);
                 }
             }, onlyEnabled);
@@ -121,21 +114,21 @@ void indie::systems::IrrklangAudioSystem::pauseSounds(bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED) {
                     component->setShouldBePlayed(false);
                 }
             }, onlyEnabled);
 }
 
-void indie::systems::IrrklangAudioSystem::pauseSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled)
+void indie::systems::IrrklangAudioSystem::pauseSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED && component->getSoundType() == soundType) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
                     component->setShouldBePlayed(false);
                 }
             }, onlyEnabled);
@@ -145,22 +138,22 @@ void indie::systems::IrrklangAudioSystem::restartSounds(bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED) {
                     component->setPlayPosition(0);
                     component->setShouldBePlayed(true);
                 }
             }, onlyEnabled);
 }
 
-void indie::systems::IrrklangAudioSystem::restartSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled)
+void indie::systems::IrrklangAudioSystem::restartSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED && component->getSoundType() == soundType) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
                     component->setPlayPosition(0);
                     component->setShouldBePlayed(true);
                 }
@@ -171,23 +164,23 @@ void indie::systems::IrrklangAudioSystem::setSoundsVolume(float volume, bool onl
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED) {
                     component->setVolume(volume);
                 }
             }, onlyEnabled);
 }
 
 void indie::systems::IrrklangAudioSystem::setSoundsVolume(float volume,
-                                                          components::ASoundComponent::SoundType soundType,
+                                                          components::SoundComponent::SoundType soundType,
                                                           bool onlyEnabled)
 {
     ECSWrapper ecs;
 
-    ecs.entityManager.applyToEach<components::ASoundComponent>(
-            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::ASoundComponent> component) {
-                if (component->getState() == components::ASoundComponent::STARTED && component->getSoundType() == soundType) {
+    ecs.entityManager.applyToEach<components::SoundComponent>(
+            [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
+                if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
                     component->setVolume(volume);
                 }
             }, onlyEnabled);

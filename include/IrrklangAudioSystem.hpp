@@ -12,7 +12,7 @@
 
 #include <irrKlang.h>
 #include "System.hpp"
-#include "ASoundComponent.hpp"
+#include "SoundComponent.hpp"
 
 namespace indie {
 
@@ -35,13 +35,13 @@ namespace indie {
             irrklang::ISound *add3DSound(const std::string &sourceFile, jf::maths::Vector3D position);
             void removeSound(irrklang::ISound *sound);
             void playSounds(bool onlyEnabled = true);
-            void playSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
+            void playSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
             void pauseSounds(bool onlyEnabled = true);
-            void pauseSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
+            void pauseSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
             void restartSounds(bool onlyEnabled = true);
-            void restartSounds(components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
+            void restartSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
             void setSoundsVolume(float volume, bool onlyEnabled = true);
-            void setSoundsVolume(float volume, components::ASoundComponent::SoundType soundType, bool onlyEnabled = true);
+            void setSoundsVolume(float volume, components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
 
         private:
             irrklang::ISoundEngine *_engine;
