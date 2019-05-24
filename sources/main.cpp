@@ -14,6 +14,7 @@
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
+#include "systems/MovementSystem.hpp"
 
 int runBomberman()
 {
@@ -25,6 +26,9 @@ int runBomberman()
 
     ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
     ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::MovementSystem>();
+    ecs.systemManager.startSystem<indie::systems::MovementSystem>();
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
