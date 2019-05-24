@@ -117,7 +117,7 @@ float indie::InputManager::GetAxis(const std::string &name)
     }
     if (!isFinded)
         throw AxisNotFoundException(name);
-    return result;
+    return (result < -1) ? -1 : ((result > 1) ? 1 : result);
 }
 
 void indie::InputManager::RegisterKey(irr::EKEY_CODE key)
