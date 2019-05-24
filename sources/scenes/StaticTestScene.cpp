@@ -17,6 +17,7 @@
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
 #include "components/Rotator.hpp"
+#include "components/Hoverer.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -87,6 +88,7 @@ void indie::scenes::StaticTestScene::onStart()
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::Rotator, indie::maths::Vector3D>({0, 90, 0});
+    cubeEntity->assignComponent<indie::components::Hoverer, indie::maths::Vector3D, indie::maths::Vector3D>({0, 1, 0}, {0, 1, 0});
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
     auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
     mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
