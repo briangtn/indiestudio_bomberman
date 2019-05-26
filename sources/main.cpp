@@ -15,6 +15,7 @@
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
+#include "input/InputManager.hpp"
 
 int runBomberman()
 {
@@ -29,6 +30,10 @@ int runBomberman()
 
     ecs.systemManager.addSystem<indie::systems::MovementSystem>();
     ecs.systemManager.startSystem<indie::systems::MovementSystem>();
+
+    indie::InputManager::CreateAxis("xAxis", {.id = 0, .axis = 0});
+    indie::InputManager::CreateAxis("zAxis", {.id = 0, .axis = 1, .invert = true});
+    indie::InputManager::CreateAxis("yAxis", {.id = 0, .positiveKey = 0b00000000, .negativeKey = 0b00000001});
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());

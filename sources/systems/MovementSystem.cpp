@@ -13,6 +13,9 @@
 #include "components/Transform.hpp"
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
+#include "components/PlayerController.hpp"
+#include "input/InputManager.hpp"
+#include "components/Camera.hpp"
 
 indie::systems::MovementSystem::MovementSystem()
 {
@@ -38,6 +41,7 @@ void indie::systems::MovementSystem::onUpdate(const std::chrono::nanoseconds &el
 {
     updateRotator(elapsedTime);
     updateHoverer(elapsedTime);
+    updatePlayerMovement(elapsedTime);
 }
 
 void indie::systems::MovementSystem::onStop()
@@ -86,6 +90,37 @@ void indie::systems::MovementSystem::updateHoverer(const std::chrono::nanosecond
                 advancement.y + elapsedTimeAsSecond * speed.y,
                 advancement.z + elapsedTimeAsSecond * speed.z
             });
+        }
+    );
+}
+
+void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nanoseconds &elapsedTime) const
+{
+    ECSWrapper ecs;
+    float elapsedTimeAsSecond = elapsedTime.count() / 1000000000.0f;
+    maths::Vector3D cameraAxes(1, 1, 1);
+    auto cameras = ecs.entityManager.getEntitiesWith<components::Camera, components::Transform>();
+    if (!cameras.empty()) {
+        cameraAxes = cameras[0]->getComponent<components::Transform>()->getLocalAxes();
+    }
+    ecs.entityManager.applyToEach<components::Transform, components::PlayerController>(
+        [elapsedTimeAsSecond, cameraAxes](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
+            auto pos = tr->getPosition();
+            auto speed = pc->getMovementSpeed();
+            auto directionAxes = maths::Vector3D(1, 1, 1).normalized();
+            if (pc->isMovementRelativeToCamera())
+                directionAxes = maths::Vector3D(pc->isLockMovementX() ? 0 : cameraAxes.x, pc->isLockMovementY() ? 0 : cameraAxes.y, pc->isLockMovementZ() ? 0 : cameraAxes.z).normalized();
+            auto &xAxis = pc->getXMovementAxis();
+            auto &yAxis = pc->getYMovementAxis();
+            auto &zAxis = pc->getZMovementAxis();
+            maths::Vector3D movementVector(0, 0, 0);
+            if (!xAxis.empty())
+                movementVector.x = indie::InputManager::GetAxis(xAxis);
+            if (!yAxis.empty())
+                movementVector.y = indie::InputManager::GetAxis(yAxis);
+            if (!zAxis.empty())
+                movementVector.z = indie::InputManager::GetAxis(zAxis);
+            tr->setPosition(pos + movementVector * speed * directionAxes * elapsedTimeAsSecond);
         }
     );
 }

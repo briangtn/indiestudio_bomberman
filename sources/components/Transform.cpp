@@ -9,6 +9,7 @@
 
 #include "Events.hpp"
 #include "components/Transform.hpp"
+#include "maths/Matrices.hpp"
 
 /* ================================================================================================================ */
 /* ----------------------------------------------------Ctor&Dtor--------------------------------------------------- */
@@ -58,4 +59,16 @@ const indie::maths::Vector3D &indie::components::Transform::getScale() const
 void indie::components::Transform::setScale(const indie::maths::Vector3D &scale)
 {
     _scale = scale;
+}
+
+indie::maths::Vector3D indie::components::Transform::getForward() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(0, 0, 1), rotMat).normalized();
+}
+
+indie::maths::Vector3D indie::components::Transform::getLocalAxes() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(1, 1, 1), rotMat).normalized();
 }

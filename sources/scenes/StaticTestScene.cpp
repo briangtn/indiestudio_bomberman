@@ -18,6 +18,7 @@
 #include "Exceptions.hpp"
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
+#include "components/PlayerController.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -26,59 +27,7 @@ void indie::scenes::StaticTestScene::onStart()
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
     cameraEntity->assignComponent<indie::components::Camera>();
-
-    auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        auto oldRot = tr->getRotation();
-        if (e.shiftActivated) {
-            oldRot.y -= 1;
-        } else {
-            oldPos.x -= 1;
-        }
-        tr->setPosition(oldPos);
-        tr->setRotation(oldRot);
-    });
-    _listeners.push_back(id);
-    id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_D>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        auto oldRot = tr->getRotation();
-        if (e.shiftActivated) {
-            oldRot.y += 1;
-        } else {
-            oldPos.x += 1;
-        }
-        tr->setPosition(oldPos);
-        tr->setRotation(oldRot);
-    });
-    _listeners.push_back(id);
-    id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Z>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        if (e.shiftActivated) {
-            oldPos.y += 1;
-        } else {
-            oldPos.z += 1;
-        }
-        tr->setPosition(oldPos);
-    });
-    _listeners.push_back(id);
-    id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_S>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        if (e.shiftActivated) {
-            oldPos.y -= 1;
-        } else {
-            oldPos.z -= 1;
-        }
-        tr->setPosition(oldPos);
-    });
-    _listeners.push_back(id);
+    cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
 
     auto plEntity = ecs.entityManager.createEntity("pointLight");
     auto plTr = plEntity->assignComponent<indie::components::Transform>();
