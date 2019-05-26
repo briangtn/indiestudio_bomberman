@@ -26,6 +26,7 @@ void indie::scenes::StaticTestScene::onStart()
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
+    cameraTr->setRotation({0, 90, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
     cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
 
