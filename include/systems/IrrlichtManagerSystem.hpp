@@ -20,6 +20,7 @@
 #include "components/Transform.hpp"
 #include "components/Material.hpp"
 #include "components/PointLight.hpp"
+#include "components/Bomb.hpp"
 
 namespace indie {
 

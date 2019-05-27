@@ -7,14 +7,13 @@
 
 #include "components/Bomb.hpp"
 
-const std::map<int, std::string> indie::components::Bomb::_pathTextureBomb =
+const std::map<int, std::pair<std::string, std::string>> indie::components::Bomb::_pathTextureBomb =
 {
-    {0, "Assets/Bombs/model_ob001_bomb.fbx"},
-    {1, "Assets/Bombd/model_ob007_golembomb.fbx"},
-    {2, "Assets/Bombs/model_ob006_magnetbomb.fbx"},
-    {3, "Assets/Bombs/model_ob010_plasmabomb.fbx"},
-    {4, "Assets/Bombs/model_ob009_sexybomb.fbx"},
-    {5, "Assets/Bombd/model_ob101_misobomb.fbx"}
+    {0, { "./Assets/Bombs/Mesh/NormalBomb.dae.obj", "./Assets/Bombs/Texture/TextureNormalBomb.png"} },
+    {1, {"./Assets/Bombs/Mesh/FireBomb.dae.obj", "./Assets/Bombs/Texture/TextureFireBomb.png"} },
+    {2, {"./Assets/Bombs/Mesh/WaterBomb.dae.obj", "./Assets/Bombs/Texture/TextureWaterBomb.png"} },
+    {3, {"./Assets/Bombs/Mesh/PlasmaBomb.dae.obj", "./Assets/Bombs/Texture/TexturePlasmaBomb.png"} },
+    {4, {"./Assets/Bombs/Mesh/SexyBomb.dae.obj", "./Assets/Bombs/Texture/TextureSexyBomb.png"} }
 };
 
 indie::components::Bomb::Bomb(jf::entities::Entity &entity, const int &strength,\
@@ -26,8 +25,11 @@ const float &timeBeforeExplose, indie::components::BombType bomb)
         _bombType(bomb)
 {
     for (auto &it : _pathTextureBomb)
-        if (it.first == _bombID)
-            _texturePath = it.second;
+        if (it.first == _bombID) {
+            _texturePath = it.second.second;
+            _meshPath = it.second.first;
+        }
+
     EMIT_CREATE(Bomb);
 }
 
@@ -74,4 +76,14 @@ std::string indie::components::Bomb::getTexturePath() const
 void indie::components::Bomb::setTexturePath(const std::string &newTexturePath)
 {
     _texturePath = newTexturePath;
+}
+
+std::string indie::components::Bomb::getTextureMesh() const
+{
+    return _meshPath;
+}
+
+void indie::components::Bomb::setTextureMesh(const std::string &newMeshPath)
+{
+    _meshPath = newMeshPath;
 }

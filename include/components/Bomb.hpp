@@ -25,8 +25,7 @@ namespace indie {
                 FIRE,
                 WATER,
                 ELECTRIC,
-                LOVE,
-                PIKE
+                LOVE
             };
 
         class Bomb : public jf::components::Component {
@@ -61,14 +60,20 @@ namespace indie {
             std::string getTexturePath() const;
             void setTexturePath(const std::string &newTexturePath);
 
+            /* Set & Get TextureMesh */
+
+            std::string getTextureMesh() const;
+            void setTextureMesh(const std::string &newMeshPath);
+
         protected:
         private:
             int _strength;
             float _timeBeforeExplose;
             int _bombID;
             BombType _bombType;
+            std::string _meshPath;
             std::string _texturePath;
-            static const std::map<int, std::string> _pathTextureBomb;
+            static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;
         };
     }
 }

@@ -113,6 +113,13 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setMinMaxAge(std::make_pair(800, 2000));
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
     sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
+
+    auto bombEntity = ecs.entityManager.createEntity("bomb");
+    auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({1, 1, 0});
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType>(5, 5, components::NORMAL);
+    auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
+    auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
+    bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
 void indie::scenes::StaticTestScene::onStop()
