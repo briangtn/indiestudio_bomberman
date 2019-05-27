@@ -119,8 +119,14 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 movementVector.y = indie::InputManager::GetAxis(yAxis);
             if (!zAxis.empty())
                 movementVector.z = indie::InputManager::GetAxis(zAxis);
-            maths::Vector3D movement = movementVector * speed * elapsedTimeAsSecond;
-            tr->setPosition(pos + maths::Matrix4::MultiplyVector(movement, rotation));
+            maths::Vector3D movement = maths::Matrix4::MultiplyVector(movementVector * speed * elapsedTimeAsSecond, rotation);
+            if (pc->isLockMovementX())
+                movement.x = 0;
+            if (pc->isLockMovementY())
+                movement.y = 0;
+            if (pc->isLockMovementZ())
+                movement.z = 0;
+            tr->setPosition(pos + movement);
         }
     );
 }
