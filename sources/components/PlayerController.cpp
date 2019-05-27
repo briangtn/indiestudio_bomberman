@@ -19,7 +19,15 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _lockMovementY(false),
       _lockMovementZ(false),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f)
+      _movementSpeed(10.0f),
+      _xRotationAxis(""),
+      _yRotationAxis(""),
+      _zRotationAxis(""),
+      _lockRotationX(false),
+      _lockRotationY(false),
+      _lockRotationZ(false),
+      _alwaysLookForward(true),
+      _rotationSpeed(10.0f)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -35,7 +43,15 @@ indie::components::PlayerController::PlayerController(
       _lockMovementY(false),
       _lockMovementZ(false),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f)
+      _movementSpeed(10.0f),
+      _xRotationAxis(""),
+      _yRotationAxis(""),
+      _zRotationAxis(""),
+      _lockRotationX(false),
+      _lockRotationY(false),
+      _lockRotationZ(false),
+      _alwaysLookForward(true),
+      _rotationSpeed(10.0f)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -52,7 +68,15 @@ indie::components::PlayerController::PlayerController(
       _lockMovementY(lockY),
       _lockMovementZ(lockZ),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f)
+      _movementSpeed(10.0f),
+      _xRotationAxis(""),
+      _yRotationAxis(""),
+      _zRotationAxis(""),
+      _lockRotationX(false),
+      _lockRotationY(false),
+      _lockRotationZ(false),
+      _alwaysLookForward(true),
+      _rotationSpeed(10.0f)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -140,4 +164,84 @@ float indie::components::PlayerController::getMovementSpeed() const
 void indie::components::PlayerController::setMovementSpeed(float movementSpeed)
 {
     _movementSpeed = movementSpeed;
+}
+
+const std::string &indie::components::PlayerController::getXRotationAxis() const
+{
+    return _xRotationAxis;
+}
+
+void indie::components::PlayerController::setXRotationAxis(const std::string &xRotationAxis)
+{
+    _xRotationAxis = xRotationAxis;
+}
+
+const std::string &indie::components::PlayerController::getYRotationAxis() const
+{
+    return _yRotationAxis;
+}
+
+void indie::components::PlayerController::setYRotationAxis(const std::string &yRotationAxis)
+{
+    _yRotationAxis = yRotationAxis;
+}
+
+const std::string &indie::components::PlayerController::getZRotationAxis() const
+{
+    return _zRotationAxis;
+}
+
+void indie::components::PlayerController::setZRotationAxis(const std::string &zRotationAxis)
+{
+    _zRotationAxis = zRotationAxis;
+}
+
+bool indie::components::PlayerController::isLockRotationX() const
+{
+    return _lockRotationX;
+}
+
+void indie::components::PlayerController::setLockRotationX(bool lockRotationX)
+{
+    _lockRotationX = lockRotationX;
+}
+
+bool indie::components::PlayerController::isLockRotationY() const
+{
+    return _lockRotationY;
+}
+
+void indie::components::PlayerController::setLockRotationY(bool lockRotationY)
+{
+    _lockRotationY = lockRotationY;
+}
+
+bool indie::components::PlayerController::isLockRotationZ() const
+{
+    return _lockRotationZ;
+}
+
+void indie::components::PlayerController::setLockRotationZ(bool lockRotationZ)
+{
+    _lockRotationZ = lockRotationZ;
+}
+
+bool indie::components::PlayerController::isAlwaysLookForward() const
+{
+    return _alwaysLookForward;
+}
+
+void indie::components::PlayerController::setAlwaysLookForward(bool alwaysLookForward)
+{
+    _alwaysLookForward = alwaysLookForward;
+}
+
+float indie::components::PlayerController::getRotationSpeed() const
+{
+    return _rotationSpeed;
+}
+
+void indie::components::PlayerController::setRotationSpeed(float rotationSpeed)
+{
+    _rotationSpeed = rotationSpeed;
 }

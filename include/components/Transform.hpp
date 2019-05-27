@@ -34,6 +34,9 @@ namespace indie {
             maths::Vector3D getForward() const;
             maths::Vector3D getLocalAxes() const;
 
+            void lookAt(const maths::Vector3D &point);
+            void lookAt(jf::components::ComponentHandler<Transform> point);
+
         private:
             maths::Vector3D _position;
             maths::Vector3D _rotation; /*!< In euler angles */

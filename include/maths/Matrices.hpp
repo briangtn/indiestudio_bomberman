@@ -149,6 +149,7 @@ namespace indie {
             static Matrix4 XRotation(float angle);
             static Matrix4 YRotation(float angle);
             static Matrix4 AxisAngle(const Vector3D &axis, float angle);
+            static Vector3D ToEulerAngles(const Matrix4 &matrix);
 
             static Vector3D MultiplyPoint(const Vector3D &vec, const Matrix4 &mat);
             static Vector3D MultiplyVector(const Vector3D &vec, const Matrix4 &mat);

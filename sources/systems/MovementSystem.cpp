@@ -127,6 +127,12 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
             if (pc->isLockMovementZ())
                 movement.z = 0;
             tr->setPosition(pos + movement);
+
+            if (pc->isAlwaysLookForward() && movement.magnitudeSq() != 0) {
+                tr->lookAt(tr->getPosition() + movement);
+            } else {
+
+            }
         }
     );
 }

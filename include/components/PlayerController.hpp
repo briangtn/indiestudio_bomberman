@@ -44,6 +44,26 @@ namespace indie {
             float getMovementSpeed() const;
             void setMovementSpeed(float movementSpeed);
 
+            const std::string &getXRotationAxis() const;
+            void setXRotationAxis(const std::string &xRotationAxis);
+            const std::string &getYRotationAxis() const;
+            void setYRotationAxis(const std::string &yRotationAxis);
+            const std::string &getZRotationAxis() const;
+            void setZRotationAxis(const std::string &zRotationAxis);
+
+            bool isLockRotationX() const;
+            void setLockRotationX(bool lockRotationX);
+            bool isLockRotationY() const;
+            void setLockRotationY(bool lockRotationY);
+            bool isLockRotationZ() const;
+            void setLockRotationZ(bool lockRotationZ);
+
+            bool isAlwaysLookForward() const;
+            void setAlwaysLookForward(bool alwaysLookForward);
+
+            float getRotationSpeed() const;
+            void setRotationSpeed(float rotationSpeed);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;
@@ -56,6 +76,18 @@ namespace indie {
             bool _movementRelativeToCamera;
 
             float _movementSpeed;
+
+            std::string _xRotationAxis;
+            std::string _yRotationAxis;
+            std::string _zRotationAxis;
+
+            bool _lockRotationX;
+            bool _lockRotationY;
+            bool _lockRotationZ;
+
+            bool _alwaysLookForward;
+
+            float _rotationSpeed;
         };
     }
 }
