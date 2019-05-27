@@ -119,7 +119,9 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 movementVector.y = indie::InputManager::GetAxis(yAxis);
             if (!zAxis.empty())
                 movementVector.z = indie::InputManager::GetAxis(zAxis);
-            maths::Vector3D movement = maths::Matrix4::MultiplyVector(movementVector * speed * elapsedTimeAsSecond, rotation);
+            maths::Vector3D movement = movementVector * speed * elapsedTimeAsSecond;
+            if (pc->isMovementRelativeToCamera())
+                movement = maths::Matrix4::MultiplyVector(movement, rotation);
             if (pc->isLockMovementX())
                 movement.x = 0;
             if (pc->isLockMovementY())
@@ -128,11 +130,32 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 movement.z = 0;
             tr->setPosition(pos + movement);
 
-            if (pc->isAlwaysLookForward() && movement.magnitudeSq() != 0) {
+            maths::Vector3D rot = tr->getRotation();
+            maths::Vector3D newRot = rot;
+            if (pc->isAlwaysLookForward() && movementVector.magnitudeSq() != 0) {
                 tr->lookAt(tr->getPosition() + movement);
+                newRot = tr->getRotation();
             } else {
-
+                auto rotSpeed = pc->getRotationSpeed();
+                auto &xRotAxis = pc->getXRotationAxis();
+                auto &yRotAxis = pc->getYRotationAxis();
+                auto &zRotAxis = pc->getZRotationAxis();
+                maths::Vector3D rotationAxes;
+                if (!xRotAxis.empty())
+                    rotationAxes.x = indie::InputManager::GetAxis(xRotAxis);
+                if (!yRotAxis.empty())
+                    rotationAxes.y = indie::InputManager::GetAxis(yRotAxis);
+                if (!zRotAxis.empty())
+                    rotationAxes.z = indie::InputManager::GetAxis(zRotAxis);
+                newRot = newRot + rotationAxes * rotSpeed * elapsedTimeAsSecond;
             }
+            if (pc->isLockRotationX())
+                newRot.x = rot.x;
+            if (pc->isLockRotationY())
+                newRot.y = rot.y;
+            if (pc->isLockRotationZ())
+                newRot.z = rot.z;
+            tr->setRotation(newRot);
         }
     );
 }

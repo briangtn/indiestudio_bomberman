@@ -27,7 +27,7 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(10.0f)
+      _rotationSpeed(25.0f)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -51,7 +51,7 @@ indie::components::PlayerController::PlayerController(
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(10.0f)
+      _rotationSpeed(25.0f)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -76,7 +76,7 @@ indie::components::PlayerController::PlayerController(
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(10.0f)
+      _rotationSpeed(25.0f)
 {
     EMIT_CREATE(PlayerController);
 }

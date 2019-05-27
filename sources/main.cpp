@@ -37,6 +37,8 @@ int runBomberman()
     indie::InputManager::CreateAxis("zAxis", indie::KeyAxis({.positiveKey = irr::KEY_KEY_Z, .negativeKey = irr::KEY_KEY_S}));
     indie::InputManager::CreateAxis("yAxis", {.id = 0, .positiveKey = 0b00000000, .negativeKey = 0b00000001});
     indie::InputManager::CreateAxis("yAxis", indie::KeyAxis({.positiveKey = irr::KEY_SPACE, .negativeKey = irr::KEY_LSHIFT}));
+    indie::InputManager::CreateAxis("xRotAxis", {.id = 0, .axis = 4});
+    indie::InputManager::CreateAxis("yRotAxis", {.id = 0, .axis = 3});
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());

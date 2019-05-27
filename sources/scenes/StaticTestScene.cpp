@@ -56,7 +56,11 @@ void indie::scenes::StaticTestScene::onStart()
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
     playerMat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
+    auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
+    //playerControler->setAlwaysLookForward(true);
+    //playerControler->setXRotationAxis("xRotAxis");
+    //playerControler->setYRotationAxis("yRotAxis");
+    //playerControler->setRotationSpeed(100);
 
     auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
     particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({0, 1, 0});
