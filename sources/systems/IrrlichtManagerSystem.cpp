@@ -16,6 +16,7 @@
 #include "events/IrrlichtMouseInputEvent.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
 #include "components/Transform.hpp"
+#include "components/SoundComponent.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
@@ -75,7 +76,6 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticlePos);
     /* 3DModel */
     ecs.entityManager.applyToEach<components::Mesh>(&syncModel);
-
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
 
