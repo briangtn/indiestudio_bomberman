@@ -36,20 +36,20 @@ namespace indie {
 
     private:
 
-        static void createCamera();
-        static void createParticle();
-        static void createMaterial();
-        static void createMesh();
-        static void createPointlight();
-        static void createSound();
-        static void createTransform();
+        static void createCamera(const std::string &entityName);
+        static void createParticle(const std::string &entityName);
+        static void createMaterial(const std::string &entityName);
+        static void createMesh(const std::string &entityName);
+        static void createPointlight(const std::string &entityName);
+        static void createSound(const std::string &entityName);
+        static void createTransform(const std::string &entityName);
     private:
         irr::IrrlichtDevice *_device;
         irr::io::IXMLReader *_xmlReader;
 
         std::vector<std::pair<std::string, scenes::IScene *>> _scenes;
 
-        std::map<const irr::core::stringw, std::function<void()>> _components;
+        std::map<const irr::core::stringw, std::function<void(const std::string &entityName)>> _components;
     };
 
 }

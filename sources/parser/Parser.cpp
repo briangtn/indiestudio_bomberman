@@ -100,37 +100,37 @@ indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
     }
 }
 
-void indie::Parser::createCamera()
+void indie::Parser::createCamera(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createParticle()
+void indie::Parser::createParticle(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createMaterial()
+void indie::Parser::createMaterial(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createMesh()
+void indie::Parser::createMesh(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createPointlight()
+void indie::Parser::createPointlight(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createSound()
+void indie::Parser::createSound(const std::string &entityName)
 {
 
 }
 
-void indie::Parser::createTransform()
+void indie::Parser::createTransform(const std::string &entityName)
 {
 
 }
