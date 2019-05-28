@@ -20,9 +20,10 @@
 #include "components/PointLight.hpp"
 #include "components/Bomb.hpp"
 #include "components/SoundComponent.hpp"
+#include "components/DestroyOnTime.hpp"
 
 namespace indie {
-    namespace ststem {
+    namespace systems {
         class BombManagerSystem : public jf::systems::ISystem {
             public:
                 BombManagerSystem();
@@ -34,6 +35,17 @@ namespace indie {
                 void onUpdate(const std::chrono::nanoseconds &elapsedTime) override;
                 void onStop() override;
                 void onTearDown() override;
+
+            public:
+                void createBomb(jf::components::ComponentHandler<components::Bomb> bomb,
+                jf::components::ComponentHandler<components::SoundComponent> sound,
+                jf::components::ComponentHandler<components::Particle> particle,
+                jf::components::ComponentHandler<components::Transform> tr);
+
+                void displayParticle(jf::components::ComponentHandler<components::Bomb> bomb);
+
+                void playSoundExplosion(jf::components::ComponentHandler<components::Bomb> bomb,
+                jf::components::ComponentHandler<components::SoundComponent> sound);
 
             protected:
             private:
