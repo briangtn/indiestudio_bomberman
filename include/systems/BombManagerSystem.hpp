@@ -22,6 +22,7 @@
 #include "components/SoundComponent.hpp"
 #include "components/DestroyOnTime.hpp"
 
+
 namespace indie {
     namespace systems {
         class BombManagerSystem : public jf::systems::ISystem {
@@ -38,14 +39,11 @@ namespace indie {
 
             public:
                 void createBomb(jf::components::ComponentHandler<components::Bomb> bomb,
-                jf::components::ComponentHandler<components::SoundComponent> sound,
-                jf::components::ComponentHandler<components::Particle> particle,
                 jf::components::ComponentHandler<components::Transform> tr);
 
-                void displayParticle(jf::components::ComponentHandler<components::Bomb> bomb);
+                void displayParticle(indie::components::BombType typeBomb, const int &strength, const indie::maths::Vector3D &posLimit);
 
-                void playSoundExplosion(jf::components::ComponentHandler<components::Bomb> bomb,
-                jf::components::ComponentHandler<components::SoundComponent> sound);
+                void playSoundExplosion(indie::components::BombType typeBomb, bool &pass);
 
             protected:
             private:

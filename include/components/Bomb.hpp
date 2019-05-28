@@ -65,6 +65,11 @@ namespace indie {
             std::string getTextureMesh() const;
             void setTextureMesh(const std::string &newMeshPath);
 
+            /* Set & Get InitialPosition Bomb */
+
+            void setInitialPosition(const indie::maths::Vector3D &vectPos);
+            indie::maths::Vector3D getInitialPosition() const;
+
         protected:
         private:
             int _strength;
@@ -74,6 +79,7 @@ namespace indie {
             std::string _meshPath;
             std::string _texturePath;
             static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;
+            indie::maths::Vector3D _vectPos;
         };
     }
 }

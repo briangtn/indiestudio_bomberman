@@ -87,3 +87,13 @@ void indie::components::Bomb::setTextureMesh(const std::string &newMeshPath)
 {
     _meshPath = newMeshPath;
 }
+
+void indie::components::Bomb::setInitialPosition(const indie::maths::Vector3D &vectPos)
+{
+    _vectPos = vectPos;
+}
+
+indie::maths::Vector3D indie::components::Bomb::getInitialPosition() const
+{
+    return _vectPos;
+}
