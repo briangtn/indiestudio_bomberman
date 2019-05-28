@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<entity name="testEntity">
+    <component type="Camera">
+        <argument name="FOV" value="45"/>
+    </component>
+    <component type="Particle">
+        <argument name="name" value="testParticule"/>
+    </component>
+    <component type="Material">
+        <argument name="materialTexture" value="path/to/texture"/>
+        <argument name="materialType" value="type"/>
+    </component>
+    <component type="Mesh">
+        <argument name="filename" value="path/to/mesh"/>
+    </component>
+    <component type="Pointlight"/>
+    <component type="Sound">
+        <argument name="filename" value="path/to/sound"/>
+        <argument name="soundType" value="type"/>
+        <argument name="position" value="0,0,0"/>
+    </component>
+    <component type="Transform">
+        <argument name="position" value="0,0,0"/>
+        <argument name="rotation" value="0,0,0"/>
+        <argument name="scale" value="0,0,0"/>
+    </component>
+</entity>

@@ -25,6 +25,9 @@ file(
 		${PROJECT_SOURCE_DIR}/include/*.hpp
 )
 
+find_package(Boost 1.65 REQUIRED COMPONENTS
+		date_time filesystem iostreams)
+
 add_executable(bomberman ${SOURCES_CPP} ${SOURCES_HPP})
 target_include_directories(bomberman PUBLIC
 		${PROJECT_SOURCE_DIR}/lib/jfecs/include
