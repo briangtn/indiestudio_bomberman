@@ -61,13 +61,13 @@ void indie::scenes::StaticTestScene::onStart()
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     auto playerAnimator = playerEntity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
-        {"default", {0, 0, 0, true, ""}},
-        {"idle", {2, 60, 20, true, ""}},
-        {"walk", {62, 121, 60, true, ""}},
-        {"dab", {123, 145, 40, false, "idle"}},
-        {"place bomb", {184, 243, 100, false, "idle"}},
-        {"die", {245, 304, 100, false, "dead"}},
-        {"dead", {305, 305, 0, true, ""}},
+        {"default", components::Animator::Animation(0, 0, 0, true, "")},
+        {"idle", components::Animator::Animation(2, 60, 20, true, "")},
+        {"walk", components::Animator::Animation(62, 121, 60, true, "")},
+        {"dab", components::Animator::Animation(123, 145, 40, false, "idle")},
+        {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
+        {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
+        {"dead", components::Animator::Animation(305, 305, 0, true, "")},
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
     playerControler->setWalkingAnimation("walk");

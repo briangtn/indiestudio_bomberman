@@ -23,6 +23,8 @@ namespace indie {
         class Animator : public jf::components::Component, public irr::scene::IAnimationEndCallBack {
         public:
             struct Animation {
+                Animation(irr::u32 start_, irr::u32 end_, irr::u32 speed_, bool loop_, const std::string &transition_)
+                : start(start_), end(end_), speed(speed_), loop(loop_), transition(transition_) {}
                 irr::u32 start;
                 irr::u32 end;
                 irr::u32 speed;
