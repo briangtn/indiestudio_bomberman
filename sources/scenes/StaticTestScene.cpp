@@ -28,6 +28,11 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({20, 10, 0});
     cameraTr->setRotation({25, -90, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
+    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
+    cameraControler->setAlwaysLookForward(false);
+    cameraControler->setXRotationAxis("xRotAxis");
+    cameraControler->setYRotationAxis("yRotAxis");
+    cameraControler->setRotationSpeed(100);
 
     auto plEntity = ecs.entityManager.createEntity("pointLight");
     auto plTr = plEntity->assignComponent<indie::components::Transform>();
@@ -36,7 +41,7 @@ void indie::scenes::StaticTestScene::onStart()
 
     auto cubeEntity = ecs.entityManager.createEntity("item");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
-    tr2->setPosition({0, 1, 0});
+    tr2->setPosition({5, 1, 0});
     cubeEntity->assignComponent<indie::components::Rotator, indie::maths::Vector3D>({0, 90, 0});
     cubeEntity->assignComponent<indie::components::Hoverer, indie::maths::Vector3D, indie::maths::Vector3D>({0, 1, 0}, {0, 1, 0});
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
@@ -52,11 +57,20 @@ void indie::scenes::StaticTestScene::onStart()
 
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
-    playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
-    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
-    playerMat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
+    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_K>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        static int nb = -1;
+        irr::c8 *anims[] = {"Default", "Idle", "Walk", "Dab", "PlaceBomb", "Death"};
+        std::pair<irr::s32, irr::s32> framesLoops[] = {{0, 0}, {2, 60}, {62, 121}, {123, 182}, {184, 243}, {245, 304}, {305, 305}};
+        if (e.wasPressed) {
+            nb++;
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Mesh>()->getAnimatedMeshNode()->setFrameLoop(framesLoops[nb].first, framesLoops[nb].second);
+        }
+    });
+    //auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
     //playerControler->setAlwaysLookForward(true);
     //playerControler->setXRotationAxis("xRotAxis");
     //playerControler->setYRotationAxis("yRotAxis");
