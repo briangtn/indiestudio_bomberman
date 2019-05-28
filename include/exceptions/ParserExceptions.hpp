@@ -25,6 +25,11 @@ namespace indie {
         public:
             explicit ParserDeviceException(const std::string &err, const std::string &where = "");
         };
+
+        class ParserInvalidFileException : public ParserException {
+        public:
+            explicit ParserInvalidFileException(const std::string &err, const std::string &where = "");
+        };
     }
 }
 

@@ -21,7 +21,7 @@ namespace indie {
 
         class Scene : public IScene {
         public:
-            Scene(const std::string &name, const std::string &fileName);
+            Scene(const std::string &fileName);
             ~Scene() = default;
 
         public:
@@ -29,7 +29,6 @@ namespace indie {
             void onStop() override;
 
         private:
-            const std::string &_name;
             const std::string &_fileName;
 
             std::vector<jf::internal::ID> _listeners;

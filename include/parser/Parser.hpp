@@ -32,21 +32,24 @@ namespace indie {
         Parser &operator=(const Parser &other) = delete;
 
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
-
-    private:
         scenes::IScene *loadScene(const std::string &fileName);
 
-        static void createScene();
-        static void createEntity();
-        static void createComponent();
+    private:
 
+        static void createCamera();
+        static void createParticle();
+        static void createMaterial();
+        static void createMesh();
+        static void createPointlight();
+        static void createSound();
+        static void createTransform();
     private:
         irr::IrrlichtDevice *_device;
         irr::io::IXMLReader *_xmlReader;
 
         std::vector<std::pair<std::string, scenes::IScene *>> _scenes;
 
-        std::map<const irr::core::stringw, std::function<void()>> _keys;
+        std::map<const irr::core::stringw, std::function<void()>> _components;
     };
 
 }
