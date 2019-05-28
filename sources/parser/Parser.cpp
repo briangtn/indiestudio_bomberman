@@ -13,6 +13,7 @@
 #include "exceptions/ParserExceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "scenes/Scene.hpp"
+#include "components/SoundComponent.hpp"
 #include <boost/filesystem.hpp>
 #include <regex>
 
@@ -57,7 +58,7 @@ const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parse
     return _scenes;
 }
 
-indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
+void indie::Parser::loadScene(const std::string &fileName)
 {
     ECSWrapper ecs;
     irr::core::stringw path(fileName.c_str());
@@ -67,13 +68,13 @@ indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
     if (!_xmlReader)
         throw indie::exceptions::ParserDeviceException("Failed to create XML reader.", "indie::Parser::loadScene");
 
-    for (int i = 0; _xmlReader->read(); i++) {
+    for (unsigned int i = 0; _xmlReader->read(); i++) {
         if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             if (irr::core::stringw(L"entity").equals_ignore_case(_xmlReader->getNodeName())) {
                 irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"name");
                 if (key.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'name' for node 'entity' at line " + std::to_string(i) + " in file " + fileName,
+                            "Missing attribute 'name' for node 'entity' at line " + std::to_string(i) + " in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 } else {
                     currentEntity = irr::core::stringc(key.c_str()).c_str();
@@ -82,16 +83,16 @@ indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
             } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
                 if (currentEntity.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Node 'component' outside 'entity' at line " + std::to_string(i) + "in file " + fileName,
+                            "Node 'component' outside 'entity' at line " + std::to_string(i) + "in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 }
                 irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"type");
                 if (key.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + "in file " + fileName,
+                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + "in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 } else {
-                    _components[key](currentEntity);
+                    _components[key](currentEntity, _xmlReader, fileName, i);
                 }
             } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
                 //TODO argument
@@ -100,37 +101,109 @@ indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
     }
 }
 
-void indie::Parser::createCamera(const std::string &entityName)
+void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createParticle(const std::string &entityName)
+void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createMaterial(const std::string &entityName)
+void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createMesh(const std::string &entityName)
+void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createPointlight(const std::string &entityName)
+void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                     const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createSound(const std::string &entityName)
+
+
+void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+            {"type", ""},
+            {"position", ""}
+    };
+
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string name = irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                if (name.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'name' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            "indie::Parser::createSound");
+                }
+                std::string value = irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                if (value.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            "indie::Parser::createSound");
+                }
+                if (!args.at(name).empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Redefinition of '" + name + "' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            "indie::Parser::createSound");
+                }
+                args.at(name) = value;
+            }
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName())) {
+                if (args.at("position").empty()) {
+                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(args.at("fileName"), getSoundType(args.at("type"), fileName, line));
+                } else {
+                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
+                }
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                        + irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getNodeName()).c_str()).c_str() + "'.",
+                        "indie::Parser::createSound");
+            }
+        }
+    }
+}
+
+void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                    const std::string &fileName, unsigned int line)
 {
 
 }
 
-void indie::Parser::createTransform(const std::string &entityName)
+const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(const std::string &type, const std::string &fileName,
+                                                                               unsigned int line)
 {
+    if (type == "MUSIC") {
+        return components::SoundComponent::MUSIC;
+    } else if (type == "EFFECT") {
+        return components::SoundComponent::EFFECT;
+    } else {
+        throw exceptions::ParserInvalidFileException(
+                "Invalid type for component 'Sound' at line + " + std::to_string(line) + " in file " + fileName + ".",
+                "indie::Parser::getSoundType");
+    }
+}
 
+const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &type, const std::string &fileName,
+                                                         unsigned int line)
+{
+    return maths::Vector3D(0,0,0);
 }
