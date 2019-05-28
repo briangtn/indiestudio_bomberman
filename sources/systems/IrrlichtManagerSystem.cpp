@@ -315,7 +315,7 @@ void indie::systems::IrrlichtManagerSystem::syncModelAnimation(
     }
 }
 
-void indie::systems::IrrlichtManagerSystem::syncParticlePos(__attribute__((unused))jf::entities::EntityHandler entity,
+void indie::systems::IrrlichtManagerSystem::syncParticlePos(jf::entities::EntityHandler entity,
                                                             jf::components::ComponentHandler<components::Transform> tr,
                                                             jf::components::ComponentHandler<components::Particle> particle)
 {
