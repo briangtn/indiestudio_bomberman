@@ -73,20 +73,25 @@ indie::scenes::IScene *indie::Parser::loadScene(const std::string &fileName)
                 irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"name");
                 if (key.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'name' for node 'entity' at line " + std::to_string(i) + " in " + fileName,
+                            "Missing attribute 'name' for node 'entity' at line " + std::to_string(i) + " in file " + fileName,
                             "indie::Parser::loadScene");
                 } else {
                     currentEntity = irr::core::stringc(key.c_str()).c_str();
                     ecs.entityManager.createEntity(currentEntity);
                 }
             } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
+                if (currentEntity.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Node 'component' outside 'entity' at line " + std::to_string(i) + "in file " + fileName,
+                            "indie::Parser::loadScene");
+                }
                 irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"type");
                 if (key.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + "in " + fileName,
+                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + "in file " + fileName,
                             "indie::Parser::loadScene");
                 } else {
-                    _components[key]();
+                    _components[key](currentEntity);
                 }
             } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
                 //TODO argument
