@@ -11,8 +11,7 @@
 #define INDIESTUDIO_INPUTMANAGER_HPP
 
 #include <map>
-#include <irrlicht/Keycodes.h>
-#include <irrlicht/IEventReceiver.h>
+#include <irrlicht.h>
 #include "ID.hpp"
 
 namespace indie {

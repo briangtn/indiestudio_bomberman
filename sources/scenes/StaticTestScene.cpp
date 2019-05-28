@@ -60,14 +60,49 @@ void indie::scenes::StaticTestScene::onStart()
     auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_K>>(nullptr, [](void *n, auto e) {
+    auto playerAnimator = playerEntity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
+        {"default", {.start = 0, .end = 0, .speed = 0, .loop = true, .transition = ""}},
+        {"idle", {.start = 2, .end = 60, .speed = 20, .loop = true, .transition = ""}},
+        {"walk", {.start = 62, .end = 121, .speed = 60, .loop = true, .transition = ""}},
+        {"dab", {.start = 123, .end = 145, .speed = 40, .loop = false, .transition = "idle"}},
+        {"place bomb", {.start = 184, .end = 243, .speed = 60, .loop = false, .transition = "idle"}},
+        {"die", {.start = 245, .end = 304, .speed = 80, .loop = false, .transition = "dead"}},
+        {"dead", {.start = 305, .end = 305, .speed = 0, .loop = true, .transition = ""}},
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
-        static int nb = -1;
-        irr::c8 *anims[] = {"Default", "Idle", "Walk", "Dab", "PlaceBomb", "Death"};
-        std::pair<irr::s32, irr::s32> framesLoops[] = {{0, 0}, {2, 60}, {62, 121}, {123, 182}, {184, 243}, {245, 304}, {305, 305}};
         if (e.wasPressed) {
-            nb++;
-            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Mesh>()->getAnimatedMeshNode()->setFrameLoop(framesLoops[nb].first, framesLoops[nb].second);
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
+        }
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
+        }
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
+        }
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("dab");
+        }
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
+        }
+    });
+    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
         }
     });
     //auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);

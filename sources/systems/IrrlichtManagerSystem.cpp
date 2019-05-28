@@ -19,6 +19,7 @@
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
+#include "exceptions/AnimatorException.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -239,6 +240,7 @@ void indie::systems::IrrlichtManagerSystem::syncModel(jf::entities::EntityHandle
 {
     auto tr = entity->getComponent<components::Transform>();
     auto mat = entity->getComponent<components::Material>();
+    auto animator = entity->getComponent<components::Animator>();
 
     mesh->linkFilenameToMesh();
     mesh->applyChanges();
@@ -248,6 +250,9 @@ void indie::systems::IrrlichtManagerSystem::syncModel(jf::entities::EntityHandle
     }
     if (mat.isValid()) {
         syncModelMaterial(mat, mesh);
+    }
+    if (animator.isValid()) {
+        syncModelAnimation(animator, mesh);
     }
 }
 
@@ -284,6 +289,30 @@ void indie::systems::IrrlichtManagerSystem::syncModelPos(
     auto rotate = tr->getRotation();
     irr::core::vector3df vectorRotation(rotate.x, rotate.y, rotate.z);
     mesh->rotate(vectorRotation);
+}
+
+void indie::systems::IrrlichtManagerSystem::syncModelAnimation(
+    jf::components::ComponentHandler<indie::components::Animator> animator,
+    jf::components::ComponentHandler<indie::components::Mesh> mesh)
+{
+    if (animator->hasAnimationChanged() && !animator->getCurrentAnimation().empty()) {
+        animator->resetAnimationChanged();
+        components::Animator::Animation data;
+        try {
+            data = animator->getCurrentAnimationData();
+        } catch (exceptions::AnimatorException &e) {
+            std::cerr << "[WARNING][IrrlichtManagerSystem] an animation was set but not found: " << e.what() << std::endl;
+            return;
+        }
+        auto *node = mesh->getAnimatedMeshNode();
+        if (node == nullptr) {
+            return;
+        }
+        node->setAnimationSpeed(data.speed);
+        node->setFrameLoop(data.start, data.end);
+        node->setLoopMode(data.loop);
+        node->setAnimationEndCallback(animator.get());
+    }
 }
 
 void indie::systems::IrrlichtManagerSystem::syncParticlePos(__attribute__((unused))jf::entities::EntityHandler entity,

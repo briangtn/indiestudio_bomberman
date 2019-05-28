@@ -19,6 +19,7 @@
 #include "components/Mesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Material.hpp"
+#include "components/Animator.hpp"
 #include "components/PointLight.hpp"
 
 namespace indie {
@@ -82,6 +83,9 @@ namespace indie {
                 jf::components::ComponentHandler<components::Mesh> mesh);
             static void syncModelPos(
                 jf::components::ComponentHandler<components::Transform> tr,
+                jf::components::ComponentHandler<components::Mesh> mesh);
+            static void syncModelAnimation(
+                jf::components::ComponentHandler<components::Animator> animator,
                 jf::components::ComponentHandler<components::Mesh> mesh);
 
             static void syncParticlePos(
