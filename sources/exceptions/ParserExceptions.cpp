@@ -20,3 +20,10 @@ indie::exceptions::ParserDeviceException::ParserDeviceException(const std::strin
 {
 
 }
+
+indie::exceptions::ParserInvalidFileException::ParserInvalidFileException(const std::string &err,
+                                                                          const std::string &where)
+    : ParserException(err, where)
+{
+
+}
