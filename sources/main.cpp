@@ -14,6 +14,7 @@
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
+#include "parser/Parser.hpp"
 
 int runBomberman()
 {
@@ -28,7 +29,7 @@ int runBomberman()
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
-    indie::scenes::SceneManager::addScenes(scenes);
+    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources"));
     indie::scenes::SceneManager::changeScene("test");
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
