@@ -64,6 +64,14 @@ namespace indie {
             float getRotationSpeed() const;
             void setRotationSpeed(float rotationSpeed);
 
+            const std::string &getIdleAnimation() const;
+            void setIdleAnimation(const std::string &idleAnimation);
+            const std::string &getWalkingAnimation() const;
+            void setWalkingAnimation(const std::string &walkingAnimation);
+
+            bool isWalking() const;
+            void setIsWalking(bool isWalking);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;
@@ -88,6 +96,10 @@ namespace indie {
             bool _alwaysLookForward;
 
             float _rotationSpeed;
+
+            bool _isWalking;
+            std::string _idleAnimation;
+            std::string _walkingAnimation;
         };
     }
 }

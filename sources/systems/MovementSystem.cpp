@@ -17,6 +17,7 @@
 #include "input/InputManager.hpp"
 #include "components/Camera.hpp"
 #include "maths/Matrices.hpp"
+#include "components/Animator.hpp"
 
 indie::systems::MovementSystem::MovementSystem()
 {
@@ -130,9 +131,17 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 movement.z = 0;
             tr->setPosition(pos + movement);
 
+            auto animator = entity->getComponent<components::Animator>();
+            if (!pc->isWalking() && movement.magnitudeSq() != 0 && animator.isValid()) {
+                animator->setCurrentAnimation(pc->getWalkingAnimation());
+            } else if (pc->isWalking() && movement.magnitudeSq() == 0 && animator.isValid()) {
+                animator->setCurrentAnimation(pc->getIdleAnimation());
+            }
+            pc->setIsWalking(movement.magnitudeSq() != 0);
+
             maths::Vector3D rot = tr->getRotation();
             maths::Vector3D newRot = rot;
-            if (pc->isAlwaysLookForward() && movementVector.magnitudeSq() != 0) {
+            if (pc->isAlwaysLookForward() && movement.magnitudeSq() != 0) {
                 tr->lookAt(tr->getPosition() + movement);
                 newRot = tr->getRotation();
             } else {

@@ -27,7 +27,10 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(25.0f)
+      _rotationSpeed(25.0f),
+      _isWalking(false),
+      _idleAnimation(""),
+      _walkingAnimation("")
 {
     EMIT_CREATE(PlayerController);
 }
@@ -51,7 +54,10 @@ indie::components::PlayerController::PlayerController(
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(25.0f)
+      _rotationSpeed(25.0f),
+      _isWalking(false),
+      _idleAnimation(""),
+      _walkingAnimation("")
 {
     EMIT_CREATE(PlayerController);
 }
@@ -76,7 +82,10 @@ indie::components::PlayerController::PlayerController(
       _lockRotationY(false),
       _lockRotationZ(false),
       _alwaysLookForward(true),
-      _rotationSpeed(25.0f)
+      _rotationSpeed(25.0f),
+      _isWalking(false),
+      _idleAnimation(""),
+      _walkingAnimation("")
 {
     EMIT_CREATE(PlayerController);
 }
@@ -244,4 +253,34 @@ float indie::components::PlayerController::getRotationSpeed() const
 void indie::components::PlayerController::setRotationSpeed(float rotationSpeed)
 {
     _rotationSpeed = rotationSpeed;
+}
+
+bool indie::components::PlayerController::isWalking() const
+{
+    return _isWalking;
+}
+
+void indie::components::PlayerController::setIsWalking(bool isWalking)
+{
+    _isWalking = isWalking;
+}
+
+const std::string &indie::components::PlayerController::getIdleAnimation() const
+{
+    return _idleAnimation;
+}
+
+void indie::components::PlayerController::setIdleAnimation(const std::string &idleAnimation)
+{
+    _idleAnimation = idleAnimation;
+}
+
+const std::string &indie::components::PlayerController::getWalkingAnimation() const
+{
+    return _walkingAnimation;
+}
+
+void indie::components::PlayerController::setWalkingAnimation(const std::string &walkingAnimation)
+{
+    _walkingAnimation = walkingAnimation;
 }

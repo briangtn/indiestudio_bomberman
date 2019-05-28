@@ -28,11 +28,11 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({20, 10, 0});
     cameraTr->setRotation({25, -90, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
-    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    cameraControler->setAlwaysLookForward(false);
-    cameraControler->setXRotationAxis("xRotAxis");
-    cameraControler->setYRotationAxis("yRotAxis");
-    cameraControler->setRotationSpeed(100);
+    //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
+    //cameraControler->setAlwaysLookForward(false);
+    //cameraControler->setXRotationAxis("xRotAxis");
+    //cameraControler->setYRotationAxis("yRotAxis");
+    //cameraControler->setRotationSpeed(100);
 
     auto plEntity = ecs.entityManager.createEntity("pointLight");
     auto plTr = plEntity->assignComponent<indie::components::Transform>();
@@ -65,10 +65,14 @@ void indie::scenes::StaticTestScene::onStart()
         {"idle", {.start = 2, .end = 60, .speed = 20, .loop = true, .transition = ""}},
         {"walk", {.start = 62, .end = 121, .speed = 60, .loop = true, .transition = ""}},
         {"dab", {.start = 123, .end = 145, .speed = 40, .loop = false, .transition = "idle"}},
-        {"place bomb", {.start = 184, .end = 243, .speed = 60, .loop = false, .transition = "idle"}},
-        {"die", {.start = 245, .end = 304, .speed = 80, .loop = false, .transition = "dead"}},
+        {"place bomb", {.start = 184, .end = 243, .speed = 100, .loop = false, .transition = "idle"}},
+        {"die", {.start = 245, .end = 304, .speed = 100, .loop = false, .transition = "dead"}},
         {"dead", {.start = 305, .end = 305, .speed = 0, .loop = true, .transition = ""}},
     });
+    auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
+    playerControler->setWalkingAnimation("walk");
+    playerControler->setIdleAnimation("idle");
+    playerControler->setMovementSpeed(5.0f);
     ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
@@ -105,11 +109,6 @@ void indie::scenes::StaticTestScene::onStart()
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
         }
     });
-    //auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string, bool, bool, bool>("xAxis", "yAxis", "zAxis", false, true, false);
-    //playerControler->setAlwaysLookForward(true);
-    //playerControler->setXRotationAxis("xRotAxis");
-    //playerControler->setYRotationAxis("yRotAxis");
-    //playerControler->setRotationSpeed(100);
 
     auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
     particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({0, 1, 0});
