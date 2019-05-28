@@ -16,6 +16,8 @@
 #include "ECSWrapper.hpp"
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
+#include "map/Map.hpp"
+
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -83,6 +85,8 @@ void indie::scenes::StaticTestScene::onStart()
     plTr->setPosition({-1, -1, -1});
     plEntity->assignComponent<indie::components::PointLight>();
 
+    indie::Map::generateMap(15, 13, 420, false);
+    indie::Map::generateMap(15, 13, 420, true, "test.ppm");
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
