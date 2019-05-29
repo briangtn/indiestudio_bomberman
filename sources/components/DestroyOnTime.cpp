@@ -7,8 +7,8 @@
 
 #include "components/DestroyOnTime.hpp"
 
-indie::components::DestroyOnTime::DestroyOnTime(jf::entities::Entity &entity)
-    :   Component(entity)
+indie::components::DestroyOnTime::DestroyOnTime(jf::entities::Entity &entity, float time)
+    :   Component(entity), _timeBeforeDestroy(time)
 {
     EMIT_CREATE(DestroyOnTime);
 }

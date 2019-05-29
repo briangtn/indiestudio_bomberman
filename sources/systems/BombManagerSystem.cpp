@@ -81,14 +81,33 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
+    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     if (typeBomb == 0) {
         std::cout << "Normal Particle" << std::endl;
     }
     else if (typeBomb == 1) {
-        std::cout << "Fire Particle" << std::endl;
+        normalParticle->setEmiterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0,255,255,0)));
+        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "./Assets/Particle/PNG/flame_02.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(0.90f, 0.0f, 0.50f));
     }
     else if (typeBomb == 2) {
-        std::cout << "Water Particle" << std::endl;
+        normalParticle->setEmiterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 0, 168, 255)));
+        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "./Assets/Particle/PNG/circle_05.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(0.90f, 0.0f, 0.50f));
     }
     else if (typeBomb == 3) {
         normalParticle->setEmiterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));

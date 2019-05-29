@@ -19,7 +19,7 @@ namespace indie {
     namespace components {
         class DestroyOnTime : public jf::components::Component {
             public:
-                DestroyOnTime(jf::entities::Entity &entity);
+                DestroyOnTime(jf::entities::Entity &entity, float time = 5.0f);
                 ~DestroyOnTime();
 
                 /* Set and Get TimeBeforeDestroy */
