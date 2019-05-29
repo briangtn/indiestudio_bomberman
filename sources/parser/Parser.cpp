@@ -18,7 +18,14 @@
 #include <regex>
 
 indie::Parser::Parser()
-    : _device(irr::createDevice(irr::video::EDT_NULL)), _xmlReader(nullptr), _scenes(), _components({
+    : _device(irr::createDevice(irr::video::EDT_NULL))
+    , _xmlReader(nullptr)
+    , _scenes()
+    , _systems({
+        {(L"IrrlichtManager"), &createIrrlichtManager},
+        {(L"IrrklangAudio"), &createIrrklangAudio}
+    })
+    , _components({
         {(L"Camera"), &createCamera},
         {(L"Particle"), &createParticle},
         {(L"Material"), &createMaterial},
@@ -44,6 +51,44 @@ indie::Parser &indie::Parser::getInstance()
     return parser;
 }
 
+void indie::Parser::loadSystems(const std::string &fileName)
+{
+    bool ecs = false;
+
+    _xmlReader = _device->getFileSystem()->createXMLReader(fileName.c_str());
+    if (!_xmlReader)
+        throw indie::exceptions::ParserDeviceException("Failed to create XML reader.", "indie::Parser::loadSystems");
+
+    for (unsigned int i = 0; _xmlReader->read(); i++) {
+            if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+                if (irr::core::stringw(L"ecs").equals_ignore_case(_xmlReader->getNodeName())) {
+                    if (ecs) {
+                        throw exceptions::ParserInvalidFileException(
+                                "Node 'ecs' reopened inside node 'ecs' at line " + std::to_string(i) + " in file " + fileName + ".",
+                                "indie::Parser::loadSystems");
+                    } else {
+                        ecs = true;
+                    }
+                } else if (irr::core::stringw(L"system").equals_ignore_case(_xmlReader->getNodeName())) {
+                    if (!ecs) {
+                        throw exceptions::ParserInvalidFileException(
+                                "Node 'system' outside 'ecs' at line " + std::to_string(i) + " in file " + fileName + ".",
+                                "indie::Parser::loadSystems");
+                    } else {
+                        irr::core::stringw type = _xmlReader->getAttributeValueSafe(L"type");
+                        if (type.empty()) {
+                            throw exceptions::ParserInvalidFileException(
+                                    "Missing attribute 'type' for node 'system' at line " + std::to_string(i) + " in file " + fileName + ".",
+                                    "indie::Parser::loadSystems");
+                        } else {
+                            _components.at(type)(_xmlReader, fileName, i);
+                        }
+                    }
+                }
+            }
+    }
+}
+
 const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parser::loadScenes(const std::string &pathToFolder)
 {
     boost::filesystem::path path(pathToFolder);
@@ -61,80 +106,133 @@ const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parse
 void indie::Parser::loadScene(const std::string &fileName)
 {
     ECSWrapper ecs;
-    irr::core::stringw path(fileName.c_str());
     std::string currentEntity;
+    bool scene = false;
 
-    _xmlReader = _device->getFileSystem()->createXMLReader(path);
-    if (!_xmlReader)
+    _xmlReader = _device->getFileSystem()->createXMLReader(fileName.c_str());
+    if (!_xmlReader) {
         throw indie::exceptions::ParserDeviceException("Failed to create XML reader.", "indie::Parser::loadScene");
-
+    }
     for (unsigned int i = 0; _xmlReader->read(); i++) {
         if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            if (irr::core::stringw(L"entity").equals_ignore_case(_xmlReader->getNodeName())) {
-                irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"name");
-                if (key.empty()) {
+            if (irr::core::stringw(L"scene").equals_ignore_case(_xmlReader->getNodeName())) {
+                if (scene) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Node 'scene' reopened inside node 'scene' at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadScene");
+                } else {
+                    scene = true;
+                }
+            } else if (irr::core::stringw(L"entity").equals_ignore_case(_xmlReader->getNodeName())) {
+                if (!scene) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Node 'entity' outside 'scene' at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadScene");
+                }
+                irr::core::stringw name = _xmlReader->getAttributeValueSafe(L"name");
+                if (name.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'name' for node 'entity' at line " + std::to_string(i) + " in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 } else {
-                    currentEntity = irr::core::stringc(key.c_str()).c_str();
+                    currentEntity = irr::core::stringc(name.c_str()).c_str();
                     ecs.entityManager.createEntity(currentEntity);
                 }
             } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
                 if (currentEntity.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Node 'component' outside 'entity' at line " + std::to_string(i) + "in file " + fileName + ".",
+                            "Node 'component' outside 'entity' at line " + std::to_string(i) + " in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 }
-                irr::core::stringw key = _xmlReader->getAttributeValueSafe(L"type");
-                if (key.empty()) {
+                irr::core::stringw type = _xmlReader->getAttributeValueSafe(L"type");
+                if (type.empty()) {
                     throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + "in file " + fileName + ".",
+                            "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + " in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 } else {
-                    _components[key](currentEntity, _xmlReader, fileName, i);
+                    _components.at(type)(currentEntity, _xmlReader, fileName, i);
                 }
             } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
-                //TODO argument
+                throw exceptions::ParserInvalidFileException(
+                        "Node 'argument' outside 'component' at line " + std::to_string(i) + " in file " + fileName + ".",
+                        "indie::Parser::loadScene");
+            }
+        } else if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"scene").equals_ignore_case(_xmlReader->getNodeName())) {
+                if (!currentEntity.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Closing node 'scene' while node 'entity' is still opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadScene");
+                } else {
+                    scene = false;
+                }
+            } else if (irr::core::stringw(L"entity").equals_ignore_case(_xmlReader->getNodeName())) {
+                if (!currentEntity.empty()) {
+                    currentEntity.clear();
+                } else {
+                    throw exceptions::ParserInvalidFileException(
+                            "Closing node 'entity' but none has been opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadScene");
+                }
+            } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
+                throw exceptions::ParserInvalidFileException(
+                        "Closing node 'component' but none has been opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                        "indie::Parser::loadScene");
+            } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
+                throw exceptions::ParserInvalidFileException(
+                        "Closing node 'argument' but none has been opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                        "indie::Parser::loadScene");
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Unknown closing node '" + std::string(irr::core::stringc(irr::core::stringw(_xmlReader->getNodeName()).c_str()).c_str())
+                        + "' at line " + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadScene");
             }
         }
     }
 }
 
+void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+
+}
+
+void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+
+}
+
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                 const std::string &fileName, unsigned int line)
+                                 const std::string &fileName, unsigned int &line)
 {
 
 }
 
 void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int line)
+                                   const std::string &fileName, unsigned int &line)
 {
 
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int line)
+                                   const std::string &fileName, unsigned int &line)
 {
 
 }
 
 void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                               const std::string &fileName, unsigned int line)
+                               const std::string &fileName, unsigned int &line)
 {
 
 }
 
 void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                     const std::string &fileName, unsigned int line)
+                                     const std::string &fileName, unsigned int &line)
 {
 
 }
 
-
-
 void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int line)
+                                const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
@@ -146,13 +244,13 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
     for (; xmlReader->read(); line++) {
         if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
-                std::string name = irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                std::string name = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
                 if (name.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'name' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
                             "indie::Parser::createSound");
                 }
-                std::string value = irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
                 if (value.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
@@ -175,7 +273,7 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
-                        + irr::core::stringc(static_cast<irr::core::stringw>(xmlReader->getNodeName()).c_str()).c_str() + "'.",
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "'.",
                         "indie::Parser::createSound");
             }
         }
@@ -183,13 +281,13 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
 }
 
 void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                    const std::string &fileName, unsigned int line)
+                                    const std::string &fileName, unsigned int &line)
 {
 
 }
 
 const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(const std::string &type, const std::string &fileName,
-                                                                               unsigned int line)
+                                                                               unsigned int &line)
 {
     if (type == "MUSIC") {
         return components::SoundComponent::MUSIC;
@@ -203,7 +301,7 @@ const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(c
 }
 
 const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &type, const std::string &fileName,
-                                                         unsigned int line)
+                                                        unsigned int &line)
 {
     return maths::Vector3D(0,0,0);
 }

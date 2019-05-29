@@ -32,30 +32,37 @@ namespace indie {
         Parser(const Parser &other) = delete;
         Parser &operator=(const Parser &other) = delete;
 
+        void loadSystems(const std::string &fileName);
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
         void loadScene(const std::string &fileName);
 
     private:
+        static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
+                                          const std::string &fileName, unsigned int &line);
+        static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line);
+
+    private:
 
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                 const std::string &fileName, unsigned int line);
+                                 const std::string &fileName, unsigned int &line);
         static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int line);
+                                   const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int line);
+                                   const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                               const std::string &fileName, unsigned int line);
+                               const std::string &fileName, unsigned int &line);
         static void createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                     const std::string &fileName, unsigned int line);
+                                     const std::string &fileName, unsigned int &line);
         static void createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int line);
+                                const std::string &fileName, unsigned int &line);
         static void createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                    const std::string &fileName, unsigned int line);
+                                    const std::string &fileName, unsigned int &line);
 
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
-                                                                        unsigned int line);
+                                                                        unsigned int &line);
         static const maths::Vector3D getVector3D(const std::string &type, const std::string &fileName,
-                                                  unsigned int line);
+                                                  unsigned int &line);
 
     private:
         irr::IrrlichtDevice *_device;
@@ -63,7 +70,8 @@ namespace indie {
 
         std::vector<std::pair<std::string, scenes::IScene *>> _scenes;
 
-        std::map<const irr::core::stringw, std::function<void(const std::string &, irr::io::IXMLReader *, const std::string &, unsigned int)>> _components;
+        std::map<const irr::core::stringw, std::function<void(irr::io::IXMLReader *, std::string, unsigned int &)>> _systems;
+        std::map<const irr::core::stringw, std::function<void(std::string, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
     };
 
 }
