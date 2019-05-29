@@ -113,6 +113,8 @@ void indie::Parser::loadSystems(const std::string &fileName)
                 continue;
             }
     }
+    _xmlReader->drop();
+    _xmlReader = nullptr;
 }
 
 const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parser::loadScenes(const std::string &pathToFolder)
@@ -236,6 +238,7 @@ void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const 
             if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
                 ecs.systemManager.addSystem<systems::IrrlichtManagerSystem>();
                 ecs.systemManager.startSystem<systems::IrrlichtManagerSystem>();
+                break;
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
@@ -261,6 +264,7 @@ void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const st
             if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
                 ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
                 ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
+                break;
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"

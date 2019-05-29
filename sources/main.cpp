@@ -22,8 +22,11 @@
 int runBomberman()
 {
     ECSWrapper ecs;
-    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
-    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
+//    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
+//    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
+    indie::Parser::getInstance().loadSystems("../resources/systems.xml");
+    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources/scenes"));
+    indie::scenes::SceneManager::changeScene("test");
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
@@ -48,10 +51,7 @@ int runBomberman()
     indie::InputManager::RegisterKey("taunt", 0, 1);
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
-    scenes.emplace_back("test", new indie::scenes::StaticTestScene());
-    indie::Parser::getInstance().loadSystems("../resources/systems.xml");
-    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources"));
-    indie::scenes::SceneManager::changeScene("test");
+//    scenes.emplace_back("test", new indie::scenes::StaticTestScene());
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
