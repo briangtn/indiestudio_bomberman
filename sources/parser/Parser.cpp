@@ -15,6 +15,7 @@
 #include "scenes/Scene.hpp"
 #include "components/SoundComponent.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 #include <boost/filesystem.hpp>
 #include <regex>
 
@@ -85,9 +86,29 @@ void indie::Parser::loadSystems(const std::string &fileName)
                             _systems.at(type)(_xmlReader, fileName, i);
                         }
                     }
+                } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Node 'argument' outside 'system' at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadSystems");
+                } else {
+
                 }
             } else if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-                //TODO fermeture balise
+                if (irr::core::stringw(L"ecs").equals_ignore_case(_xmlReader->getNodeName())) {
+                    ecs = false;
+                } else if (irr::core::stringw(L"system").equals_ignore_case(_xmlReader->getNodeName())) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Closing node 'system' but none has been opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadSystems");
+                } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Closing node 'argument' but none has been opened, at line " + std::to_string(i) + " in file " + fileName + ".",
+                            "indie::Parser::loadSystems");
+                } else {
+                    throw exceptions::ParserInvalidFileException(
+                            "Unknown closing node '" + std::string(irr::core::stringc(irr::core::stringw(_xmlReader->getNodeName()).c_str()).c_str())
+                            + "' at line " + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadSystems");
+                }
             } else {
                 continue;
             }
@@ -164,7 +185,7 @@ void indie::Parser::loadScene(const std::string &fileName)
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(_xmlReader->getNodeName()).c_str()).c_str())
-                        + " at line " + std::to_string(i) + " in file " + fileName + ".");
+                        + " at line " + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadScene");
             }
         } else if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (irr::core::stringw(L"scene").equals_ignore_case(_xmlReader->getNodeName())) {
@@ -218,7 +239,7 @@ void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const 
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "'.",
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
                         "indie::Parser::createIrrlichtManager");
             }
         } else {
@@ -229,7 +250,27 @@ void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const 
 
 void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
+    ECSWrapper ecs;
 
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            throw exceptions::ParserInvalidFileException(
+                    "Node 'system' of type 'IrrklangAudio' does not required subnodes, at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createIrrklangAudio");
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+                ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
+                ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        "indie::Parser::createIrrklangAudio");
+            }
+        } else {
+            continue;
+        }
+    }
 }
 
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -293,6 +334,10 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
                             "indie::Parser::createSound");
                 }
                 args.at(name) = value;
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
+                        + " at line " + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
             }
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName())) {
@@ -307,7 +352,7 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "'.",
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
                         "indie::Parser::createSound");
             }
         } else {
