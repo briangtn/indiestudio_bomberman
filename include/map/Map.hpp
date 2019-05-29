@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include "maths/Vectors.hpp"
 
 namespace indie {
 
@@ -20,8 +21,9 @@ namespace indie {
         static int generateMap(unsigned int width, unsigned int height, unsigned int seed, bool clamped);
         static int generateMap(unsigned int width, unsigned int height, unsigned int seed, bool clamped, const std::string &fileName);
     private:
+        static void drawElement(const std::string &objPath, const std::string &texturePath, const indie::maths::Vector3D position);
         static void drawCorner(unsigned int width, unsigned int height);
-        static void drawCube(float drawX, float drawY, const std::string &textureName);
+        static void drawFloor(unsigned int width, unsigned int height);
         static std::vector<std::pair<float, float>> getSpawn(unsigned int width, unsigned int height);
         static bool isSpawningArea(float drawX, float drawY, unsigned int width, unsigned int height);
     };

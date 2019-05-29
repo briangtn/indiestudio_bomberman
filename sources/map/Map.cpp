@@ -31,16 +31,16 @@ std::vector<std::pair<float, float>> indie::Map::getSpawn(unsigned int width, un
     };
 }
 
-void indie::Map::drawCube(float drawX, float drawY, const std::string &textureName)
+void indie::Map::drawElement(const std::string &objPath, const std::string &texturePath, const indie::maths::Vector3D position)
 {
     ECSWrapper ecs;
 
     auto cubeEntity = ecs.entityManager.createEntity("cube");
     auto tr = cubeEntity->assignComponent<indie::components::Transform>();
-    tr->setPosition({drawX, drawY, 10});
-    tr->setScale({10, 10, 2});
-    cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
-    auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>(textureName);
+    tr->setPosition(position);
+    tr->setScale({10, 10, 10});
+    cubeEntity->assignComponent<indie::components::Mesh, std::string>(objPath);
+    auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>(texturePath);
     mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
@@ -57,12 +57,21 @@ bool indie::Map::isSpawningArea(float drawX, float drawY, unsigned int width, un
 void indie::Map::drawCorner(unsigned int width, unsigned int height)
 {
     for (int i = 10; i > (static_cast<float>(height) * -10.0f) - 10.0f; i -= 10) {
-        drawCube(-10, static_cast<float>(i), "../test_assets/unbreakable_cube.png");
-        drawCube(width * 10, static_cast<float>(i), "../test_assets/unbreakable_cube.png");
+        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {-10, 0, static_cast<float>(i)});
+        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {width * 10.0f, 0, static_cast<float>(i)});
     }
-    for (int j = 0; j < width * 10; j++) {
-        drawCube(static_cast<float>(j), 10.0f, "../test_assets/unbreakable_cube.png");
-        drawCube(static_cast<float>(j), static_cast<float>(height) * -10.0f, "../test_assets/unbreakable_cube.png");
+    for (int j = 0; j < width * 10; j += 10) {
+        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {static_cast<float>(j), 0, 10.0f});
+        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {static_cast<float>(j), 0, height * -10.0f});
+    }
+}
+
+void indie::Map::drawFloor(unsigned int width, unsigned int height)
+{
+    for (int y = 0; y > height * -10.0f; y -= 10) {
+        for (int x = 0; x < width * 10.0f; x+= 10) {
+            drawElement("../test_assets/cube.obj", "../test_assets/grass_texture.png", {static_cast<float>(x), -10, static_cast<float>(y)});
+        }
     }
 }
 
@@ -74,6 +83,7 @@ int indie::Map::generateMap(unsigned int width, unsigned int height, unsigned in
     float drawX = 0;
     float drawY = 0;
 
+    drawFloor(width, height);
     drawCorner(width, height);
     for (unsigned int y = 0; y < height; ++y) {
         for (unsigned int x = 0; x < width; ++x) {
@@ -84,10 +94,11 @@ int indie::Map::generateMap(unsigned int width, unsigned int height, unsigned in
                 else if (255 * n < 122) n = 0;
             } else
                 n = floor(255 * n);
-            if (y % 2 == 0 && x % 2 == 0 && y > 0 && x > 0 && x < width - 1 && y < height - 1 && !isSpawningArea(drawX, drawY, width, height))
-                drawCube(drawX, drawY, "../test_assets/unbreakable_cube.png");
+            if (y % 2 == 0 && x % 2 == 0 && y > 0 && x > 0 && x < width - 1 &&
+                y < height - 1 && !isSpawningArea(drawX, drawY, width, height))
+                drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {drawX, 0, drawY});
             else if (n > 122 && !isSpawningArea(drawX, drawY, width, height))
-                drawCube(drawX, drawY, "../test_assets/cube_texture.png");
+                drawElement("../test_assets/case2.obj", "../test_assets/case_texture.jpg", {drawX, 0, drawY});
             drawX += 10;
         }
         drawX = 0;
@@ -118,10 +129,9 @@ int indie::Map::generateMap(unsigned int width, unsigned int height, unsigned in
                 n = floor(255 * n);
             if (isSpawningArea(drawX, drawY, width, height))
                 n = 0;
-            else if (y % 2 == 0 && x % 2 == 0 && y > 0 && x > 0 && x < width - 1 && y < height - 1 && !isSpawningArea(drawX, drawY, width, height)) {
-                std::cout << "[" << drawX << ";" << drawY << "]" << std::endl;
+            else if (y % 2 == 0 && x % 2 == 0 && y > 0 && x > 0 && x < width - 1 &&
+                    y < height - 1 && !isSpawningArea(drawX, drawY, width, height))
                 n = 122;
-            }
             image._rgb['r'][co] = n;
             image._rgb['g'][co] = n;
             image._rgb['b'][co] = n;

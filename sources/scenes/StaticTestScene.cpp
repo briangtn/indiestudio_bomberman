@@ -24,7 +24,8 @@ void indie::scenes::StaticTestScene::onStart()
     ECSWrapper ecs;
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
-    cameraTr->setPosition({0, 0, -20});
+    cameraTr->setPosition({0, 130, -20});
+    cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
 
     auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(nullptr, [](void *null, auto e) {
