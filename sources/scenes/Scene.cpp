@@ -13,12 +13,11 @@
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
 {
-
 }
 
 void indie::scenes::Scene::onStart()
 {
-    Parser::getInstance().loadScene(_fileName);
+    Parser::getInstance().loadScene("../resources/scenes/test.xml");
 }
 
 void indie::scenes::Scene::onStop()
