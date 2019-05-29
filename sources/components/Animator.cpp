@@ -55,13 +55,13 @@ indie::components::Animator::~Animator()
 
 void indie::components::Animator::addAnimation(const std::string &name, const indie::components::Animator::Animation &anim)
 {
-    _animations[name] = anim;
+    _animations.emplace(std::make_pair(name, anim));
 }
 
 void indie::components::Animator::addAnimations(const std::map<std::string, indie::components::Animator::Animation> &animations)
 {
     for (const auto &animation : animations) {
-        _animations[animation.first] = animation.second;
+        _animations.emplace(std::make_pair(animation.first, animation.second));
     }
 }
 

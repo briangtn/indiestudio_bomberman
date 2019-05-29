@@ -8,6 +8,10 @@
 /* Created the 24/05/2019 at 13:53 by jfrabel */
 
 #include <cmath>
+#include <components/BoxCollider.hpp>
+#include <maths/Geometry3D.hpp>
+#include <systems/IrrlichtManagerSystem.hpp>
+
 #include "ECSWrapper.hpp"
 #include "systems/MovementSystem.hpp"
 #include "components/Transform.hpp"
@@ -106,8 +110,11 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
         auto rot = cameras[0]->getComponent<components::Transform>()->getRotation();
         rotation = maths::Matrix4::Rotation(rot.x, rot.y, rot.z);
     }
+
+    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
+
     ecs.entityManager.applyToEach<components::Transform, components::PlayerController>(
-        [elapsedTimeAsSecond, rotation](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
+        [elapsedTimeAsSecond, rotation, entitiesWithCollider](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
             auto pos = tr->getPosition();
             auto speed = pc->getMovementSpeed();
             auto &xAxis = pc->getXMovementAxis();
@@ -165,6 +172,28 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
             if (pc->isLockRotationZ())
                 newRot.z = rot.z;
             tr->setRotation(newRot);
+
+            //Cancel movement and rotation if invalid
+            auto playerCollider = entity->getComponent<components::BoxCollider>();
+            if (playerCollider.isValid()) {
+                maths::OBB playerOBB(tr->getPosition() + playerCollider->getOffset(), playerCollider->getSize(), maths::Matrix3::Rotation(newRot.x, newRot.y, newRot.z));
+                for (jf::entities::EntityHandler testEntity : entitiesWithCollider) {
+                    if (testEntity->getID() == entity->getID())
+                        continue;
+                    auto testEntityTr = testEntity->getComponent<components::Transform>();
+                    auto testEntityCol = testEntity->getComponent<components::BoxCollider>();
+                    maths::Vector3D testPosition = testEntityTr.isValid() ? testEntityTr->getPosition() + testEntityCol->getOffset() : testEntityCol->getOffset();
+                    maths::Vector3D testSize = testEntityCol->getSize();
+                    auto testRot = testEntityTr.isValid() ? testEntityTr->getRotation() : maths::Vector3D(0, 0, 0);
+                    maths::Matrix3 testRotation = maths::Matrix3::Rotation(testRot.x, testRot.y, testRot.z);
+                    maths::OBB entityOBB(testPosition, testSize, testRotation);
+                    if (entityOBB.collides(playerOBB)) {
+                        tr->setPosition(pos);
+                        tr->setRotation(rot);
+                        return;
+                    }
+                }
+            }
         }
     );
 }

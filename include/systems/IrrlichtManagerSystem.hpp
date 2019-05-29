@@ -12,6 +12,8 @@
 
 #include <irrlicht.h>
 #include <string>
+#include <components/BoxCollider.hpp>
+
 #include "System.hpp"
 #include "components/ComponentParticle.hpp"
 #include "components/Transform.hpp"
@@ -74,6 +76,10 @@ namespace indie {
             void reloadJoysticks();
             const irr::core::array<irr::SJoystickInfo> &getJoystickInfos();
 
+        public:
+            static void drawGizmos(bool value);
+            static bool getDrawGizmos();
+
         private:
             static void syncModel(
                 jf::entities::EntityHandler entity,
@@ -101,6 +107,8 @@ namespace indie {
                 jf::components::ComponentHandler<components::PointLight> pl);
             static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
+            static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
+
         private:
             void openWindow();
             void closeWindow();
@@ -109,6 +117,8 @@ namespace indie {
             void updateCamera(const std::chrono::nanoseconds &elapsedTime);
 
         private:
+            static bool _drawGizmos;
+
             IrrlichtEventReceiver _eventReceiver;
 
             irr::IrrlichtDevice *_device;

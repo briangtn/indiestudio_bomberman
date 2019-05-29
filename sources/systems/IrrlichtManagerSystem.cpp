@@ -7,6 +7,9 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include "maths/Vectors.hpp"
+#include "maths/Matrices.hpp"
+#include "maths/Geometry3D.hpp"
 #include "components/Camera.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
@@ -25,6 +28,8 @@
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
+
+bool indie::systems::IrrlichtManagerSystem::_drawGizmos = false;
 
 indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
     : _eventReceiver(),
@@ -76,6 +81,10 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticlePos);
     /* 3DModel */
     ecs.entityManager.applyToEach<components::Mesh>(&syncModel);
+
+    if (_drawGizmos) {
+        ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
+    }
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -428,6 +437,58 @@ void indie::systems::IrrlichtManagerSystem::syncPointChanges(jf::components::Com
         pl->getLightNode()->setLightData(lightData);
     }
     pl->resetChanges();
+}
+
+void indie::systems::IrrlichtManagerSystem::drawBoxColliderGizmos(jf::entities::EntityHandler entity,
+                                                                  jf::components::ComponentHandler<indie::components::BoxCollider> collider)
+{
+    ECSWrapper ecs;
+    auto tr = entity->getComponent<components::Transform>();
+    auto rot = tr.isValid() ? tr->getRotation() : maths::Vector3D();
+    maths::Vector3D position = tr.isValid() ? tr->getPosition() + collider->getOffset() : collider->getOffset();
+    maths::Vector3D size = collider->getSize();
+    maths::Matrix3 rotation = maths::Matrix3::Rotation(rot.x, rot.y, rot.z);
+    maths::Vector3D axes[] = {
+        maths::Vector3D(rotation.asArray[0], rotation.asArray[1], rotation.asArray[2]),
+        maths::Vector3D(rotation.asArray[3], rotation.asArray[4], rotation.asArray[5]),
+        maths::Vector3D(rotation.asArray[6], rotation.asArray[7], rotation.asArray[8]),
+    };
+    maths::Vector3D vertices[8];
+    vertices[0] = position + axes[0] * size[0] + axes[1] * size[1] + axes[2] * size[2];
+    vertices[1] = position - axes[0] * size[0] + axes[1] * size[1] + axes[2] * size[2];
+    vertices[2] = position + axes[0] * size[0] - axes[1] * size[1] + axes[2] * size[2];
+    vertices[3] = position + axes[0] * size[0] + axes[1] * size[1] - axes[2] * size[2];
+    vertices[4] = position - axes[0] * size[0] - axes[1] * size[1] - axes[2] * size[2];
+    vertices[5] = position + axes[0] * size[0] - axes[1] * size[1] - axes[2] * size[2];
+    vertices[6] = position - axes[0] * size[0] + axes[1] * size[1] - axes[2] * size[2];
+    vertices[7] = position - axes[0] * size[0] - axes[1] * size[1] + axes[2] * size[2];
+
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    irr::video::SMaterial mat;
+    mat.Lighting = false;
+    driver->setMaterial(mat);
+
+    irr::core::matrix4 identity;
+    driver->setTransform(irr::video::ETS_WORLD, identity);
+    for (int i = 0; i < 7; ++i) {
+        for (int j = i + 1; j < 8; ++j) {
+            driver->draw3DLine(
+                irr::core::vector3df(vertices[i].x, vertices[i].y, vertices[i].z),
+                irr::core::vector3df(vertices[j].x, vertices[j].y, vertices[j].z),
+                irr::video::SColor(255, 0, 255, 0));
+        }
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
+{
+    _drawGizmos = value;
+}
+
+bool indie::systems::IrrlichtManagerSystem::getDrawGizmos()
+{
+    return _drawGizmos;
 }
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
