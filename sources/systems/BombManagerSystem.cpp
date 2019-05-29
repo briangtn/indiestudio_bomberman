@@ -30,15 +30,18 @@ void indie::systems::BombManagerSystem::onStart()
 void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
     ECSWrapper ecs;
-    std::vector<jf::internal::ID> toDelete;    
+    std::vector<jf::internal::ID> toDelete;
+    indie::maths::Vector3D vectLimit(-3, 1, 3);
     static bool pass = true;
 
     ecs.entityManager.applyToEach<components::Bomb>(
-    [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
+    [elapsedTime, &toDelete, this, vectLimit](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplose() <= 0) {
-            if (pass == true)
+            if (pass == true) {
+                this->displayParticle(bomb->getBombType(), bomb->getStrength(), vectLimit);
                 this->playSoundExplosion(bomb->getBombType(), pass);
+            }
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
             bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
@@ -72,9 +75,48 @@ jf::components::ComponentHandler<components::Transform> tr)
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
-void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, const indie::maths::Vector3D &posLimit)
+void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, indie::maths::Vector3D posLimit)
 {
+    ECSWrapper ecs;
 
+    auto componentParticle = ecs.entityManager.createEntity("particle");
+    auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
+    if (typeBomb == 0) {
+        std::cout << "Normal Particle" << std::endl;
+    }
+    else if (typeBomb == 1) {
+        std::cout << "Fire Particle" << std::endl;
+    }
+    else if (typeBomb == 2) {
+        std::cout << "Water Particle" << std::endl;
+    }
+    else if (typeBomb == 3) {
+        normalParticle->setEmiterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0,255,255,0)));
+        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "./Assets/Particle/PNG/spark_01.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(0.90f, 0.0f, 0.50f));
+    }
+    else if (typeBomb == 4) {
+        normalParticle->setEmiterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 232, 65, 24)));
+        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "./Assets/Particle/PNG/symbol_01.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(0.90f, 0.0f, 0.50f));
+    }
+    else {
+        std::cout << "throw error : unknown type bomb" << std::endl;
+    }
 }
 
 void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::BombType typeBomb, bool &pass)

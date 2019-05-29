@@ -21,7 +21,7 @@
 #include "components/Bomb.hpp"
 #include "components/SoundComponent.hpp"
 #include "components/DestroyOnTime.hpp"
-
+#include <unistd.h>
 
 namespace indie {
     namespace systems {
@@ -41,7 +41,7 @@ namespace indie {
                 void createBomb(jf::components::ComponentHandler<components::Bomb> bomb,
                 jf::components::ComponentHandler<components::Transform> tr);
 
-                void displayParticle(indie::components::BombType typeBomb, const int &strength, const indie::maths::Vector3D &posLimit);
+                void displayParticle(indie::components::BombType typeBomb, const int &strength, indie::maths::Vector3D posLimit);
 
                 void playSoundExplosion(indie::components::BombType typeBomb, bool &pass);
 
