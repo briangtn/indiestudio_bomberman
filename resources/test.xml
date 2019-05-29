@@ -1,28 +1,30 @@
 <?xml version="1.0"?>
-<entity name="testEntity">
-    <component type="Camera">
-        <argument name="FOV" value="45"/>
-    </component>
-    <component type="Particle">
-        <argument name="name" value="testParticule"/>
-    </component>
-    <component type="Material">
-        <argument name="fileName" value="path/to/texture"/>
-        <argument name="type" value="type"/>
-    </component>
-    <component type="Mesh">
-        <argument name="fileName" value="path/to/mesh"/>
-    </component>
-    <component type="Pointlight">
-    </component>
-    <component type="Sound">
-        <argument name="fileName" value="path/to/sound"/>
-        <argument name="type" value="type"/>
-        <argument name="position" value="0,0,0"/>
-    </component>
-    <component type="Transform">
-        <argument name="position" value="0,0,0"/>
-        <argument name="rotation" value="0,0,0"/>
-        <argument name="scale" value="0,0,0"/>
-    </component>
-</entity>
+<scene>
+    <entity name="testEntity">
+        <component type="Camera">
+            <argument name="FOV" value="45"/>
+        </component>
+        <component type="Particle">
+            <argument name="name" value="testParticule"/>
+        </component>
+        <component type="Material">
+            <argument name="fileName" value="path/to/texture"/>
+            <argument name="type" value="type"/>
+        </component>
+        <component type="Mesh">
+            <argument name="fileName" value="path/to/mesh"/>
+        </component>
+        <component type="Pointlight">
+        </component>
+        <component type="Sound">
+            <argument name="fileName" value="path/to/sound"/>
+            <argument name="type" value="type"/>
+            <argument name="position" value="0,0,0"/>
+        </component>
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="rotation" value="0,0,0"/>
+            <argument name="scale" value="0,0,0"/>
+        </component>
+    </entity>
+</scene>
