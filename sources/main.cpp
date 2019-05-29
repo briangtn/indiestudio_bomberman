@@ -29,6 +29,7 @@ int runBomberman()
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
+    indie::Parser::getInstance().loadSystems("../resources/systems.xml");
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources"));
     indie::scenes::SceneManager::changeScene("test");
 
