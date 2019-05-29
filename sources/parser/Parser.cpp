@@ -14,6 +14,7 @@
 #include "ECSWrapper.hpp"
 #include "scenes/Scene.hpp"
 #include "components/SoundComponent.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
 #include <boost/filesystem.hpp>
 #include <regex>
 
@@ -81,10 +82,14 @@ void indie::Parser::loadSystems(const std::string &fileName)
                                     "Missing attribute 'type' for node 'system' at line " + std::to_string(i) + " in file " + fileName + ".",
                                     "indie::Parser::loadSystems");
                         } else {
-                            _components.at(type)(_xmlReader, fileName, i);
+                            _systems.at(type)(_xmlReader, fileName, i);
                         }
                     }
                 }
+            } else if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+                //TODO fermeture balise
+            } else {
+                continue;
             }
     }
 }
@@ -156,6 +161,10 @@ void indie::Parser::loadScene(const std::string &fileName)
                 throw exceptions::ParserInvalidFileException(
                         "Node 'argument' outside 'component' at line " + std::to_string(i) + " in file " + fileName + ".",
                         "indie::Parser::loadScene");
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(_xmlReader->getNodeName()).c_str()).c_str())
+                        + " at line " + std::to_string(i) + " in file " + fileName + ".");
             }
         } else if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (irr::core::stringw(L"scene").equals_ignore_case(_xmlReader->getNodeName())) {
@@ -187,13 +196,35 @@ void indie::Parser::loadScene(const std::string &fileName)
                         "Unknown closing node '" + std::string(irr::core::stringc(irr::core::stringw(_xmlReader->getNodeName()).c_str()).c_str())
                         + "' at line " + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadScene");
             }
+        } else {
+            continue;
         }
     }
 }
 
 void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
+    ECSWrapper ecs;
 
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            throw exceptions::ParserInvalidFileException(
+                    "Node 'system' of type 'IrrlichtManager' does not required subnodes, at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createIrrlichtManager");
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+                ecs.systemManager.addSystem<systems::IrrlichtManagerSystem>();
+                ecs.systemManager.startSystem<systems::IrrlichtManagerSystem>();
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "'.",
+                        "indie::Parser::createIrrlichtManager");
+            }
+        } else {
+            continue;
+        }
+    }
 }
 
 void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
@@ -266,9 +297,12 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName())) {
                 if (args.at("position").empty()) {
-                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(args.at("fileName"), getSoundType(args.at("type"), fileName, line));
+                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                            args.at("fileName"), getSoundType(args.at("type"), fileName, line));
                 } else {
-                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
+                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                            args.at("fileName"), getSoundType(
+                                    args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
                 }
             } else {
                 throw exceptions::ParserInvalidFileException(
@@ -276,6 +310,8 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "'.",
                         "indie::Parser::createSound");
             }
+        } else {
+            continue;
         }
     }
 }
