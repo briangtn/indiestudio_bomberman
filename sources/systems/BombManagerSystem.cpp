@@ -80,8 +80,9 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
     ECSWrapper ecs;
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
-    auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
     componentParticle->assignComponent<components::DestroyOnTime, float>(1);
+    auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
+
     if (typeBomb == 0) {
         std::cout << "Normal Particle" << std::endl;
     }

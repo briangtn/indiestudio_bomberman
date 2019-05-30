@@ -19,8 +19,7 @@ indie::systems::DestroyOnTimeSystem::~DestroyOnTimeSystem()
 
 void indie::systems::DestroyOnTimeSystem::onAwake()
 {
-    // refaire comme le bombManagerSystem //
-    // avec le component exploseonTime //
+
 }
 
 void indie::systems::DestroyOnTimeSystem::onStart()
@@ -30,7 +29,20 @@ void indie::systems::DestroyOnTimeSystem::onStart()
 
 void indie::systems::DestroyOnTimeSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
-    std::cout << elapsedTime.count() << std::endl;
+    ECSWrapper ecs;
+    std::vector<jf::internal::ID> toDelete;
+
+    ecs.entityManager.applyToEach<components::DestroyOnTime>(
+        [elapsedTime, &toDelete](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::DestroyOnTime> destroy) {
+            if (destroy->getTimeBeforeDestroy() <= 0) {
+                toDelete.emplace_back(destroy->getEntity()->getID());
+            }
+            else {
+                destroy->setTimeBeforeDestroy(destroy->getTimeBeforeDestroy() - elapsedTime.count() / 1000000000.0f);
+            }
+    });
+    for (auto &id : toDelete)
+        ecs.entityManager.deleteEntity(id);
 }
 
 void indie::systems::DestroyOnTimeSystem::onTearDown()
