@@ -307,10 +307,50 @@ void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXM
 
 }
 
-void indie::Parser::fillMapArgs(const std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader, 
-                                const std::string &fileName, unsigned int &line)
+void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader, 
+                                const std::string &fileName, unsigned int &line, const std::string &from)
 {
+    ECSWrapper ecs;
 
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string name = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                if (name.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'name' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            from);
+                }
+                std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                if (value.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            from);
+                }
+                if (!args.at(name).empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Redefinition of '" + name + "' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            from);
+                }
+                args.at(name) = value;
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
+                        + " at line " + std::to_string(line) + " in file " + fileName + ".", from);
+            }
+
+
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (!(irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName()))) {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        from);
+            }
+        } else {
+            continue;
+        }
+    }
 }
 
 void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -322,52 +362,18 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
             {"type", ""},
             {"position", ""}
     };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
+    if (args.at("fileName").empty() || args.at("type").empty())
+        throw exceptions::ParserInvalidFileException(
+                            "Missing mandatory argument in file " + fileName + ".",
+                            "indie::Parser::createSound");
 
-    for (; xmlReader->read(); line++) {
-        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
-                std::string name = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
-                if (name.empty()) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'name' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            "indie::Parser::createSound");
-                }
-                std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
-                if (value.empty()) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            "indie::Parser::createSound");
-                }
-                if (!args.at(name).empty()) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Redefinition of '" + name + "' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            "indie::Parser::createSound");
-                }
-                args.at(name) = value;
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
-                        + " at line " + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
-            }
-        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName())) {
-                if (args.at("position").empty()) {
-                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                            args.at("fileName"), getSoundType(args.at("type"), fileName, line));
-                } else {
-                    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                            args.at("fileName"), getSoundType(
-                                    args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
-                }
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createSound");
-            }
-        } else {
-            continue;
-        }
+    if (args.at("position").empty()) {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                    args.at("fileName"), getSoundType(args.at("type"), fileName, line));
+    } else {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                    args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
     }
 }
 

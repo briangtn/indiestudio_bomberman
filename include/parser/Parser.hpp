@@ -43,8 +43,8 @@ namespace indie {
                                         const std::string &fileName, unsigned int &line);
 
     private:
-        static void fillMapArgs(const std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line);
+        static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line, const std::string &from);
 
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
