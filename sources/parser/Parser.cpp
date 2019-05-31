@@ -19,6 +19,34 @@
 #include <boost/filesystem.hpp>
 #include <regex>
 #include "components/Camera.hpp"
+#include "components/PointLight.hpp"
+
+const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::myMap = {
+    {"EMT_SOLID", irr::video::EMT_SOLID},
+    {"EMT_SOLID_2_LAYER", irr::video::EMT_SOLID_2_LAYER},
+    {"EMT_LIGHTMAP", irr::video::EMT_LIGHTMAP},
+    {"EMT_LIGHTMAP_ADD", irr::video::EMT_LIGHTMAP_ADD},
+    {"EMT_LIGHTMAP_M2", irr::video::EMT_LIGHTMAP_M2},
+    {"EMT_LIGHTMAP_M4", irr::video::EMT_LIGHTMAP_M4},
+    {"EMT_LIGHTMAP_LIGHTING", irr::video::EMT_LIGHTMAP_LIGHTING},
+    {"EMT_LIGHTMAP_LIGHTING_M2", irr::video::EMT_LIGHTMAP_LIGHTING_M2},
+    {"EMT_LIGHTMAP_LIGHTING_M4", irr::video::EMT_LIGHTMAP_LIGHTING_M4},
+    {"EMT_DETAIL_MAP", irr::video::EMT_DETAIL_MAP},
+    {"EMT_SPHERE_MAP", irr::video::EMT_SPHERE_MAP},
+    {"EMT_REFLECTION_2_LAYER", irr::video::EMT_REFLECTION_2_LAYER},
+    {"EMT_TRANSPARENT_ADD_COLOR", irr::video::EMT_TRANSPARENT_ADD_COLOR},
+    {"EMT_TRANSPARENT_ALPHA_CHANNEL", irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL},
+    {"EMT_TRANSPARENT_ALPHA_CHANNEL_REF", irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF},
+    {"EMT_TRANSPARENT_VERTEX_ALPHA", irr::video::EMT_TRANSPARENT_VERTEX_ALPHA},
+    {"EMT_TRANSPARENT_REFLECTION_2_LAYER", irr::video::EMT_TRANSPARENT_REFLECTION_2_LAYER},
+    {"EMT_NORMAL_MAP_SOLID", irr::video::EMT_NORMAL_MAP_SOLID},
+    {"EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR", irr::video::EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR},
+    {"EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA", irr::video::EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA},
+    {"EMT_PARALLAX_MAP_SOLID", irr::video::EMT_PARALLAX_MAP_SOLID},
+    {"EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR", irr::video::EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR},
+    {"EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA", irr::video::EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA},
+    {"EMT_ONETEXTURE_BLEND", irr::video::EMT_ONETEXTURE_BLEND}
+};
 
 indie::Parser::Parser()
     : _device(irr::createDevice(irr::video::EDT_NULL))
@@ -310,6 +338,11 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
         args.at("name"));
 }
 
+irr::video::E_MATERIAL_TYPE indie::Parser::getMaterialType(const std::string &type)
+{
+    return myMap.at(type);
+}
+
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
@@ -319,8 +352,17 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
             {"fileName", ""},
             {"type", ""}
     };
-    //fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
-
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
+    if (args.at("fileName").empty())
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".",
+                "indie::Parser::createMaterial");
+    if (args.at("type").empty())
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+            args.at("type"));
+    else
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+            args.at("name"), getMaterialType(args.at("type")));
 }
 
 void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -342,7 +384,12 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
 void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                      const std::string &fileName, unsigned int &line)
 {
-
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPointLight");
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::PointLight>();
 }
 
 void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader, 
