@@ -7,12 +7,6 @@
 
 #include "irrTypes.h"
 #include <new>
-    "bits/c++config.h"
-    "bits/nested_exception.h"
-        "bits/c++config.h"
-        "bits/exception.h"
-            "bits/exception_ptr.h"
-            "bits/nested_exception.h"
 // necessary for older compilers
 #include <memory.h>
 
