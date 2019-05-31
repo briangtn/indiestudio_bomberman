@@ -9,7 +9,6 @@
         </component>
         <component type="Material">
             <argument name="fileName" value="path/to/texture"/>
-            <argument name="type" value="type"/>
         </component>
         <component type="Mesh">
             <argument name="fileName" value="path/to/mesh"/>
@@ -18,7 +17,7 @@
         </component>
         <component type="Sound">
             <argument name="fileName" value="path/to/sound"/>
-            <argument name="type" value="type"/>
+            <argument name="type" value="MUSIC"/>
             <argument name="position" value="0,0,0"/>
         </component>
         <component type="Transform">

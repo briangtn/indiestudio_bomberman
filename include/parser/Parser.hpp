@@ -43,6 +43,9 @@ namespace indie {
                                         const std::string &fileName, unsigned int &line);
 
     private:
+        static const std::map<std::string, irr::video::E_MATERIAL_TYPE> myMap;
+        static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
+
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &from);
 
