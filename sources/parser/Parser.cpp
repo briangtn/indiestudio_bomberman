@@ -62,7 +62,7 @@ void indie::Parser::loadSystems(const std::string &fileName)
     if (!_xmlReader)
         throw indie::exceptions::ParserDeviceException("Failed to create XML reader.", "indie::Parser::loadSystems");
 
-    for (unsigned int i = 0; _xmlReader->read(); i++) {
+    for (unsigned int i = 1; _xmlReader->read(); i++) {
             if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
                 if (irr::core::stringw(L"ecs").equals_ignore_case(_xmlReader->getNodeName())) {
                     if (ecs) {
@@ -142,7 +142,7 @@ void indie::Parser::loadScene(const std::string &fileName)
     if (!_xmlReader) {
         throw indie::exceptions::ParserDeviceException("Failed to create XML reader.", "indie::Parser::loadScene");
     }
-    for (unsigned int i = 0; _xmlReader->read(); i++) {
+    for (unsigned int i = 1; _xmlReader->read(); i++) {
         if (_xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             if (irr::core::stringw(L"scene").equals_ignore_case(_xmlReader->getNodeName())) {
                 if (scene) {
@@ -297,12 +297,29 @@ void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLRea
 void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
-
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"name", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createParticle");
+    if (args.at("name").empty())
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".",
+                "indie::Parser::createParticle");
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
+        args.at("name"));
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
+    fflush(stdout);
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+            {"type", ""}
+    };
+    //fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
 
 }
 
@@ -311,7 +328,7 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
 {
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
-            {"filename", ""}
+            {"fileName", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
     if (args.at("fileName").empty())
@@ -319,7 +336,7 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
                             "Missing mandatory argument in file " + fileName + ".",
                             "indie::Parser::createMesh");
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Mesh>(
-        args.at("filename"));
+        args.at("fileName"));
 }
 
 void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
