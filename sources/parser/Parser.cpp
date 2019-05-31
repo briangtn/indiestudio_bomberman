@@ -307,6 +307,12 @@ void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXM
 
 }
 
+void indie::Parser::fillMapArgs(const std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader, 
+                                const std::string &fileName, unsigned int &line)
+{
+
+}
+
 void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line)
 {
@@ -388,5 +394,17 @@ const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(c
 const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &type, const std::string &fileName,
                                                         unsigned int &line)
 {
-    return maths::Vector3D(0,0,0);
+    float x;
+    float y;
+    float z;
+
+    size_t n = std::count(type.begin(), type.end(), ',');
+    if (n != 2 || type.length() != 5)
+        throw exceptions::ParserInvalidFileException(
+                "Wrong argument at line " + std::to_string(line) + " in file " + fileName + "(expected 'float, float, float' but got something else",
+                "indie::Parser::getVector3d");
+    x = std::atof(type.substr(0, 1).c_str());
+    y = std::atof(type.substr(2, 1).c_str());
+    z = std::atof(type.substr(4, 1).c_str());
+    return maths::Vector3D(x, y, z);
 }
