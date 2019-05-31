@@ -18,6 +18,7 @@
 #include "systems/IrrklangAudioSystem.hpp"
 #include <boost/filesystem.hpp>
 #include <regex>
+#include "components/Camera.hpp"
 
 indie::Parser::Parser()
     : _device(irr::createDevice(irr::video::EDT_NULL))
@@ -280,7 +281,17 @@ void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const st
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"FOV", ""}
+    };
 
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
+    if (args.at("FOV").empty())
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>();
+    else
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
+            atof(args.at("FOV").c_str()));
 }
 
 void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -298,7 +309,17 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
 void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line)
 {
-
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"filename", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
+    if (args.at("fileName").empty())
+        throw exceptions::ParserInvalidFileException(
+                            "Missing mandatory argument in file " + fileName + ".",
+                            "indie::Parser::createMesh");
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Mesh>(
+        args.at("filename"));
 }
 
 void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -338,8 +359,6 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
                         + " at line " + std::to_string(line) + " in file " + fileName + ".", from);
             }
-
-
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (!(irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName()))) {
                 throw exceptions::ParserInvalidFileException(
@@ -347,6 +366,8 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
                         from);
             }
+            line++;
+            return;
         } else {
             continue;
         }
@@ -367,7 +388,6 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
         throw exceptions::ParserInvalidFileException(
                             "Missing mandatory argument in file " + fileName + ".",
                             "indie::Parser::createSound");
-
     if (args.at("position").empty()) {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
                     args.at("fileName"), getSoundType(args.at("type"), fileName, line));
@@ -380,7 +400,25 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
 void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                     const std::string &fileName, unsigned int &line)
 {
-
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"position", ""},
+            {"rotation", ""},
+            {"scale", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
+    if (args.at("position").empty()) {
+        args.at("position") = "0,0,0";
+    }
+    if (args.at("rotation").empty()) {
+        args.at("rotation") = "0,0,0";
+    }
+    if (args.at("scale").empty()) {
+        args.at("scale") = "1,1,1";
+    }
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Transform>(
+        getVector3D(args.at("position"), fileName, line), getVector3D(args.at("rotation"), fileName, line), 
+        getVector3D(args.at("scale"), fileName, line));
 }
 
 const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(const std::string &type, const std::string &fileName,
