@@ -43,6 +43,8 @@ namespace indie {
                                         const std::string &fileName, unsigned int &line);
 
     private:
+        static void fillMapArgs(const std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
 
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
@@ -62,7 +64,7 @@ namespace indie {
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
                                                                         unsigned int &line);
         static const maths::Vector3D getVector3D(const std::string &type, const std::string &fileName,
-                                                  unsigned int &line);
+                                                 unsigned int &line);
 
     private:
         irr::IrrlichtDevice *_device;
