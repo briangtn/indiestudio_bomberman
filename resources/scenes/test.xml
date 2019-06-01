@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <scene>
-    <entity name="testEntity">
+    <entity name="testEntity" shouldBeKeeped="false">
         <component type="Camera">
             <argument name="FOV" value="45"/>
         </component>
