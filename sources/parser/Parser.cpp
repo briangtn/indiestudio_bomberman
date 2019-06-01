@@ -21,7 +21,7 @@
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 
-const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::myMap = {
+const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
     {"EMT_SOLID_2_LAYER", irr::video::EMT_SOLID_2_LAYER},
     {"EMT_LIGHTMAP", irr::video::EMT_LIGHTMAP},
@@ -193,7 +193,18 @@ void indie::Parser::loadScene(const std::string &fileName)
                             "indie::Parser::loadScene");
                 } else {
                     currentEntity = irr::core::stringc(name.c_str()).c_str();
-                    ecs.entityManager.createEntity(currentEntity);
+                    auto entity = ecs.entityManager.createEntity(currentEntity);
+                    irr::core::stringw shouldBeKeeped = _xmlReader->getAttributeValueSafe(L"shouldBeKeeped");
+                    if (shouldBeKeeped.empty() || std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) == "false") {
+                        entity->setShouldBeKeeped(false);
+                    } else if (std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) == "true") {
+                        entity->setShouldBeKeeped(true);
+                    } else {
+                        throw exceptions::ParserInvalidFileException(
+                                "Invalid value for attribute 'shouldBeKeeped', expected 'true' or 'false', but got '"
+                                + std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) + "' at line "
+                                + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadScene");
+                    }
                 }
             } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
                 if (currentEntity.empty()) {
@@ -252,6 +263,8 @@ void indie::Parser::loadScene(const std::string &fileName)
             continue;
         }
     }
+    _xmlReader->drop();
+    _xmlReader = nullptr;
 }
 
 void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
@@ -319,7 +332,7 @@ void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLRea
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>();
     else
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
-            atof(args.at("FOV").c_str()));
+            std::atof(args.at("FOV").c_str()));
 }
 
 void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -336,11 +349,6 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
                 "indie::Parser::createParticle");
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
         args.at("name"));
-}
-
-irr::video::E_MATERIAL_TYPE indie::Parser::getMaterialType(const std::string &type)
-{
-    return myMap.at(type);
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -392,7 +400,54 @@ void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXM
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::PointLight>();
 }
 
-void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader, 
+void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+            {"type", ""},
+            {"position", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
+    if (args.at("fileName").empty() || args.at("type").empty())
+        throw exceptions::ParserInvalidFileException(
+                            "Missing mandatory argument in file " + fileName + ".",
+                            "indie::Parser::createSound");
+    if (args.at("position").empty()) {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                    args.at("fileName"), getSoundType(args.at("type"), fileName, line));
+    } else {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+                    args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
+    }
+}
+
+void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                    const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"position", ""},
+            {"rotation", ""},
+            {"scale", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
+    if (args.at("position").empty()) {
+        args.at("position") = "0,0,0";
+    }
+    if (args.at("rotation").empty()) {
+        args.at("rotation") = "0,0,0";
+    }
+    if (args.at("scale").empty()) {
+        args.at("scale") = "1,1,1";
+    }
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Transform>(
+        getVector3D(args.at("position"), fileName, line), getVector3D(args.at("rotation"), fileName, line),
+        getVector3D(args.at("scale"), fileName, line));
+}
+
+void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &from)
 {
     ECSWrapper ecs;
@@ -438,51 +493,9 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
     }
 }
 
-void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line)
+irr::video::E_MATERIAL_TYPE indie::Parser::getMaterialType(const std::string &type)
 {
-    ECSWrapper ecs;
-    std::map<std::string, std::string> args = {
-            {"fileName", ""},
-            {"type", ""},
-            {"position", ""}
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
-    if (args.at("fileName").empty() || args.at("type").empty())
-        throw exceptions::ParserInvalidFileException(
-                            "Missing mandatory argument in file " + fileName + ".",
-                            "indie::Parser::createSound");
-    if (args.at("position").empty()) {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                    args.at("fileName"), getSoundType(args.at("type"), fileName, line));
-    } else {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                    args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
-    }
-}
-
-void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                    const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-    std::map<std::string, std::string> args = {
-            {"position", ""},
-            {"rotation", ""},
-            {"scale", ""}
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
-    if (args.at("position").empty()) {
-        args.at("position") = "0,0,0";
-    }
-    if (args.at("rotation").empty()) {
-        args.at("rotation") = "0,0,0";
-    }
-    if (args.at("scale").empty()) {
-        args.at("scale") = "1,1,1";
-    }
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Transform>(
-        getVector3D(args.at("position"), fileName, line), getVector3D(args.at("rotation"), fileName, line), 
-        getVector3D(args.at("scale"), fileName, line));
+    return _materialTypes.at(type);
 }
 
 const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(const std::string &type, const std::string &fileName,
@@ -510,7 +523,7 @@ const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &type,
     if (n != 2 || type.length() != 5)
         throw exceptions::ParserInvalidFileException(
                 "Wrong argument at line " + std::to_string(line) + " in file " + fileName + "(expected 'float, float, float' but got something else",
-                "indie::Parser::getVector3d");
+                "indie::Parser::getVector3D");
     x = std::atof(type.substr(0, 1).c_str());
     y = std::atof(type.substr(2, 1).c_str());
     z = std::atof(type.substr(4, 1).c_str());
