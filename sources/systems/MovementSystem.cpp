@@ -115,6 +115,14 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
 
     ecs.entityManager.applyToEach<components::Transform, components::PlayerController>(
         [elapsedTimeAsSecond, rotation, entitiesWithCollider](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
+
+            bool canMove = !pc->isTaunting() && !pc->isPlacingBomb();
+
+            if (!canMove) {
+                pc->setIsWalking(false);
+                return;
+            }
+
             auto pos = tr->getPosition();
             auto speed = pc->getMovementSpeed();
             auto &xAxis = pc->getXMovementAxis();
