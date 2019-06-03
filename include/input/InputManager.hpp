@@ -10,8 +10,7 @@
 #ifndef INDIESTUDIO_INPUTMANAGER_HPP
 #define INDIESTUDIO_INPUTMANAGER_HPP
 
-#include <irrlicht/Keycodes.h>
-#include <irrlicht/IEventReceiver.h>
+#include <irrlicht.h>
 #include <iostream>
 #include "ID.hpp"
 #include "exceptions/InputManagerException.hpp"
