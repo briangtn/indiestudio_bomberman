@@ -10,6 +10,7 @@
 #ifndef INDIESTUDIO_INPUTMANAGER_HPP
 #define INDIESTUDIO_INPUTMANAGER_HPP
 
+#include <map>
 #include <irrlicht.h>
 #include <iostream>
 #include "ID.hpp"

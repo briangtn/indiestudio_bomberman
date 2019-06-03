@@ -580,6 +580,23 @@ indie::maths::Matrix4 indie::maths::Matrix4::Ortho(float left, float right, floa
     );
 }
 
+indie::maths::Vector3D indie::maths::Matrix4::ToEulerAngles(const indie::maths::Matrix4 &matrix)
+{
+    float sy = sqrtf(matrix._11 * matrix._11 + matrix._21 * matrix._21);
+    bool singular = sy < 0.000001;
+    float x, y, z;
+    if (!singular) {
+        x = atan2f(-matrix._32, matrix._33);
+        y = atan2f(matrix._31, sy);
+        z = atan2f(-matrix._21, matrix._11);
+    } else {
+        x = atan2f(matrix._23, matrix._22);
+        y = atan2f(matrix._31, sy);
+        z = 0;
+    }
+    return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
+}
+
 indie::maths::Matrix4 indie::maths::operator*(const indie::maths::Matrix4 &matrix, float scalar)
 {
     Matrix4 result;
