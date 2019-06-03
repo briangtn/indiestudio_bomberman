@@ -27,6 +27,9 @@ std::map<irr::u16, bool> indie::InputManager::controllerKeyStates;
 jf::internal::ID indie::InputManager::eventKeyInputID;
 jf::internal::ID indie::InputManager::eventJoystickInputID;
 jf::internal::ID indie::InputManager::eventControlleKeyInputID;
+std::map<std::string, irr::EKEY_CODE> indie::InputManager::nameToKey;
+std::map<std::string, irr::u16> indie::InputManager::nameToControllerKey;
+
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axis)
 {
@@ -66,12 +69,6 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::ControllerK
     controllerKeyStates.emplace((axis.id << 8) + axis.negativeKey, false);
 
     RegisterControllerKeyInputEvent();
-}
-
-void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis keyAxis, indie::JoystickAxis joyAxis)
-{
-    CreateAxis(name, keyAxis);
-    CreateAxis(name, joyAxis);
 }
 
 float indie::InputManager::GetAxis(const std::string &name)
@@ -204,3 +201,44 @@ void indie::InputManager::RegisterControllerKeyInputEvent()
     }
 }
 
+void indie::InputManager::MapKey(const std::string &name, irr::EKEY_CODE key)
+{
+    if (nameToKey.find(name) != nameToKey.end() || nameToControllerKey.find(name) != nameToControllerKey.end())
+        throw KeyAlreadyExistException(name);
+    nameToKey.emplace(name, key);
+}
+
+void indie::InputManager::MapKey(const std::string &name, irr::u8 controllerId, irr::u8 keyId)
+{
+    if (nameToKey.find(name) != nameToKey.end() || nameToControllerKey.find(name) != nameToControllerKey.end())
+        throw KeyAlreadyExistException(name);
+    nameToControllerKey.emplace(name, (controllerId << 8) + keyId);
+}
+
+bool indie::InputManager::IsKeyPressed(const std::string &name)
+{
+    auto findedKey = nameToKey.find(name);
+    auto findedControllerKey = nameToControllerKey.find(name);
+
+    if (findedKey != nameToKey.end()) {
+        return IsKeyPressed(findedKey->second);
+    }
+    if (findedControllerKey != nameToControllerKey.end()) {
+        irr::u8 id = findedControllerKey->second >> 8;
+        irr::u8 keyId = findedControllerKey->second & 0x0f;
+        return IsKeyPressed(id, keyId);
+    }
+    throw KeyNotFoundException(name);
+}
+
+void indie::InputManager::RegisterKey(const std::string &name, irr::EKEY_CODE key)
+{
+    RegisterKey(key);
+    MapKey(name, key);
+}
+
+void indie::InputManager::RegisterKey(const std::string &name, irr::u8 controllerId, irr::u8 keyId)
+{
+    RegisterKey(controllerId, keyId);
+    MapKey(name, controllerId, keyId);
+}
