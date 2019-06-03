@@ -16,6 +16,8 @@
 #include "ECSWrapper.hpp"
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
+#include "input/InputManager.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -24,33 +26,16 @@ void indie::scenes::StaticTestScene::onStart()
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
     cameraEntity->assignComponent<indie::components::Camera>();
+    indie::InputManager::CreateAxis<KeyAxis, JoystickAxis>("Horizontal",
+            {.positiveKey = irr::EKEY_CODE::KEY_KEY_D, .negativeKey = irr::EKEY_CODE::KEY_KEY_Q},
+            {.id = 0, .axis = 0});
+    indie::InputManager::RegisterKey("axisChanger", irr::EKEY_CODE::KEY_KEY_U);
+    indie::InputManager::RegisterKey("printer", irr::EKEY_CODE::KEY_KEY_X);
 
-    auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        auto oldRot = tr->getRotation();
-        if (e.shiftActivated) {
-            oldRot.y -= 1;
-        } else {
-            oldPos.x -= 1;
+    auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtKeyJustChangedEvent>(nullptr, [](void *null, auto e){
+        if (e.pressed && e.keyCode == irr::EKEY_CODE::KEY_KEY_U) {
+            indie::InputManager::EditAxis<JoystickAxis>("Horizontal", {.id = 0, .axis = 2});
         }
-        tr->setPosition(oldPos);
-        tr->setRotation(oldRot);
-    });
-    _listeners.push_back(id);
-    id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_D>>(nullptr, [](void *null, auto e) {
-        ECSWrapper ecs;
-        auto tr = ecs.entityManager.getEntityByName("camera")->getComponent<indie::components::Transform>();
-        auto oldPos = tr->getPosition();
-        auto oldRot = tr->getRotation();
-        if (e.shiftActivated) {
-            oldRot.y += 1;
-        } else {
-            oldPos.x += 1;
-        }
-        tr->setPosition(oldPos);
-        tr->setRotation(oldRot);
     });
     _listeners.push_back(id);
     id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Z>>(nullptr, [](void *null, auto e) {

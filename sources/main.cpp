@@ -14,6 +14,8 @@
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
+#include "input/InputManager.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
 
 int runBomberman()
 {
@@ -30,6 +32,7 @@ int runBomberman()
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
     indie::scenes::SceneManager::addScenes(scenes);
     indie::scenes::SceneManager::changeScene("test");
+    auto cameraEntity = ecs.entityManager.getEntityByName("camera");
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
@@ -47,6 +50,17 @@ int runBomberman()
             }
             return 84;
         }
+        if (indie::InputManager::IsKeyPressed("printer")) {
+            std::cout << "Salut" << std::endl;
+        }
+        auto cameraTr = cameraEntity->getComponent<indie::components::Transform>();
+        auto pos = cameraTr->getPosition();
+        try {
+            pos.x += indie::InputManager::GetAxis("Horizontal");
+        } catch (indie::AxisNotFoundException e) {
+
+        }
+        cameraTr->setPosition(pos);
     }
     return 0;
 }
