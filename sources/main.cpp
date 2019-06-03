@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <systems/TauntSystem.hpp>
-
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/StaticTestScene.hpp"
@@ -18,6 +17,7 @@
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
 #include "input/InputManager.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
 
 int runBomberman()
 {
@@ -45,7 +45,7 @@ int runBomberman()
     indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
     indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
 
-    indie::InputManager::RegisterKey(0, 1); //TODO change to taunt
+    indie::InputManager::RegisterKey("taunt", 0, 1);
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());

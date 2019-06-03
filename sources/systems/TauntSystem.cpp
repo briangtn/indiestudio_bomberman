@@ -38,8 +38,7 @@ void indie::systems::TauntSystem::onUpdate(const std::chrono::nanoseconds &elaps
                 }
             }
 
-            //if (indie::InputManager::IsKeyPressed("taunt")) {
-            if (indie::InputManager::IsKeyPressed(0, 1)) {
+            if (indie::InputManager::IsKeyPressed("taunt")) {
                 pc->setIsTaunting(true);
                 pc->setTauntTime(pc->getTauntDuration());
                 auto animator = pc->getEntity()->getComponent<components::Animator>();
