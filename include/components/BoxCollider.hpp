@@ -19,7 +19,7 @@ namespace indie {
 
         class BoxCollider : public jf::components::Component {
         public:
-            explicit BoxCollider(jf::entities::Entity &entity, maths::Vector3D size = {1, 1, 1}, maths::Vector3D offset = {0, 0, 0}, uint64_t layer = 1);
+            explicit BoxCollider(jf::entities::Entity &entity, maths::Vector3D size = {1, 1, 1}, maths::Vector3D offset = {0, 0, 0}, uint64_t layer = 0xffffffff);
             ~BoxCollider() override;
 
             const maths::Vector3D &getSize() const;
@@ -30,6 +30,9 @@ namespace indie {
 
             uint64_t getLayer() const;
             void setLayer(uint64_t layer);
+
+            bool hasCollisions();
+            std::vector<jf::entities::EntityHandler> getCollisions();
 
         private:
             maths::Vector3D _size;

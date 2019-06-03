@@ -175,24 +175,10 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
 
             //Cancel movement and rotation if invalid
             auto playerCollider = entity->getComponent<components::BoxCollider>();
-            if (playerCollider.isValid()) {
-                maths::OBB playerOBB(tr->getPosition() + playerCollider->getOffset(), playerCollider->getSize(), maths::Matrix3::Rotation(newRot.x, newRot.y, newRot.z));
-                for (jf::entities::EntityHandler testEntity : entitiesWithCollider) {
-                    if (testEntity->getID() == entity->getID())
-                        continue;
-                    auto testEntityTr = testEntity->getComponent<components::Transform>();
-                    auto testEntityCol = testEntity->getComponent<components::BoxCollider>();
-                    maths::Vector3D testPosition = testEntityTr.isValid() ? testEntityTr->getPosition() + testEntityCol->getOffset() : testEntityCol->getOffset();
-                    maths::Vector3D testSize = testEntityCol->getSize();
-                    auto testRot = testEntityTr.isValid() ? testEntityTr->getRotation() : maths::Vector3D(0, 0, 0);
-                    maths::Matrix3 testRotation = maths::Matrix3::Rotation(testRot.x, testRot.y, testRot.z);
-                    maths::OBB entityOBB(testPosition, testSize, testRotation);
-                    if (entityOBB.collides(playerOBB)) {
-                        tr->setPosition(pos);
-                        tr->setRotation(rot);
-                        return;
-                    }
-                }
+            if (playerCollider.isValid() && playerCollider->hasCollisions()) {
+                tr->setPosition(pos);
+                tr->setRotation(rot);
+                return;
             }
         }
     );
