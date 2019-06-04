@@ -82,6 +82,8 @@ namespace indie {
             irr::scene::ILightSceneNode *_lightNode;
 
             unsigned int _changes;
+
+            jf::internal::ID _irrlichtClosingWindowEventID;
         };
     }
 }

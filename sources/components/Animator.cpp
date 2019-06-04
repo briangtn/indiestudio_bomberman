@@ -7,6 +7,7 @@
 
 /* Created the 28/05/2019 at 16:30 by jfrabel */
 
+#include <components/Mesh.hpp>
 #include "Events.hpp"
 #include "components/Animator.hpp"
 #include "exceptions/AnimatorException.hpp"
@@ -51,6 +52,10 @@ indie::components::Animator::Animator(
 indie::components::Animator::~Animator()
 {
     EMIT_DELETE(Animator);
+    auto mesh = getEntity()->getComponent<components::Mesh>();
+    if (mesh.isValid() && mesh->getAnimatedMeshNode() != nullptr) {
+        mesh->getAnimatedMeshNode()->setAnimationEndCallback(nullptr);
+    }
 }
 
 void indie::components::Animator::addAnimation(const std::string &name, const indie::components::Animator::Animation &anim)
