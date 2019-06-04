@@ -35,19 +35,16 @@ namespace indie {
         void loadSystems(const std::string &fileName);
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
         void loadScene(const std::string &fileName);
+        static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line, const std::string &callingMethod);
 
-    private:
+    private: /* SYSTEMS */
         static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line);
 
-    private:
-        static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
-
-        static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line, const std::string &callingMethod);
-
+    private: /* COMPONENTS */
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -63,6 +60,9 @@ namespace indie {
         static void createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                     const std::string &fileName, unsigned int &line);
 
+    private: /* CONVERTORS */
+        static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
+        static irr::video::E_MATERIAL_FLAG getMaterialFlag(const std::string &flag);
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
                                                                         unsigned int &line);
         static const maths::Vector2D getVector2D(const std::string &value, const std::string &fileName,
@@ -81,6 +81,7 @@ namespace indie {
         std::map<const irr::core::stringw, std::function<void(irr::io::IXMLReader *, std::string, unsigned int &)>> _systems;
         std::map<const irr::core::stringw, std::function<void(std::string, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
         static const std::map<std::string, irr::video::E_MATERIAL_TYPE> _materialTypes;
+        static const std::map<std::string, irr::video::E_MATERIAL_FLAG> _materialFlags;
     };
 
 }
