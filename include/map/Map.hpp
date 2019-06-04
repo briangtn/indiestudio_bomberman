@@ -21,7 +21,7 @@ namespace indie {
         static int generateMap(unsigned int width, unsigned int height, unsigned int seed, bool clamped);
         static int generateMap(unsigned int width, unsigned int height, unsigned int seed, bool clamped, const std::string &fileName);
     private:
-        static void drawElement(const std::string &objPath, const std::string &texturePath, const indie::maths::Vector3D position, bool addHitbox = true, const indie::maths::Vector3D scale = {10, 10, 10});
+        static void drawElement(const std::string &objPath, const std::string &texturePath, const indie::maths::Vector3D position, uint64_t hitboxLayer = 0, const indie::maths::Vector3D scale = {10, 10, 10});
         static void drawCorner(unsigned int width, unsigned int height);
         static void drawFloor(unsigned int width, unsigned int height);
         static std::vector<std::pair<float, float>> getSpawn(unsigned int width, unsigned int height);

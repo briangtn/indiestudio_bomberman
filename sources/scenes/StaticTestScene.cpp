@@ -51,7 +51,7 @@ void indie::scenes::StaticTestScene::onStart()
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
     playerTr->setScale({8, 8, 8});
-    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0});
+    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, UNBREAKABLE_BLOCK_LAYER | BREAKABLE_BLOCK_LAYER | BOMB_LAYER);
     auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
