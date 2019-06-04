@@ -27,7 +27,7 @@ void indie::scenes::StaticTestScene::onStart()
     ECSWrapper ecs;
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
-    cameraTr->setPosition({0, 130, -20});
+    cameraTr->setPosition({50, 130, -105});
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
     //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
@@ -111,7 +111,6 @@ void indie::scenes::StaticTestScene::onStart()
 
     indie::Map::generateMap(15, 13, 420, false);
 
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
