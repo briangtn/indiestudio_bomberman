@@ -10,6 +10,7 @@
 //
 
 #include "map/PpmImage.hpp"
+#include "exceptions/ImageException.hpp"
 #include <fstream>
 
 indie::PpmImage::PpmImage(unsigned int width, unsigned int height)
@@ -27,10 +28,8 @@ void indie::PpmImage::writeImage(const std::string &fileName)
     char bpixel = 0;
     char gpixel = 0;
 
-    if (!image.is_open()) {
-        // TODO sent exception if image not opened
-        return;
-    }
+    if (!image.is_open())
+        throw indie::ImageException("Can't open image");
     image << "P6" << std::endl << _width << " " << _height << std::endl << 255 << std::endl;
     for (unsigned int i = 0; i < _totalSize; i++) {
         rpixel = _rgb['r'][i];
