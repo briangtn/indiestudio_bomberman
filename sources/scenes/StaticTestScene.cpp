@@ -74,49 +74,56 @@ void indie::scenes::StaticTestScene::onStart()
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, indie::components::PlayerController::PlayerControllerSettings>({"xAxis", "zAxis", "taunt", "bomb"});
     playerControler->setMovementSpeed(5.0f);
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
+    auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
+    _listeners.emplace_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
+    _listeners.emplace_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
+    _listeners.emplace_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
+    _listeners.emplace_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
+    _listeners.emplace_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
         }
     });
+    _listeners.emplace_back(id);
 
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
         }
     });
+    _listeners.emplace_back(id);
 
     auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
     particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({0, 1, 0});
@@ -139,4 +146,9 @@ void indie::scenes::StaticTestScene::onStop()
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
     _listeners.clear();
+}
+
+indie::scenes::StaticTestScene::StaticTestScene(): _listeners()
+{
+
 }

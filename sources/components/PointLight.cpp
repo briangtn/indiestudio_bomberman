@@ -9,6 +9,8 @@
 
 #include "Events.hpp"
 #include "components/PointLight.hpp"
+#include "ECSWrapper.hpp"
+#include "events/IrrlichtClosingWindowEvent.hpp"
 
 indie::components::PointLight::PointLight(jf::entities::Entity &entity)
     : Component(entity),
@@ -23,12 +25,27 @@ indie::components::PointLight::PointLight(jf::entities::Entity &entity)
       _lightNode(nullptr),
       _changes(POINT_LIGHT_NO_CHANGES)
 {
+    ECSWrapper ecs;
+    _irrlichtClosingWindowEventID = ecs.eventManager.addListener<PointLight, events::IrrlichtClosingWindowEvent>(this, [](PointLight *pl, events::IrrlichtClosingWindowEvent e) {
+        if (pl->_lightNode != nullptr) {
+            pl->_lightNode->remove();
+            pl->_lightNode = nullptr;
+            pl->_billboardNode = nullptr;
+        }
+    });
     EMIT_CREATE(PointLight);
 }
 
 indie::components::PointLight::~PointLight()
 {
     EMIT_DELETE(PointLight);
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_irrlichtClosingWindowEventID);
+    if (_lightNode != nullptr) {
+        _lightNode->remove();
+        _lightNode = nullptr;
+        _billboardNode = nullptr;
+    }
 }
 
 bool indie::components::PointLight::isInit()
