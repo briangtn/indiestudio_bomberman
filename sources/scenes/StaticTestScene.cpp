@@ -17,6 +17,7 @@
 #include "ECSWrapper.hpp"
 #include "components/ComponentParticle.hpp"
 #include "Exceptions.hpp"
+#include "map/Map.hpp"
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
@@ -26,8 +27,8 @@ void indie::scenes::StaticTestScene::onStart()
     ECSWrapper ecs;
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
-    cameraTr->setPosition({20, 10, 0});
-    cameraTr->setRotation({25, -90, 0});
+    cameraTr->setPosition({50, 130, -105});
+    cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
     //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
     //cameraControler->setAlwaysLookForward(false);
@@ -35,15 +36,11 @@ void indie::scenes::StaticTestScene::onStart()
     //cameraControler->setYRotationAxis("yRotAxis");
     //cameraControler->setRotationSpeed(100);
 
-    auto plEntity = ecs.entityManager.createEntity("pointLight");
-    auto plTr = plEntity->assignComponent<indie::components::Transform>();
-    plTr->setPosition({-1, 1, -1});
-    plEntity->assignComponent<indie::components::PointLight>();
-
     auto cubeEntity = ecs.entityManager.createEntity("item");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
     cubeEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D>({0.5f, 0.5f, 0.5f});
-    tr2->setPosition({5, 1, 0});
+    tr2->setPosition({10, 1, 0});
+    tr2->setScale({8, 8, 8});
     cubeEntity->assignComponent<indie::components::Rotator, indie::maths::Vector3D>({0, 90, 0});
     cubeEntity->assignComponent<indie::components::Hoverer, indie::maths::Vector3D, indie::maths::Vector3D>({0, 1, 0}, {0, 1, 0});
     cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
@@ -51,15 +48,10 @@ void indie::scenes::StaticTestScene::onStart()
     mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
-    auto planeEntity = ecs.entityManager.createEntity("plane");
-    auto planeTr = planeEntity->assignComponent<indie::components::Transform>();
-    planeTr->setPosition({0, -1, 0});
-    planeTr->setScale({100, 1, 100});
-    planeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
-
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
-    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0});
+    playerTr->setScale({8, 8, 8});
+    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, UNBREAKABLE_BLOCK_LAYER | BREAKABLE_BLOCK_LAYER | BOMB_LAYER);
     auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -73,7 +65,7 @@ void indie::scenes::StaticTestScene::onStart()
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, indie::components::PlayerController::PlayerControllerSettings>({"xAxis", "zAxis", "taunt", "bomb"});
-    playerControler->setMovementSpeed(5.0f);
+    playerControler->setMovementSpeed(50.0f);
     auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
@@ -116,6 +108,8 @@ void indie::scenes::StaticTestScene::onStart()
         }
     });
     _listeners.emplace_back(id);
+
+    indie::Map::generateMap(15, 13, 420, false);
 
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
