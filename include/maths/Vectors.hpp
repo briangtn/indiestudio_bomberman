@@ -10,6 +10,8 @@
 #ifndef JFENTITYCOMPONENTSYSTEM_VECTORS_HPP
 #define JFENTITYCOMPONENTSYSTEM_VECTORS_HPP
 
+#include <iostream>
+
 #define RAD2DEG(x) ((x) * 57.295754f)
 #define DEG2RAD(x) ((x) * 0.0174533f)
 
@@ -109,6 +111,9 @@ namespace indie {
         bool operator==(const Vector3D &lhs, const Vector3D &rhs);
         bool operator!=(const Vector3D &lhs, const Vector3D &rhs);
     }
+
+    std::ostream &operator<<(std::ostream &s, const maths::Vector2D &vec);
+    std::ostream &operator<<(std::ostream &s, const maths::Vector3D &vec);
 }
 
 #endif //JFENTITYCOMPONENTSYSTEM_VECTORS_HPP

@@ -31,6 +31,8 @@ namespace indie {
             void rotate(irr::core::vector3df &vector);
             void linkFilenameToMesh();
             void applyChanges();
+
+            irr::scene::IAnimatedMeshSceneNode *getAnimatedMeshNode();
         protected:
         private:
             irr::scene::IAnimatedMesh *_mesh;

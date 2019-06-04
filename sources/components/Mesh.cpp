@@ -146,3 +146,8 @@ void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
         throw exceptions::MeshExceptions("no Mesh Node available");
     _node->setVisible(shouldBeSeen);
 }
+
+irr::scene::IAnimatedMeshSceneNode *indie::components::Mesh::getAnimatedMeshNode()
+{
+    return _node;
+}

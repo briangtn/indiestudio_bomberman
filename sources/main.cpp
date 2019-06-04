@@ -8,12 +8,16 @@
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
 #include <iostream>
+#include <systems/TauntSystem.hpp>
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/StaticTestScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
+#include "systems/MovementSystem.hpp"
+#include "input/InputManager.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
 
 int runBomberman()
 {
@@ -25,6 +29,23 @@ int runBomberman()
 
     ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
     ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::MovementSystem>();
+    ecs.systemManager.startSystem<indie::systems::MovementSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
+    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
+
+    indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
+	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
+    indie::InputManager::CreateAxis("zAxis", indie::JoystickAxis({0, 1, true}));
+    indie::InputManager::CreateAxis("zAxis", indie::KeyAxis({irr::KEY_KEY_Z, irr::KEY_KEY_S}));
+    indie::InputManager::CreateAxis("yAxis", indie::ControllerKeyAxis({0, 0b00000000, 0b00000001}));
+    indie::InputManager::CreateAxis("yAxis", indie::KeyAxis({irr::KEY_SPACE, irr::KEY_LSHIFT}));
+    indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
+    indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
+
+    indie::InputManager::RegisterKey("taunt", 0, 1);
 
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     scenes.emplace_back("test", new indie::scenes::StaticTestScene());
