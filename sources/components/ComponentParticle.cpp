@@ -149,14 +149,14 @@ const irr::scene::IParticleEmitter *indie::components::Particle::getEmitter() co
     return _emitter;
 }
 
-irr::core::aabbox3d<irr::f32> indie::components::Particle::getEmiterSize() const
+irr::core::aabbox3d<irr::f32> indie::components::Particle::getEmitterSize() const
 {
     return _emiterSize;
 }
 
-void indie::components::Particle::setEmiterSize(const irr::core::aabbox3d<irr::f32> &newEmiterSize)
+void indie::components::Particle::setEmitterSize(const irr::core::aabbox3d<irr::f32> &newEmitterSize)
 {
-    _emiterSize = newEmiterSize;
+    _emiterSize = newEmitterSize;
     _emiterSizeInitialize = true;
 }
 

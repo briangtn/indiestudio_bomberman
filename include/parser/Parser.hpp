@@ -46,16 +46,16 @@ namespace indie {
         static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
 
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line, const std::string &from);
+                                const std::string &fileName, unsigned int &line, const std::string &callingMethod);
 
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
-        static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line);
+        static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
         static void createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                      const std::string &fileName, unsigned int &line);
         static void createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -65,7 +65,11 @@ namespace indie {
 
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
                                                                         unsigned int &line);
-        static const maths::Vector3D getVector3D(const std::string &type, const std::string &fileName,
+        static const maths::Vector2D getVector2D(const std::string &value, const std::string &fileName,
+                                                 unsigned int &line);
+        static const maths::Vector3D getVector3D(const std::string &value, const std::string &fileName,
+                                                 unsigned int &line);
+        static const irr::video::SColor getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line);
 
     private:

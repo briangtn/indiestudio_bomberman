@@ -10,6 +10,9 @@
 #ifndef JFENTITYCOMPONENTSYSTEM_VECTORS_HPP
 #define JFENTITYCOMPONENTSYSTEM_VECTORS_HPP
 
+#include <Irrlicht/vector3d.h>
+#include <Irrlicht/dimension2d.h>
+
 #define RAD2DEG(x) ((x) * 57.295754f)
 #define DEG2RAD(x) ((x) * 0.0174533f)
 
@@ -55,6 +58,12 @@ namespace indie {
             static Vector2D Project(const Vector2D &len, const Vector2D &dir);
             static Vector2D Perpendicular(const Vector2D &len, const Vector2D &dir);
             static Vector2D Reflection(const Vector2D &vec, const Vector2D &normal);
+
+            template <typename T>
+            operator const irr::core::dimension2d<T>() const { return irr::core::dimension2d<T>(x, y); }
+
+            template <typename T>
+            operator irr::core::dimension2d<T>() { return irr::core::dimension2d<T>(x, y); }
         };
 
         Vector2D operator+(const Vector2D &lhs, const Vector2D &rhs);
@@ -100,6 +109,12 @@ namespace indie {
             static Vector3D Project(const Vector3D &len, const Vector3D &dir);
             static Vector3D Perpendicular(const Vector3D &len, const Vector3D &dir);
             static Vector3D Reflection(const Vector3D &vec, const Vector3D &normal);
+
+            template <typename T>
+            operator const irr::core::vector3d<T>() const { return irr::core::vector3d<T>(x, y, z); }
+
+            template <typename T>
+            operator irr::core::vector3d<T>() { return irr::core::vector3d<T>(x, y, z); }
         };
 
         Vector3D operator+(const Vector3D &lhs, const Vector3D &rhs);

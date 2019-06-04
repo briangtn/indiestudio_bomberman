@@ -328,27 +328,12 @@ void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLRea
     };
 
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
-    if (args.at("FOV").empty())
+    if (args["FOV"].empty()) {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>();
-    else
+    } else {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
-            std::atof(args.at("FOV").c_str()));
-}
-
-void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-    std::map<std::string, std::string> args = {
-            {"name", ""}
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createParticle");
-    if (args.at("name").empty())
-        throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".",
-                "indie::Parser::createParticle");
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
-        args.at("name"));
+                std::atof(args["FOV"].c_str()));
+    }
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -361,16 +346,17 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
             {"type", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
-    if (args.at("fileName").empty())
+    if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".",
-                "indie::Parser::createMaterial");
-    if (args.at("type").empty())
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMaterial");
+    }
+    if (args["type"].empty()) {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
-            args.at("type"));
-    else
+                args["type"]);
+    } else {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
-            args.at("name"), getMaterialType(args.at("type")));
+                args["name"], getMaterialType(args["type"]));
+    }
 }
 
 void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -381,12 +367,97 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
             {"fileName", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
-    if (args.at("fileName").empty())
+    if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                            "Missing mandatory argument in file " + fileName + ".",
-                            "indie::Parser::createMesh");
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMesh");
+    }
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Mesh>(
-        args.at("fileName"));
+        args["fileName"]);
+}
+
+void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"name",        ""},
+            {"fileName",    ""},
+            {"layer",       ""},
+            {"position",    ""},
+            {"scale",       ""},
+            {"rotation",    ""},
+            {"emitterSize", ""},
+            {"direction",   ""},
+            {"emitRate",    ""},
+            {"brightColor", ""},
+            {"age",         ""},
+            {"angle",       ""},
+            {"size",        ""},
+            {"fadeColor",   ""},
+            {"fadeTime",    ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createParticle");
+    if (args["name"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createParticle");
+    }
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
+        args["name"]);
+    if (!args["fileName"].empty() && !args["layer"].empty()) {
+        component->setTexture(std::atoi(args["layer"].c_str()), args["fileName"]);
+    } else if (!args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing argument 'layer' for texture setting for component 'Particle' at line "
+                + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createParticle");
+    } else if (!args["layer"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing argument 'fileName' for texture setting for component 'Particle' at line "
+                + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createParticle");
+    }
+    if (!args["position"].empty()) {
+        component->setPosition(getVector3D(args["position"], fileName, line));
+    }
+    if (!args["scale"].empty()) {
+        component->setScale(getVector3D(args["scale"], fileName, line));
+    }
+    if (!args["rotation"].empty()) {
+        component->setRotation(getVector3D(args["rotation"], fileName, line));
+    }
+    if (!args["emitterSize"].empty()) {
+        component->setEmitterSize(irr::core::aabbox3d<irr::f32>(
+                getVector3D(args["emitterSize"].substr(0, args["emitterSize"].find(';')), fileName, line),
+                getVector3D(args["emitterSize"].substr(args["emitterSize"].find(';') + 1), fileName, line)));
+    }
+    if (!args["direction"].empty()) {
+        component->setInitialDirection(getVector3D(args["direction"], fileName, line));
+    }
+    if (!args["emitRate"].empty()) {
+        component->setEmitRate(std::make_pair(std::atoi(args["emitRate"].substr(0, args["emitRate"].find(',')).c_str()),
+                std::atoi(args["emitRate"].substr(args["emitRate"].find(',') + 1).c_str())));
+    }
+    if (!args["brightColor"].empty()) {
+        component->setDarkBrightColor(std::make_pair(
+                getColor(args["brightColor"].substr(0, args["brightColor"].find(';')), fileName, line),
+                getColor(args["brightColor"].substr(args["brightColor"].find(';') + 1), fileName, line)));
+    }
+    if (!args["age"].empty()) {
+        component->setMinMaxAge(std::make_pair(std::atoi(args["age"].substr(0, args["emitRate"].find(',')).c_str()),
+                std::atoi(args["age"].substr(args["age"].find(',') + 1).c_str())));
+    }
+    if (!args["angle"].empty()) {
+        component->setAngle(std::atoi(args["angle"].c_str()));
+    }
+    if (!args["size"].empty()) {
+        component->setMinMaxSize(std::make_pair(
+                getVector2D(args["size"].substr(0, args["size"].find(';')), fileName, line),
+                getVector2D(args["size"].substr(args["size"].find(';') + 1), fileName, line)));
+    }
+    if (!args["fadeColor"].empty()) {
+        component->setFadeColor(getColor(args["fadeColor"], fileName, line));
+    }
+    if (!args["fadeTime"].empty()) {
+        component->setFadeTime(std::atoi(args["fadeTime"].c_str()));
+    }
 }
 
 void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -406,20 +477,21 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"fileName", ""},
-            {"type", ""},
+            {"type",     ""},
             {"position", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
-    if (args.at("fileName").empty() || args.at("type").empty())
+    if (args["fileName"].empty() || args["type"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                            "Missing mandatory argument in file " + fileName + ".",
-                            "indie::Parser::createSound");
-    if (args.at("position").empty()) {
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createSound");
+    }
+    if (args["position"].empty()) {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                    args.at("fileName"), getSoundType(args.at("type"), fileName, line));
+                args["fileName"], getSoundType(args["type"], fileName, line));
     } else {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
-                    args.at("fileName"), getSoundType(args.at("type"), fileName, line), getVector3D(args.at("position"), fileName, line));
+                args["fileName"], getSoundType(args["type"], fileName, line),
+                getVector3D(args["position"], fileName, line));
     }
 }
 
@@ -430,28 +502,26 @@ void indie::Parser::createTransform(const std::string &entityName, irr::io::IXML
     std::map<std::string, std::string> args = {
             {"position", ""},
             {"rotation", ""},
-            {"scale", ""}
+            {"scale",    ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
-    if (args.at("position").empty()) {
-        args.at("position") = "0,0,0";
+    if (args["position"].empty()) {
+        args["position"] = "0,0,0";
     }
-    if (args.at("rotation").empty()) {
-        args.at("rotation") = "0,0,0";
+    if (args["rotation"].empty()) {
+        args["rotation"] = "0,0,0";
     }
-    if (args.at("scale").empty()) {
-        args.at("scale") = "1,1,1";
+    if (args["scale"].empty()) {
+        args["scale"] = "1,1,1";
     }
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Transform>(
-        getVector3D(args.at("position"), fileName, line), getVector3D(args.at("rotation"), fileName, line),
-        getVector3D(args.at("scale"), fileName, line));
+            getVector3D(args["position"], fileName, line), getVector3D(args["rotation"], fileName, line),
+            getVector3D(args["scale"], fileName, line));
 }
 
 void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line, const std::string &from)
+                                const std::string &fileName, unsigned int &line, const std::string &callingMethod)
 {
-    ECSWrapper ecs;
-
     for (; xmlReader->read(); line++) {
         if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
@@ -459,31 +529,31 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                 if (name.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'name' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            from);
+                            callingMethod);
                 }
                 std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
                 if (value.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            from);
+                            callingMethod);
                 }
                 if (!args.at(name).empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Redefinition of '" + name + "' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            from);
+                            callingMethod);
                 }
                 args.at(name) = value;
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
-                        + " at line " + std::to_string(line) + " in file " + fileName + ".", from);
+                        + " at line " + std::to_string(line) + " in file " + fileName + ".", callingMethod);
             }
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (!(irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName()))) {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        from);
+                        callingMethod);
             }
             line++;
             return;
@@ -512,20 +582,62 @@ const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(c
     }
 }
 
-const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &type, const std::string &fileName,
+const indie::maths::Vector2D indie::Parser::getVector2D(const std::string &value, const std::string &fileName,
                                                         unsigned int &line)
 {
-    float x;
-    float y;
-    float z;
+    float x, y;
 
-    size_t n = std::count(type.begin(), type.end(), ',');
-    if (n != 2 || type.length() != 5)
+    size_t n = std::count(value.begin(), value.end(), ',');
+    if (n != 1) {
         throw exceptions::ParserInvalidFileException(
-                "Wrong argument at line " + std::to_string(line) + " in file " + fileName + "(expected 'float, float, float' but got something else",
-                "indie::Parser::getVector3D");
-    x = std::atof(type.substr(0, 1).c_str());
-    y = std::atof(type.substr(2, 1).c_str());
-    z = std::atof(type.substr(4, 1).c_str());
+                "Wrong argument at line " + std::to_string(line) + " in file " + fileName
+                + "(expected 'float, float' but got something else.", "indie::Parser::getVector2D");
+    }
+    auto pos = value.find(',');
+    x = std::atof(value.substr(0, pos).c_str());
+    y = std::atof(value.substr(pos + 1).c_str());
+    return indie::maths::Vector2D(x, y);
+}
+
+const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &value, const std::string &fileName,
+                                                        unsigned int &line)
+{
+    float x, y, z;
+
+    size_t n = std::count(value.begin(), value.end(), ',');
+    if (n != 2) {
+        throw exceptions::ParserInvalidFileException(
+                "Wrong argument at line " + std::to_string(line) + " in file " + fileName
+                + "(expected 'float, float, float' but got something else.", "indie::Parser::getVector3D");
+    }
+    auto pos = value.find(',');
+    x = std::atof(value.substr(0, pos).c_str());
+    auto newPos = value.find(',', pos + 1);
+    y = std::atof(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    pos = newPos;
+    z = std::atof(value.substr(pos + 1).c_str());
     return maths::Vector3D(x, y, z);
+}
+
+const irr::video::SColor indie::Parser::getColor(const std::string &value, const std::string &fileName,
+                                                 unsigned int &line)
+{
+    int a, r, g, b;
+
+    size_t n = std::count(value.begin(), value.end(), ',');
+    if (n != 3) {
+        throw exceptions::ParserInvalidFileException(
+                "Wrong argument at line " + std::to_string(line) + " in file " + fileName
+                + "(expected 'int, int, int, int' but got something else.", "indie::Parser::getColor");
+    }
+    auto pos = value.find(',');
+    a = std::atoi(value.substr(0, pos).c_str());
+    auto newPos = value.find(',', pos + 1);
+    r = std::atoi(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    pos = newPos;
+    newPos = value.find(',', pos + 1);
+    g = std::atoi(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    pos = newPos;
+    b = std::atoi(value.substr(pos + 1).c_str());
+    return irr::video::SColor(a, r, g, b);
 }
