@@ -10,6 +10,7 @@
 #ifndef JFENTITYCOMPONENTSYSTEM_TRANSFORM_HPP
 #define JFENTITYCOMPONENTSYSTEM_TRANSFORM_HPP
 
+#include <irrlicht.h>
 #include "Component.hpp"
 #include "maths/Vectors.hpp"
 

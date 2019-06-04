@@ -23,6 +23,7 @@
 #include "components/Material.hpp"
 #include "components/Animator.hpp"
 #include "components/PointLight.hpp"
+#include "components/GUI/Button.hpp"
 
 namespace indie {
 
@@ -68,6 +69,7 @@ namespace indie {
 
             irr::scene::ISceneManager *getSceneManager();
             irr::video::IVideoDriver *getVideoDriver();
+            irr::gui::IGUIEnvironment *getGUIEnvironment();
             irr::IrrlichtDevice *getDevice();
 
             bool isWindowOpen() const;
@@ -108,6 +110,14 @@ namespace indie {
             static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
+
+        private:
+            static void drawGUIs();
+            static void drawButton(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Button> button);
+
 
         private:
             void openWindow();

@@ -7,7 +7,10 @@
 
 /* Created the 22/05/2019 at 18:36 by jfrabel */
 
-#include <components/BoxCollider.hpp>
+#include "components/BoxCollider.hpp"
+#include "components/GUI/Button.hpp"
+#include "components/GUI/Font.hpp"
+#include "events/IrrlichtGUIEvent.hpp"
 #include "scenes/StaticTestScene.hpp"
 #include "components/Material.hpp"
 #include "components/Camera.hpp"
@@ -74,44 +77,49 @@ void indie::scenes::StaticTestScene::onStart()
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, indie::components::PlayerController::PlayerControllerSettings>({"xAxis", "zAxis", "taunt", "bomb"});
     playerControler->setMovementSpeed(5.0f);
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
+    auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
         }
     });
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id =  ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
         }
     });
-
-    ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
+    _listeners.push_back(id);
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
@@ -131,6 +139,16 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setMinMaxAge(std::make_pair(800, 2000));
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
     sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
+
+    auto btnEntity = ecs.entityManager.createEntity("testBtn");
+    btnEntity->assignComponent<components::Transform>();
+    auto btnCmp = btnEntity->assignComponent<components::Button, std::string, int>("La bite sur ton front", 1);
+    btnEntity->assignComponent<components::Font, std::string>("../bigfont.png");
+    btnEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
+    btnCmp->setTexturePath("../4.png");
+    btnCmp->setOnClicked([]() {
+        std::cout << "I'm clicked" << std::endl;
+    });
 }
 
 void indie::scenes::StaticTestScene::onStop()

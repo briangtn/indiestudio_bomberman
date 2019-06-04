@@ -18,6 +18,8 @@
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "events/IrrlichtMouseInputEvent.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
+#include "components/GUI/Button.hpp"
+#include "components/GUI/Font.hpp"
 #include "components/Transform.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
@@ -85,6 +87,8 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
     }
+
+    ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -154,6 +158,11 @@ irr::scene::ISceneManager *indie::systems::IrrlichtManagerSystem::getSceneManage
 irr::video::IVideoDriver *indie::systems::IrrlichtManagerSystem::getVideoDriver()
 {
     return _driver;
+}
+
+irr::gui::IGUIEnvironment *indie::systems::IrrlichtManagerSystem::getGUIEnvironment()
+{
+    return _guiEnvironment;
 }
 
 irr::IrrlichtDevice* indie::systems::IrrlichtManagerSystem::getDevice()
@@ -491,6 +500,45 @@ bool indie::systems::IrrlichtManagerSystem::getDrawGizmos()
     return _drawGizmos;
 }
 
+void indie::systems::IrrlichtManagerSystem::drawGUIs()
+{
+
+}
+
+void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandler entity,
+                                                       jf::components::ComponentHandler<components::Transform> tr,
+                                                       jf::components::ComponentHandler<components::Button> button)
+{
+    ECSWrapper ecs;
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+    auto pos = tr->getPosition();
+    auto scale = tr->getScale();
+    auto font = entity->getComponent<components::Font>();
+    irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
+    irr::gui::IGUIButton *buttonNode = nullptr;
+    const wchar_t *text = irr::core::stringw(button->getText().c_str()).c_str(); // TODO: Seems to have a problem here (Text is not complete)
+
+    if (!button->isInit()) {
+        buttonNode = env->addButton(rect, nullptr, button->getId(), text);
+        button->setButtonNode(buttonNode);
+    }
+    if (button->isTextureNeedInit())
+        button->setTextureNode(driver->getTexture(button->getTexturePath().c_str()));
+    buttonNode = button->getButtonNode();
+    buttonNode->setText(text);
+    buttonNode->setRelativePosition(rect);
+    buttonNode->setID(button->getId());
+    if (button->getTextureNode() != nullptr)
+        buttonNode->setImage(button->getTextureNode());
+    if (font.isValid()) {
+        if (!font->isInit()) {
+            font->setFontNode(env->getFont(font->getPath().c_str()));
+        }
+        buttonNode->setOverrideFont(font->getFontNode());
+    }
+}
+
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {
     switch (event.EventType) {
@@ -522,6 +570,14 @@ void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendGUIEvent(
 {
     ECSWrapper ecs;
     ecs.eventManager.emit(events::IrrlichtGUIEvent({event.GUIEvent}));
+    if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnClicked() != nullptr)
+                    button->getOnClicked()();
+            }
+        });
+    }
 }
 
 void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendMouseInputEvent(const irr::SEvent &event)

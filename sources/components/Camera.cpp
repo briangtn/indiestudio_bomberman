@@ -19,7 +19,8 @@ indie::components::Camera::Camera(jf::entities::Entity &entity, float FOV)
     ECSWrapper ecs;
 
     _eventCloseID = ecs.eventManager.addListener<Camera, events::IrrlichtClosingWindowEvent>(this, [](Camera *camera, events::IrrlichtClosingWindowEvent e){
-        camera->_cameraNode->remove();
+        if (camera->_cameraNode != nullptr)
+            camera->_cameraNode->remove();
         camera->_cameraNode = nullptr;
     });
     EMIT_CREATE(Camera);
