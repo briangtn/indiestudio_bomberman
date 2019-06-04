@@ -266,6 +266,33 @@ indie::maths::Vector3D indie::maths::Matrix3::MultiplyVector(const indie::maths:
     return result;
 }
 
+indie::maths::Vector3D indie::maths::Matrix3::ToEulerAngles(const Matrix3 &matrix)
+{
+    if (CMP(matrix._12, -1.0f)) {
+        float x = 0;
+        float y = M_PI / 2;
+        float z = x + atan2f(matrix._21, matrix._31);
+        return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
+    } else if (CMP(matrix._12, 1.0f)) {
+        float x = 0;
+        float y = -M_PI / 2;
+        float z = -x + atan2f(-matrix._21, -matrix._31);
+        return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
+    } else {
+        float y1 = -asinf(matrix._13);
+        float y2 = M_PI - y1;
+        float x1 = atan2f(matrix._23 / cosf(y1), matrix._33 / cosf(y1));
+        float x2 = atan2f(matrix._23 / cosf(y2), matrix._33 / cosf(y2));
+        float z1 = atan2f(matrix._12 / cosf(y1), matrix._11 / cosf(y1));
+        float z2 = atan2f(matrix._12 / cosf(y2), matrix._11 / cosf(y2));
+        if (std::abs(x1) + std::abs(y1) + std::abs(z1) <= std::abs(x2) + std::abs(y2) + std::abs(z2)) {
+            return {RAD2DEG(x1), RAD2DEG(y1), RAD2DEG(z1)};
+        } else {
+            return {RAD2DEG(x2), RAD2DEG(y2), RAD2DEG(z2)};
+        }
+    }
+}
+
 indie::maths::Matrix3 indie::maths::operator*(const indie::maths::Matrix3 &matrix, float scalar)
 {
     Matrix3 result;
@@ -582,19 +609,29 @@ indie::maths::Matrix4 indie::maths::Matrix4::Ortho(float left, float right, floa
 
 indie::maths::Vector3D indie::maths::Matrix4::ToEulerAngles(const indie::maths::Matrix4 &matrix)
 {
-    float sy = sqrtf(matrix._11 * matrix._11 + matrix._21 * matrix._21);
-    bool singular = sy < 0.000001;
-    float x, y, z;
-    if (!singular) {
-        x = atan2f(-matrix._32, matrix._33);
-        y = atan2f(matrix._31, sy);
-        z = atan2f(-matrix._21, matrix._11);
+    if (CMP(matrix._12, -1.0f)) {
+        float x = 0;
+        float y = M_PI / 2;
+        float z = x + atan2f(matrix._21, matrix._31);
+        return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
+    } else if (CMP(matrix._12, 1.0f)) {
+        float x = 0;
+        float y = -M_PI / 2;
+        float z = -x + atan2f(-matrix._21, -matrix._31);
+        return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
     } else {
-        x = atan2f(matrix._23, matrix._22);
-        y = atan2f(matrix._31, sy);
-        z = 0;
+        float y1 = -asinf(matrix._13);
+        float y2 = M_PI - y1;
+        float x1 = atan2f(matrix._23 / cosf(y1), matrix._33 / cosf(y1));
+        float x2 = atan2f(matrix._23 / cosf(y2), matrix._33 / cosf(y2));
+        float z1 = atan2f(matrix._12 / cosf(y1), matrix._11 / cosf(y1));
+        float z2 = atan2f(matrix._12 / cosf(y2), matrix._11 / cosf(y2));
+        if (std::abs(x1) + std::abs(y1) + std::abs(z1) <= std::abs(x2) + std::abs(y2) + std::abs(z2)) {
+            return {RAD2DEG(x1), RAD2DEG(y1), RAD2DEG(z1)};
+        } else {
+            return {RAD2DEG(x2), RAD2DEG(y2), RAD2DEG(z2)};
+        }
     }
-    return {RAD2DEG(x), RAD2DEG(y), RAD2DEG(z)};
 }
 
 indie::maths::Matrix4 indie::maths::operator*(const indie::maths::Matrix4 &matrix, float scalar)
