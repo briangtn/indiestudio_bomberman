@@ -64,8 +64,8 @@ namespace indie {
 
             /* Get and Set For Emitter */
 
-            irr::core::aabbox3d<irr::f32> getEmiterSize() const;
-            void setEmiterSize(const irr::core::aabbox3d<irr::f32> &newEmiterSize);
+            irr::core::aabbox3d<irr::f32> getEmitterSize() const;
+            void setEmitterSize(const irr::core::aabbox3d<irr::f32> &newEmitterSize);
 
             irr::core::vector3df getInitialDirection() const;
             void setInitialDirection(const irr::core::vector3df &newInitialDirection);
