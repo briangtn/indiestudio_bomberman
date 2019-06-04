@@ -86,13 +86,16 @@ namespace indie {
                 jf::components::ComponentHandler<components::Mesh> mesh);
             static void syncModelMaterial(
                 jf::components::ComponentHandler<components::Material> mat,
-                jf::components::ComponentHandler<components::Mesh> mesh);
+                jf::components::ComponentHandler<components::Mesh> mesh,
+                bool force);
             static void syncModelPos(
                 jf::components::ComponentHandler<components::Transform> tr,
-                jf::components::ComponentHandler<components::Mesh> mesh);
+                jf::components::ComponentHandler<components::Mesh> mesh,
+                bool force);
             static void syncModelAnimation(
                 jf::components::ComponentHandler<components::Animator> animator,
-                jf::components::ComponentHandler<components::Mesh> mesh);
+                jf::components::ComponentHandler<components::Mesh> mesh,
+                bool force);
 
             static void syncParticlePos(
                 jf::entities::EntityHandler entity,
@@ -133,6 +136,8 @@ namespace indie {
             bool _vsyncEnabled;
             std::string _windowCaption;
             indie::maths::Vector2D _windowDimension;
+
+            bool _needToReload;
         };
     }
 }

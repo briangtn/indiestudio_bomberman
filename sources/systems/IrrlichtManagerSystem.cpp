@@ -42,7 +42,8 @@ indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _fullscreenEnabled(false),
       _vsyncEnabled(false),
       _windowCaption("Irrlicht window"),
-      _windowDimension(800, 600)
+      _windowDimension(800, 600),
+      _needToReload(false)
 {
 }
 
@@ -69,6 +70,15 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
+
+    if (_needToReload) {
+        if (_device != nullptr)
+            closeWindow();
+        if (_device == nullptr)
+            openWindow();
+        _needToReload = false;
+    }
+
     ECSWrapper ecs;
 
     _driver->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
@@ -193,6 +203,8 @@ void indie::systems::IrrlichtManagerSystem::closeWindow()
     if (_device != nullptr) {
         ECSWrapper ecs;
         ecs.eventManager.emit(events::IrrlichtClosingWindowEvent());
+        _device->closeDevice();
+        _device->run();
         _device->drop();
     }
     _device = nullptr;
@@ -202,10 +214,7 @@ void indie::systems::IrrlichtManagerSystem::reloadWindow()
 {
     if (!isWindowOpen())
         return;
-    if (_device != nullptr)
-        closeWindow();
-    if (_device == nullptr)
-        openWindow();
+    _needToReload = true;
 }
 
 void indie::systems::IrrlichtManagerSystem::activateJoysticks()
@@ -250,33 +259,35 @@ void indie::systems::IrrlichtManagerSystem::syncModel(jf::entities::EntityHandle
     auto tr = entity->getComponent<components::Transform>();
     auto mat = entity->getComponent<components::Material>();
     auto animator = entity->getComponent<components::Animator>();
+    bool forceReload = false;
 
-    mesh->linkFilenameToMesh();
-    mesh->applyChanges();
+    forceReload = forceReload || mesh->linkFilenameToMesh();
+    forceReload = forceReload || mesh->applyChanges();
     mesh->addToScene();
     if (tr.isValid()) {
-        syncModelPos(tr, mesh);
+        syncModelPos(tr, mesh, forceReload);
     }
     if (mat.isValid()) {
-        syncModelMaterial(mat, mesh);
+        syncModelMaterial(mat, mesh, forceReload);
     }
     if (animator.isValid()) {
-        syncModelAnimation(animator, mesh);
+        syncModelAnimation(animator, mesh, forceReload);
     }
 }
 
 void indie::systems::IrrlichtManagerSystem::syncModelMaterial(
     jf::components::ComponentHandler<indie::components::Material> mat,
-    jf::components::ComponentHandler<indie::components::Mesh> mesh)
+    jf::components::ComponentHandler<indie::components::Mesh> mesh,
+    bool force)
 {
-    if (mat->hasMaterialChanged()) {
-        if (mat->hasMaterialTextureChanged()) {
+    if (mat->hasMaterialChanged() || force) {
+        if (mat->hasMaterialTextureChanged() || force) {
             mesh->setMaterialTexture(mat->getMaterialTexture());
         }
-        if (mat->hasMaterialTypeChanged()) {
+        if (mat->hasMaterialTypeChanged() || force) {
             mesh->setMaterialType(mat->getMaterialType());
         }
-        if (mat->hasMaterialFlagsChanged()) {
+        if (mat->hasMaterialFlagsChanged() || force) {
             for (const auto &flag : mat->getMaterialFlags()) {
                 mesh->setMaterialFlag(flag.first, flag.second);
             }
@@ -287,7 +298,8 @@ void indie::systems::IrrlichtManagerSystem::syncModelMaterial(
 
 void indie::systems::IrrlichtManagerSystem::syncModelPos(
     jf::components::ComponentHandler<components::Transform> tr,
-    jf::components::ComponentHandler<components::Mesh> mesh)
+    jf::components::ComponentHandler<components::Mesh> mesh,
+    bool force)
 {
     auto pos = tr->getPosition();
     irr::core::vector3df vector(pos.x, pos.y, pos.z);
@@ -302,9 +314,10 @@ void indie::systems::IrrlichtManagerSystem::syncModelPos(
 
 void indie::systems::IrrlichtManagerSystem::syncModelAnimation(
     jf::components::ComponentHandler<indie::components::Animator> animator,
-    jf::components::ComponentHandler<indie::components::Mesh> mesh)
+    jf::components::ComponentHandler<indie::components::Mesh> mesh,
+    bool force)
 {
-    if (animator->hasAnimationChanged() && !animator->getCurrentAnimation().empty()) {
+    if ((animator->hasAnimationChanged() || force) && !animator->getCurrentAnimation().empty()) {
         animator->resetAnimationChanged();
         components::Animator::Animation data;
         try {
