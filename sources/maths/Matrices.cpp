@@ -7,6 +7,7 @@
 
 /* Created the 25/04/2019 at 18:42 by indierabel */
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cfloat>
 #include "maths/Matrices.hpp"
