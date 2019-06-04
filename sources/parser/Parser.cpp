@@ -17,6 +17,7 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include <regex>
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
@@ -46,6 +47,29 @@ const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materia
     {"EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR", irr::video::EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR},
     {"EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA", irr::video::EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA},
     {"EMT_ONETEXTURE_BLEND", irr::video::EMT_ONETEXTURE_BLEND}
+};
+
+const std::map<std::string, irr::video::E_MATERIAL_FLAG> indie::Parser::_materialFlags = {
+        {"EMF_WIREFRAME", irr::video::EMF_WIREFRAME},
+        {"EMF_POINTCLOUD", irr::video::EMF_POINTCLOUD},
+        {"EMF_GOURAUD_SHADING", irr::video::EMF_GOURAUD_SHADING},
+        {"EMF_LIGHTING", irr::video::EMF_LIGHTING},
+        {"EMF_ZBUFFER", irr::video::EMF_ZBUFFER},
+        {"EMF_ZWRITE_ENABLE", irr::video::EMF_ZWRITE_ENABLE},
+        {"EMF_BACK_FACE_CULLING", irr::video::EMF_BACK_FACE_CULLING},
+        {"EMF_FRONT_FACE_CULLING", irr::video::EMF_FRONT_FACE_CULLING},
+        {"EMF_BILINEAR_FILTER", irr::video::EMF_BILINEAR_FILTER},
+        {"EMF_TRILINEAR_FILTER", irr::video::EMF_TRILINEAR_FILTER},
+        {"EMF_ANISOTROPIC_FILTER", irr::video::EMF_ANISOTROPIC_FILTER},
+        {"EMF_FOG_ENABLE", irr::video::EMF_FOG_ENABLE},
+        {"EMF_NORMALIZE_NORMALS", irr::video::EMF_NORMALIZE_NORMALS},
+        {"EMF_TEXTURE_WRAP", irr::video::EMF_TEXTURE_WRAP},
+        {"EMF_ANTI_ALIASING", irr::video::EMF_ANTI_ALIASING},
+        {"EMF_COLOR_MASK", irr::video::EMF_COLOR_MASK},
+        {"EMF_COLOR_MATERIAL", irr::video::EMF_COLOR_MATERIAL},
+        {"EMF_USE_MIP_MAPS", irr::video::EMF_USE_MIP_MAPS},
+        {"EMF_BLEND_OPERATION", irr::video::EMF_BLEND_OPERATION},
+        {"EMF_POLYGON_OFFSET", irr::video::EMF_POLYGON_OFFSET}
 };
 
 indie::Parser::Parser()
@@ -343,19 +367,32 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"fileName", ""},
-            {"type", ""}
+            {"type", ""},
+            {"flags", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMaterial");
     }
+    jf::components::ComponentHandler<components::Material> component;
     if (args["type"].empty()) {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
                 args["type"]);
     } else {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+         component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
                 args["name"], getMaterialType(args["type"]));
+    }
+    if (!args["flags"].empty()) {
+        std::vector<std::string> flags;
+        boost::split(flags, args["flags"], [](char c){ return c == ';'; });
+        for (auto &it : flags) {
+            if (it[0] == '!') {
+                component->setMaterialFlag(getMaterialFlag(&it[1]), false);
+            } else {
+                component->setMaterialFlag(getMaterialFlag(it), true);
+            }
+        }
     }
 }
 
@@ -532,6 +569,7 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                             callingMethod);
                 }
                 std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
                 if (value.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
@@ -566,6 +604,11 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
 irr::video::E_MATERIAL_TYPE indie::Parser::getMaterialType(const std::string &type)
 {
     return _materialTypes.at(type);
+}
+
+irr::video::E_MATERIAL_FLAG indie::Parser::getMaterialFlag(const std::string &flag)
+{
+    return _materialFlags.at(flag);
 }
 
 const indie::components::SoundComponent::SoundType indie::Parser::getSoundType(const std::string &type, const std::string &fileName,

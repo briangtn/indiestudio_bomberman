@@ -19,10 +19,12 @@
             <argument name="angle" value="0"/>
             <argument name="size" value="0,1;2,3"/>
             <argument name="fadeColor" value="0,0,0,0"/>
-            <argument name="fadeTime" value=""/>
+            <argument name="fadeTime" value="0"/>
         </component>
         <component type="Material">
             <argument name="fileName" value="path/to/texture"/>
+            <argument name="type" value="EMT_SOLID"/>
+            <argument name="flags" value="EMF_WIREFRAME,!EMF_WIREFRAME"/>
         </component>
         <component type="Mesh">
             <argument name="fileName" value="path/to/mesh"/>
