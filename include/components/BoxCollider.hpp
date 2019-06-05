@@ -53,8 +53,8 @@ namespace indie {
             uint64_t getLayer() const;
             void setLayer(uint64_t layer);
 
-            bool hasCollisions();
-            std::vector<jf::entities::EntityHandler> getCollisions();
+            bool hasCollisions(bool ignoreLayer = false);
+            std::vector<jf::entities::EntityHandler> getCollisions(bool ignoreLayer = false);
 
         private:
             maths::Vector3D _size;

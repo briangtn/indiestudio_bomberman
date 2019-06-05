@@ -8,6 +8,7 @@
 /* Created the 22/05/2019 at 18:36 by jfrabel */
 
 #include <components/BoxCollider.hpp>
+#include <events/AskingForBonusSpawnEvent.hpp>
 #include "scenes/StaticTestScene.hpp"
 #include "components/Material.hpp"
 #include "components/Camera.hpp"
@@ -35,18 +36,6 @@ void indie::scenes::StaticTestScene::onStart()
     //cameraControler->setXRotationAxis("xRotAxis");
     //cameraControler->setYRotationAxis("yRotAxis");
     //cameraControler->setRotationSpeed(100);
-
-    auto cubeEntity = ecs.entityManager.createEntity("item");
-    auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
-    cubeEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D>({0.5f, 0.5f, 0.5f});
-    tr2->setPosition({10, 1, 0});
-    tr2->setScale({8, 8, 8});
-    cubeEntity->assignComponent<indie::components::Rotator, indie::maths::Vector3D>({0, 90, 0});
-    cubeEntity->assignComponent<indie::components::Hoverer, indie::maths::Vector3D, indie::maths::Vector3D>({0, 1, 0}, {0, 1, 0});
-    cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
-    auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
-    mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
@@ -105,6 +94,14 @@ void indie::scenes::StaticTestScene::onStart()
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
+        }
+    });
+    _listeners.emplace_back(id);
+
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, components::BONUS_T_WALL_PASS}));
         }
     });
     _listeners.emplace_back(id);

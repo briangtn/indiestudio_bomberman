@@ -61,12 +61,12 @@ void indie::components::BoxCollider::setLayer(uint64_t layer)
     _layer = layer;
 }
 
-bool indie::components::BoxCollider::hasCollisions()
+bool indie::components::BoxCollider::hasCollisions(bool ignoreLayer)
 {
-    return !getCollisions().empty();
+    return !getCollisions(ignoreLayer).empty();
 }
 
-std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getCollisions()
+std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getCollisions(bool ignoreLayer)
 {
     ECSWrapper ecs;
 
@@ -91,7 +91,7 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
 
         auto collider = entity->getComponent<components::BoxCollider>();
 
-        if (!(collider->getLayer() & _layer))
+        if (ignoreLayer || !(collider->getLayer() & _layer))
             continue;
 
         auto tr = entity->getComponent<components::Transform>();

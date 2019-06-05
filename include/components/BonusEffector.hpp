@@ -21,6 +21,7 @@ namespace indie {
             BONUS_T_SPEED_UP,
             BONUS_T_FIRE_UP,
             BONUS_T_WALL_PASS,
+            BONUS_T_NB
         };
 
         class BonusEffector : public jf::components::Component {
