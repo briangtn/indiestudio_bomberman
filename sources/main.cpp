@@ -25,8 +25,6 @@ int runBomberman()
 //    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
 //    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     indie::Parser::getInstance().loadSystems("../resources/systems.xml");
-    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources/scenes"));
-    indie::scenes::SceneManager::changeScene("test");
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
