@@ -8,9 +8,6 @@
             <argument name="name" value="testParticule"/>
             <argument name="fileName" value="path/to/texture"/>
             <argument name="layer" value="0"/>
-            <argument name="position" value="0,0,0"/>
-            <argument name="scale" value="0,0,0"/>
-            <argument name="rotation" value="0,0,0"/>
             <argument name="emitterSize" value="0,0,0;0,0,0"/>
             <argument name="direction" value="0,0,0"/>
             <argument name="emitRate" value="0,0"/>

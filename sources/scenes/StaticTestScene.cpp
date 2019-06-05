@@ -20,7 +20,7 @@
 
 void indie::scenes::StaticTestScene::onStart()
 {
-/*    ECSWrapper ecs;
+    ECSWrapper ecs;
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     auto cameraTr = cameraEntity->assignComponent<indie::components::Transform>();
     cameraTr->setPosition({0, 0, -20});
@@ -113,9 +113,7 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setFadeTime(1000);
     sys->setMinMaxAge(std::make_pair(800, 2000));
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
-    sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));*/
-
-    Parser::getInstance().loadScene("../resources/test.xml");
+    sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
 }
 
 void indie::scenes::StaticTestScene::onStop()
