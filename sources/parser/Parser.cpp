@@ -85,7 +85,6 @@ indie::Parser::Parser()
         {(L"Particle"), &createParticle},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
-        {(L"Pointlight"), &createPointlight},
         {(L"Sound"), &createSound},
         {(L"Transform"), &createTransform}
     })
@@ -495,17 +494,6 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
     if (!args["fadeTime"].empty()) {
         component->setFadeTime(std::atoi(args["fadeTime"].c_str()));
     }
-}
-
-void indie::Parser::createPointlight(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                     const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-    std::map<std::string, std::string> args = {
-            {}
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPointLight");
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::PointLight>();
 }
 
 void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
