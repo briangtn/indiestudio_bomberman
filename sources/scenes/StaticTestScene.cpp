@@ -20,6 +20,8 @@
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
+#include "assets_manager/AssetsManager.hpp"
+
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -29,6 +31,7 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({20, 10, 0});
     cameraTr->setRotation({25, -90, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
+    indie::AssetsManager::getInstance().addTexturePack("Minecraft", "../test_assets/lol");
     //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
     //cameraControler->setAlwaysLookForward(false);
     //cameraControler->setXRotationAxis("xRotAxis");

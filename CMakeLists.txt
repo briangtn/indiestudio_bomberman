@@ -14,6 +14,9 @@ include(${PROJECT_SOURCE_DIR}/cmake-dependencies/FindIrrklang.cmake)
 
 add_definitions(-D DO_NOT_SEND_SPECIFIC_KEY_EVENT=false)
 
+find_package(Boost 1.65 REQUIRED COMPONENTS
+		date_time filesystem iostreams)
+
 file(
         GLOB_RECURSE
         SOURCES_CPP
@@ -34,6 +37,7 @@ target_include_directories(bomberman PUBLIC
 		)
 target_link_libraries(bomberman
 		jfecs
+		Boost::filesystem
 		${Irrlicht_LIBRARIES}
 		${Irrklang_LIBRARIES}
 		)
