@@ -42,7 +42,6 @@ void indie::systems::IrrklangAudioSystem::onAwake()
 
 void indie::systems::IrrklangAudioSystem::onStart()
 {
-    playSounds();
 }
 
 void indie::systems::IrrklangAudioSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
@@ -58,12 +57,6 @@ void indie::systems::IrrklangAudioSystem::onUpdate(const std::chrono::nanosecond
                     ECSWrapper ecs;
                     component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition()));
                 }
-                if (component->getShouldBePlayed() && component->getIsPaused()) {
-                    component->setIsPaused(false);
-                }
-                if (!component->getShouldBePlayed() && !component->getIsPaused()) {
-                    component->setIsPaused(true);
-                }
             });
     _engine->update();
 }
@@ -78,14 +71,15 @@ void indie::systems::IrrklangAudioSystem::onTearDown()
 
 }
 
-irrklang::ISound *indie::systems::IrrklangAudioSystem::add2DSound(const std::string &sourceFile)
+irrklang::ISound *indie::systems::IrrklangAudioSystem::add2DSound(const std::string &sourceFile, bool playLooped, bool startPaused)
 {
-    return _engine->play2D(sourceFile.c_str(), false, true);
+    return _engine->play2D(sourceFile.c_str(), playLooped, startPaused);
 }
 
-irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::string &sourceFile, indie::maths::Vector3D position)
+irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::string &sourceFile, indie::maths::Vector3D position,
+                                                                  bool playLooped, bool startPaused)
 {
-    return _engine->play3D(sourceFile.c_str(), irrklang::vec3df(position.x, position.y, position.z), false, true);
+    return _engine->play3D(sourceFile.c_str(), irrklang::vec3df(position.x, position.y, position.z), playLooped, startPaused);
 }
 
 void indie::systems::IrrklangAudioSystem::removeSound(jf::components::ComponentHandler<components::SoundComponent> component)
@@ -102,7 +96,7 @@ void indie::systems::IrrklangAudioSystem::playSounds(bool onlyEnabled)
     ecs.entityManager.applyToEach<components::SoundComponent>(
             [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED) {
-                    component->setShouldBePlayed(true);
+                    component->setIsPaused(false);
                 }
             }, onlyEnabled);
 }
@@ -114,7 +108,7 @@ void indie::systems::IrrklangAudioSystem::playSounds(components::SoundComponent:
     ecs.entityManager.applyToEach<components::SoundComponent>(
             [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
-                    component->setShouldBePlayed(true);
+                    component->setIsPaused(false);
                 }
             }, onlyEnabled);
 }
@@ -126,7 +120,7 @@ void indie::systems::IrrklangAudioSystem::pauseSounds(bool onlyEnabled)
     ecs.entityManager.applyToEach<components::SoundComponent>(
             [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED) {
-                    component->setShouldBePlayed(false);
+                    component->setIsPaused(true);
                 }
             }, onlyEnabled);
 }
@@ -138,7 +132,7 @@ void indie::systems::IrrklangAudioSystem::pauseSounds(components::SoundComponent
     ecs.entityManager.applyToEach<components::SoundComponent>(
             [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
-                    component->setShouldBePlayed(false);
+                    component->setIsPaused(true);
                 }
             }, onlyEnabled);
 }
@@ -151,7 +145,7 @@ void indie::systems::IrrklangAudioSystem::restartSounds(bool onlyEnabled)
             [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED) {
                     component->setPlayPosition(0);
-                    component->setShouldBePlayed(true);
+                    component->setIsPaused(false);
                 }
             }, onlyEnabled);
 }
@@ -164,7 +158,7 @@ void indie::systems::IrrklangAudioSystem::restartSounds(components::SoundCompone
             [&](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTED && component->getSoundType() == soundType) {
                     component->setPlayPosition(0);
-                    component->setShouldBePlayed(true);
+                    component->setIsPaused(false);
                 }
             }, onlyEnabled);
 }

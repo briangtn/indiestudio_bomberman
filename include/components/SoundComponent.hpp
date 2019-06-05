@@ -27,9 +27,7 @@ namespace indie {
 
             enum SoundComponentState {
                 STARTING,
-                STARTED,
-                STOPPING,
-                STOPPED
+                STARTED
             };
 
         public:
@@ -44,14 +42,12 @@ namespace indie {
             const std::string &getSourceFile() const;
             SoundType getSoundType() const;
             bool getSpatialization() const;
+            bool getIsLooped() const;
+            void setIsLooped(bool isLooped);
             bool getIsPaused() const;
             void setIsPaused(bool isPaused);
             float getVolume() const;
             void setVolume(float volume);
-            bool getShouldBePlayed() const;
-            void setShouldBePlayed(bool shouldBePlayed);
-            bool getIsLooped() const;
-            void setIsLooped(bool loop);
             unsigned int getPlayPosition() const;
             void setPlayPosition(unsigned int position);
 
@@ -69,7 +65,9 @@ namespace indie {
             std::string _sourceFile;
             SoundType _soundType;
             bool _spatialization;
-            bool _shouldBePlayed;
+
+            bool _isLooped;
+            bool _isPaused;
 
             indie::maths::Vector3D _position;
         };
