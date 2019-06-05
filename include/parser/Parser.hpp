@@ -17,6 +17,7 @@
 #include <functional>
 #include "scenes/IScene.hpp"
 #include "components/SoundComponent.hpp"
+#include "scenes/Scene.hpp"
 
 namespace indie {
 
@@ -34,7 +35,7 @@ namespace indie {
 
         void loadSystems(const std::string &fileName);
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
-        void loadScene(const std::string &fileName);
+        void loadScene(const std::string &fileName, scenes::Scene &scene);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &callingMethod);
 
