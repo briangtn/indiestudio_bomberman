@@ -11,6 +11,7 @@
 #include "parser/Parser.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "exceptions/ParserExceptions.hpp"
+#include "Exceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "scenes/Scene.hpp"
 #include "components/SoundComponent.hpp"
@@ -178,7 +179,8 @@ const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parse
         std::string fileName = entry.path().leaf().string();
         std::regex regex(".*\\.xml$");
         if (std::regex_search(fileName, regex))
-            _scenes.emplace_back(std::pair<std::string, scenes::IScene *>(fileName.substr(0, fileName.length() - 4), new scenes::Scene(fileName)));
+            _scenes.emplace_back(std::pair<std::string, scenes::IScene *>(
+                    fileName.substr(0, fileName.length() - 4), new scenes::Scene(fileName)));
     });
     return _scenes;
 }
@@ -355,7 +357,7 @@ void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLRea
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>();
     } else {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
-                std::atof(args["FOV"].c_str()));
+                std::stof(args["FOV"]));
     }
 }
 
@@ -419,9 +421,6 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
             {"name",        ""},
             {"fileName",    ""},
             {"layer",       ""},
-            {"position",    ""},
-            {"scale",       ""},
-            {"rotation",    ""},
             {"emitterSize", ""},
             {"direction",   ""},
             {"emitRate",    ""},
@@ -440,7 +439,7 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
     auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
         args["name"]);
     if (!args["fileName"].empty() && !args["layer"].empty()) {
-        component->setTexture(std::atoi(args["layer"].c_str()), args["fileName"]);
+        component->setTexture(std::stoi(args["layer"].c_str()), args["fileName"]);
     } else if (!args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
                 "Missing argument 'layer' for texture setting for component 'Particle' at line "
@@ -449,15 +448,6 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
         throw exceptions::ParserInvalidFileException(
                 "Missing argument 'fileName' for texture setting for component 'Particle' at line "
                 + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createParticle");
-    }
-    if (!args["position"].empty()) {
-        component->setPosition(getVector3D(args["position"], fileName, line));
-    }
-    if (!args["scale"].empty()) {
-        component->setScale(getVector3D(args["scale"], fileName, line));
-    }
-    if (!args["rotation"].empty()) {
-        component->setRotation(getVector3D(args["rotation"], fileName, line));
     }
     if (!args["emitterSize"].empty()) {
         component->setEmitterSize(irr::core::aabbox3d<irr::f32>(
@@ -468,8 +458,8 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
         component->setInitialDirection(getVector3D(args["direction"], fileName, line));
     }
     if (!args["emitRate"].empty()) {
-        component->setEmitRate(std::make_pair(std::atoi(args["emitRate"].substr(0, args["emitRate"].find(',')).c_str()),
-                std::atoi(args["emitRate"].substr(args["emitRate"].find(',') + 1).c_str())));
+        component->setEmitRate(std::make_pair(std::stoi(args["emitRate"].substr(0, args["emitRate"].find(','))),
+                std::stoi(args["emitRate"].substr(args["emitRate"].find(',') + 1))));
     }
     if (!args["brightColor"].empty()) {
         component->setDarkBrightColor(std::make_pair(
@@ -477,11 +467,11 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
                 getColor(args["brightColor"].substr(args["brightColor"].find(';') + 1), fileName, line)));
     }
     if (!args["age"].empty()) {
-        component->setMinMaxAge(std::make_pair(std::atoi(args["age"].substr(0, args["emitRate"].find(',')).c_str()),
-                std::atoi(args["age"].substr(args["age"].find(',') + 1).c_str())));
+        component->setMinMaxAge(std::make_pair(std::stoi(args["age"].substr(0, args["emitRate"].find(','))),
+                std::stoi(args["age"].substr(args["age"].find(',') + 1))));
     }
     if (!args["angle"].empty()) {
-        component->setAngle(std::atoi(args["angle"].c_str()));
+        component->setAngle(std::stoi(args["angle"]));
     }
     if (!args["size"].empty()) {
         component->setMinMaxSize(std::make_pair(
@@ -492,7 +482,7 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
         component->setFadeColor(getColor(args["fadeColor"], fileName, line));
     }
     if (!args["fadeTime"].empty()) {
-        component->setFadeTime(std::atoi(args["fadeTime"].c_str()));
+        component->setFadeTime(std::stoi(args["fadeTime"]));
     }
 }
 
@@ -501,22 +491,77 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
 {
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
-            {"fileName", ""},
-            {"type",     ""},
-            {"position", ""}
+            {"fileName",     ""},
+            {"type",         ""},
+            {"position",     ""},
+            {"playLooped",   ""},
+            {"startPaused",  ""},
+            {"volume",       ""},
+            {"playPosition", ""},
+            {"velocity",     ""}
     };
+    systems::IrrklangAudioSystem audioSystem;
+    try {
+        audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
+    } catch (jf::SystemNotFoundException &e) {
+        throw exceptions::ParserInvalidFileException(
+                "Component 'Sound' found at line " + std::to_string(line) + " in file " + fileName
+                + " but no system of type 'IrrklangAudio' has been previously instancied. "
+                  "Systems have to be added in file systems.xml.", "indie::Parser::createSound");
+    }
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
     if (args["fileName"].empty() || args["type"].empty()) {
         throw exceptions::ParserInvalidFileException(
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createSound");
     }
+    jf::components::ComponentHandler<components::SoundComponent> component;
     if (args["position"].empty()) {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
                 args["fileName"], getSoundType(args["type"], fileName, line));
     } else {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
                 args["fileName"], getSoundType(args["type"], fileName, line),
                 getVector3D(args["position"], fileName, line));
+    }
+    if (!args["playLooped"].empty()) {
+        if (args["playLooped"] == "false") {
+            component->setIsLooped(false);
+        } else if (args["playLooped"] == "true") {
+            component->setIsLooped(true);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'playLooped', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["playLooped"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
+        }
+    }
+    if (!args["startPaused"].empty()) {
+        if (args["startPaused"] == "false") {
+            component->setIsPaused(false);
+        } else if (args["startPaused"] == "true") {
+            component->setIsPaused(true);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'startPaused', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["startPaused"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
+        }
+    }
+    if (component->getSpatialization()) {
+        component->setSound(audioSystem.add3DSound(
+                component->getSourceFile(), component->getPosition(), component->getIsLooped(), component->getIsPaused()));
+    } else {
+        component->setSound(audioSystem.add2DSound(
+                component->getSourceFile(), component->getIsLooped(), component->getIsPaused()));
+    }
+    if (!args["volume"].empty()) {
+        component->setVolume(std::stof(args["volume"]));
+    }
+    if (!args["playPosition"].empty()) {
+        component->setPlayPosition(std::stoul(args["playPosition"]));
+    }
+    if (!args["velocity"].empty()) {
+        component->setVelocity(getVector3D(args["velocity"], fileName, line));
     }
 }
 
@@ -625,8 +670,8 @@ const indie::maths::Vector2D indie::Parser::getVector2D(const std::string &value
                 + "(expected 'float, float' but got something else.", "indie::Parser::getVector2D");
     }
     auto pos = value.find(',');
-    x = std::atof(value.substr(0, pos).c_str());
-    y = std::atof(value.substr(pos + 1).c_str());
+    x = std::stof(value.substr(0, pos));
+    y = std::stof(value.substr(pos + 1));
     return indie::maths::Vector2D(x, y);
 }
 
@@ -642,11 +687,11 @@ const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &value
                 + "(expected 'float, float, float' but got something else.", "indie::Parser::getVector3D");
     }
     auto pos = value.find(',');
-    x = std::atof(value.substr(0, pos).c_str());
+    x = std::stof(value.substr(0, pos));
     auto newPos = value.find(',', pos + 1);
-    y = std::atof(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    y = std::stof(value.substr(pos + 1, newPos - (pos + 1)));
     pos = newPos;
-    z = std::atof(value.substr(pos + 1).c_str());
+    z = std::stof(value.substr(pos + 1));
     return maths::Vector3D(x, y, z);
 }
 
@@ -662,13 +707,13 @@ const irr::video::SColor indie::Parser::getColor(const std::string &value, const
                 + "(expected 'int, int, int, int' but got something else.", "indie::Parser::getColor");
     }
     auto pos = value.find(',');
-    a = std::atoi(value.substr(0, pos).c_str());
+    a = std::stoi(value.substr(0, pos));
     auto newPos = value.find(',', pos + 1);
-    r = std::atoi(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    r = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
     pos = newPos;
     newPos = value.find(',', pos + 1);
-    g = std::atoi(value.substr(pos + 1, newPos - (pos + 1)).c_str());
+    g = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
     pos = newPos;
-    b = std::atoi(value.substr(pos + 1).c_str());
+    b = std::stoi(value.substr(pos + 1));
     return irr::video::SColor(a, r, g, b);
 }

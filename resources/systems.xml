@@ -2,4 +2,6 @@
 <ecs>
     <system type="IrrlichtManager">
     </system>
+    <system type="IrrklangAudio">
+    </system>
 </ecs>
