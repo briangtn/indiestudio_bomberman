@@ -19,6 +19,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <regex>
+#include <systems/MovementSystem.hpp>
+#include <systems/TauntSystem.hpp>
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 
@@ -78,7 +80,9 @@ indie::Parser::Parser()
     , _scenes()
     , _systems({
         {(L"IrrlichtManager"), &createIrrlichtManager},
-        {(L"IrrklangAudio"), &createIrrklangAudio}
+        {(L"IrrklangAudio"), &createIrrklangAudio},
+        {(L"Movement"), &createMovement},
+        {(L"Taunt"), &createTaunt}
     })
     , _components({
         {(L"Camera"), &createCamera},
@@ -337,6 +341,58 @@ void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const st
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
                         "indie::Parser::createIrrklangAudio");
+            }
+        } else {
+            continue;
+        }
+    }
+}
+
+void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            throw exceptions::ParserInvalidFileException(
+                    "Node 'system' of type 'Movement' does not required subnodes, at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createMovement");
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+                ecs.systemManager.addSystem<systems::MovementSystem>();
+                ecs.systemManager.startSystem<systems::MovementSystem>();
+                break;
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        "indie::Parser::createMovement");
+            }
+        } else {
+            continue;
+        }
+    }
+}
+
+void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            throw exceptions::ParserInvalidFileException(
+                    "Node 'system' of type 'Taunt' does not required subnodes, at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createTaunt");
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+                ecs.systemManager.addSystem<systems::TauntSystem>();
+                ecs.systemManager.startSystem<systems::TauntSystem>();
+                break;
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        "indie::Parser::createTaunt");
             }
         } else {
             continue;

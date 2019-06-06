@@ -125,7 +125,7 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setTexture(0, "../test_assets/particle_default.png");
     sys->setAngle(0);
     sys->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 255, 0, 0), irr::video::SColor(0, 0, 0, 255)));
-    sys->setEmiterSize(irr::core::aabbox3df(-100, 0, -100, 100, 1, 100));
+    sys->setEmitterSize(irr::core::aabbox3df(-100, 0, -100, 100, 1, 100));
     sys->setEmitRate(std::make_pair(40, 80));
     sys->setFadeColor(irr::video::SColor(0, 0, 255, 0));
     sys->setFadeTime(1000);

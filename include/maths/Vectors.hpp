@@ -11,6 +11,7 @@
 #define JFENTITYCOMPONENTSYSTEM_VECTORS_HPP
 
 #include <iostream>
+#include <irrlicht.h>
 
 #define RAD2DEG(x) ((x) * 57.295754f)
 #define DEG2RAD(x) ((x) * 0.0174533f)

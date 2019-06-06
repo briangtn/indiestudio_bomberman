@@ -39,6 +39,7 @@ target_link_libraries(bomberman
 		jfecs
 		${Irrlicht_LIBRARIES}
 		${Irrklang_LIBRARIES}
+		Boost::filesystem
 		)
 
 if (UNIX)

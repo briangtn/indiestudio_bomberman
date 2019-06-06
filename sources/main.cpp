@@ -18,6 +18,7 @@
 #include "systems/MovementSystem.hpp"
 #include "input/InputManager.hpp"
 #include "events/IrrlichtKeyJustChangedEvent.hpp"
+#include "parser/Parser.hpp"
 
 int runBomberman()
 {
@@ -28,14 +29,14 @@ int runBomberman()
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
-    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
-    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
+//    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
+//    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
 
-    ecs.systemManager.addSystem<indie::systems::MovementSystem>();
-    ecs.systemManager.startSystem<indie::systems::MovementSystem>();
+//    ecs.systemManager.addSystem<indie::systems::MovementSystem>();
+//    ecs.systemManager.startSystem<indie::systems::MovementSystem>();
 
-    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
-    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
+//    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
+//    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));

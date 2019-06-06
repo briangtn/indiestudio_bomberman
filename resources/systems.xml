@@ -2,6 +2,10 @@
 <ecs>
     <system type="IrrlichtManager">
     </system>
-<!--    <system type="IrrklangAudio">-->
-<!--    </system>-->
+    <system type="IrrklangAudio">
+    </system>
+    <system type="Movement">
+    </system>
+    <system type="Taunt">
+    </system>
 </ecs>
