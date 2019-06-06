@@ -24,7 +24,7 @@ int runBomberman()
     ECSWrapper ecs;
 //    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
 //    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
-    indie::Parser::getInstance().loadSystems("../resources/systems.xml");
+    indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 

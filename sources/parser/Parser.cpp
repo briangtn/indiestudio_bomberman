@@ -184,7 +184,7 @@ const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parse
     return _scenes;
 }
 
-void indie::Parser::loadScene(const std::string &fileName, scenes::Scene &scene)
+void indie::Parser::loadScene(const std::string &fileName)
 {
     ECSWrapper ecs;
     std::string currentEntity;

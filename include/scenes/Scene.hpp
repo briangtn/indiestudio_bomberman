@@ -28,10 +28,8 @@ namespace indie {
             void onStart() override;
             void onStop() override;
 
-            void setListeners(const std::vector<jf::internal::ID> &listeners);
-
         private:
-            const std::string &_fileName;
+            const std::string _fileName;
 
             std::vector<jf::internal::ID> _listeners;
         };

@@ -10,7 +10,7 @@
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
-
+#include "parser/Parser.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "components/Transform.hpp"
 
@@ -21,7 +21,7 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 
 void indie::scenes::Scene::onStart()
 {
-    Parser::getInstance().loadScene("../resources/scenes/test.xml", *this);
+    Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
     ECSWrapper ecs;
 
     auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_Q>>(nullptr, [](void *null, auto e) {
@@ -84,9 +84,4 @@ void indie::scenes::Scene::onStop()
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
     _listeners.clear();
-}
-
-void indie::scenes::Scene::setListeners(const std::vector<jf::internal::ID> &listeners)
-{
-    _listeners = listeners;
 }
