@@ -547,7 +547,6 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
 {
     ECSWrapper ecs;
     auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
-    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
     auto pos = tr->getPosition();
     auto scale = tr->getScale();
     auto font = entity->getComponent<components::Font>();
