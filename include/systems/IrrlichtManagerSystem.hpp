@@ -24,6 +24,7 @@
 #include "components/Animator.hpp"
 #include "components/PointLight.hpp"
 #include "components/GUI/Button.hpp"
+#include "components/GUI/Text.hpp"
 
 namespace indie {
 
@@ -117,6 +118,10 @@ namespace indie {
                     jf::entities::EntityHandler entity,
                     jf::components::ComponentHandler<components::Transform> tr,
                     jf::components::ComponentHandler<components::Button> button);
+            static void drawText(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Text> text);
 
 
         private:

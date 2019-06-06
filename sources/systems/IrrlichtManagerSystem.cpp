@@ -19,6 +19,7 @@
 #include "events/IrrlichtMouseInputEvent.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
 #include "components/GUI/Button.hpp"
+#include "components/GUI/Text.hpp"
 #include "components/GUI/Font.hpp"
 #include "components/Transform.hpp"
 #include "Entity.hpp"
@@ -89,6 +90,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     }
 
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
+    ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -536,6 +538,40 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
             font->setFontNode(env->getFont(font->getPath().c_str()));
         }
         buttonNode->setOverrideFont(font->getFontNode());
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler entity,
+                                                     jf::components::ComponentHandler<indie::components::Transform> tr,
+                                                     jf::components::ComponentHandler<indie::components::Text> text)
+{
+    ECSWrapper ecs;
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+    auto pos = tr->getPosition();
+    auto scale = tr->getScale();
+    auto font = entity->getComponent<components::Font>();
+    irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
+    irr::gui::IGUIStaticText *textNode = nullptr;
+    const wchar_t *textStr = irr::core::stringw(text->getText().c_str()).c_str(); // TODO: Seems to have a problem here (Text is not complete)
+
+    if (!text->isInit()) {
+        textNode = env->addStaticText(textStr, rect, false, true, nullptr, text->getId());
+        text->setTextNode(textNode);
+    }
+    textNode = text->getTextNode();
+    textNode->setText(textStr);
+    textNode->setRelativePosition(rect);
+    textNode->setID(text->getId());
+    textNode->setTextAlignment(static_cast<irr::gui::EGUI_ALIGNMENT>(text->getHorizontalAlignement()), static_cast<irr::gui::EGUI_ALIGNMENT>(text->getVerticalAlignement()));
+    textNode->setOverrideColor(text->getColor());
+    textNode->setBackgroundColor(text->getBackgroundColor());
+    textNode->setDrawBackground(true);
+    if (font.isValid()) {
+        if (!font->isInit()) {
+            font->setFontNode(env->getFont(font->getPath().c_str()));
+        }
+        textNode->setOverrideFont(font->getFontNode());
     }
 }
 

@@ -149,6 +149,16 @@ void indie::scenes::StaticTestScene::onStart()
     btnCmp->setOnClicked([]() {
         std::cout << "I'm clicked" << std::endl;
     });
+
+    auto textEntity = ecs.entityManager.createEntity("testText");
+    textEntity->assignComponent<components::Transform>();
+    auto textComp = textEntity->assignComponent<components::Text, std::string>("Salut toi");
+    btnEntity->assignComponent<components::Font, std::string>("../bigfont.png");
+    textEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
+    textEntity->getComponent<components::Transform>()->setPosition(maths::Vector3D(400, 400, 0));
+    textComp->setHorizontalAlignement(components::Text::CENTER);
+    textComp->setBackgroundColor(irr::video::SColor(255, 255, 0, 0));
+    textComp->setColor(irr::video::SColor(255, 0, 0, 255));
 }
 
 void indie::scenes::StaticTestScene::onStop()
