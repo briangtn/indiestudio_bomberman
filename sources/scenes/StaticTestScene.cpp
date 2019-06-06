@@ -21,6 +21,7 @@
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
+#include "parser/Parser.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
 {
