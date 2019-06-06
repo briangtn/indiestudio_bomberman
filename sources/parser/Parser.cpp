@@ -401,10 +401,10 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
     jf::components::ComponentHandler<components::Material> component;
     if (args["type"].empty()) {
         component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
-                args["type"]);
+                args["fileName"]);
     } else {
          component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
-                args["name"], getMaterialType(args["type"]));
+                args["fileName"], getMaterialType(args["type"]));
     }
     if (!args["flags"].empty()) {
         std::vector<std::string> flags;
