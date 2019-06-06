@@ -17,7 +17,7 @@ jf::entities::EntityManager &jf::entities::EntityManager::getInstance()
 }
 
 jf::entities::EntityManager::EntityManager()
-    : _maxId(0), _entities(), _freeIDs()
+    : _maxId(0), _entities(), _freeIDs(), _toDestroyIDs()
 {
 
 }
@@ -115,4 +115,17 @@ void jf::entities::EntityManager::deleteAllEntities()
         if (!_entities.begin()->second->shouldBeKeeped())
             deleteEntity(_entities.begin()->first);
     }
+}
+
+void jf::entities::EntityManager::safeDeleteEntity(const jf::internal::ID &entityID)
+{
+    _toDestroyIDs.push_back(entityID);
+}
+
+void jf::entities::EntityManager::applySafeDelete()
+{
+    for (auto &id : _toDestroyIDs) {
+        unregisterEntity(id);
+    }
+    _toDestroyIDs.clear();
 }

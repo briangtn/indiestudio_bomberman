@@ -66,7 +66,20 @@ void indie::systems::BonusSystem::onStart()
 
 void indie::systems::BonusSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
-    //TODO make powerups actually affect environment
+    ECSWrapper ecs;
+    ecs.entityManager.applyToEach<components::BonusEffector, components::BoxCollider>(
+        [ecs](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BonusEffector> bonus, jf::components::ComponentHandler<components::BoxCollider> collider) {
+            auto collisions = collider->getCollisions(true);
+            components::BonusType type;
+            for (auto &collision : collisions) {
+                type = bonus->getType();
+                if (_bonusAffectorMap.find(type) != _bonusAffectorMap.end() && _bonusAffectorMap.at(type)(collision, bonus)) {
+                    ecs.entityManager.safeDeleteEntity(entity->getID());
+                    return;
+                }
+            }
+        }
+    );
 }
 
 void indie::systems::BonusSystem::onStop()

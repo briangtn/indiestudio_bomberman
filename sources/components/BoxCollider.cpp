@@ -91,7 +91,7 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
 
         auto collider = entity->getComponent<components::BoxCollider>();
 
-        if (ignoreLayer || !(collider->getLayer() & _layer))
+        if (!ignoreLayer && !(collider->getLayer() & _layer))
             continue;
 
         auto tr = entity->getComponent<components::Transform>();
