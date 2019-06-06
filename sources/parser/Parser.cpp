@@ -21,7 +21,6 @@
 #include <regex>
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
-#include "dlloader/DLLoader.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -190,7 +189,6 @@ void indie::Parser::loadScene(const std::string &fileName, scenes::Scene &scene)
     ECSWrapper ecs;
     std::string currentEntity;
     bool sceneNode = false;
-    bool listenersNode = false;
 
     _xmlReader = _device->getFileSystem()->createXMLReader(fileName.c_str());
     if (!_xmlReader) {
@@ -207,28 +205,7 @@ void indie::Parser::loadScene(const std::string &fileName, scenes::Scene &scene)
                 } else {
                     sceneNode = true;
                 }
-            } else if (irr::core::stringw(L"listeners").equals_ignore_case(_xmlReader->getNodeName())) {
-                if (!sceneNode) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Node 'listeners' outside 'scene' at line " + std::to_string(i) + " in file "
-                            + fileName + ".", "indie::Parser::loadScene");
-                }
-                std::string name = irr::core::stringc(irr::core::stringw(_xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
-                if (name.empty()) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Missing attribute 'name' for node 'listeners' at line " + std::to_string(i) + " in file "
-                            + fileName + ".", "indie::Parser::loadScene");
-                } else {
-                    DLLoader dlLoader("../resources/listeners/" + name + "/lib" + name);
-                    scene.setListeners(dlLoader.getInstance<std::vector<jf::internal::ID>>("getListeners")());
-                }
-                listenersNode = true;
             } else if (irr::core::stringw(L"entity").equals_ignore_case(_xmlReader->getNodeName())) {
-                if (listenersNode) {
-                    throw exceptions::ParserInvalidFileException(
-                            "Node 'entity' found after a node 'listeners' at line " + std::to_string(i) + " in file "
-                            + fileName + ". The 'listeners' node has to be at the end of the file.", "indie::Parser::loadScene");
-                }
                 if (!sceneNode) {
                     throw exceptions::ParserInvalidFileException(
                             "Node 'entity' outside 'scene' at line " + std::to_string(i) + " in file " + fileName + ".",
