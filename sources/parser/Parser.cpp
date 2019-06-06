@@ -85,6 +85,7 @@ indie::Parser::Parser()
         {(L"Taunt"), &createTaunt}
     })
     , _components({
+        {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
         {(L"Particle"), &createParticle},
         {(L"Material"), &createMaterial},
@@ -397,6 +398,32 @@ void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::strin
         } else {
             continue;
         }
+    }
+}
+
+void indie::Parser::createBoxCollider(const std::string &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"size", ""},
+            {"offset", ""},
+            {"layer", ""}
+    };
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBoxCollider");
+    if (args["size"].empty()) {
+        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>();
+    } else if (args["offset"].empty()) {
+        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
+                getVector3D(args["size"], fileName, line));
+    } else if (args["layer"].empty()) {
+        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
+                getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line));
+    } else {
+        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
+                getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line),
+                std::stoull(args["layer"], nullptr, 16));
     }
 }
 
