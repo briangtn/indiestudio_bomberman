@@ -21,14 +21,14 @@ int runBomberman()
     ECSWrapper ecs;
 //    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
 //    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
-    indie::Parser::getInstance().loadSystems("../resources/systems.xml");
+    indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
     ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
     ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
 
-    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes("../resources/scenes"));
+    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
     indie::scenes::SceneManager::changeScene("test");
     std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
 //    scenes.emplace_back("test", new indie::scenes::StaticTestScene());

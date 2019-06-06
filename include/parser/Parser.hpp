@@ -19,6 +19,9 @@
 #include "components/SoundComponent.hpp"
 #include "scenes/Scene.hpp"
 
+#define SYSTEMS_FILE_PATH   "../resources/systems.xml"
+#define SCENES_FOLDER_PATH  "../resources/scenes"
+
 namespace indie {
 
     class Parser {
@@ -35,7 +38,7 @@ namespace indie {
 
         void loadSystems(const std::string &fileName);
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
-        void loadScene(const std::string &fileName, scenes::Scene &scene);
+        void loadScene(const std::string &fileName);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &callingMethod);
 
