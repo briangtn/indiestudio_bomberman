@@ -65,6 +65,8 @@ namespace indie {
                                const std::string &fileName, unsigned int &line);
         static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
+        static void createRotator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
         static void createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
         static void createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,

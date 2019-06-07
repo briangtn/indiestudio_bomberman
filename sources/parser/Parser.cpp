@@ -24,6 +24,7 @@
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 #include "components/Hoverer.hpp"
+#include "components/Rotator.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -92,6 +93,7 @@ indie::Parser::Parser()
         {(L"Particle"), &createParticle},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
+        {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
         {(L"Transform"), &createTransform}
     })
@@ -593,6 +595,22 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
     }
     if (!args["fadeTime"].empty()) {
         component->setFadeTime(std::stoi(args["fadeTime"]));
+    }
+}
+
+void indie::Parser::createRotator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"speed", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createRotator");
+    if (args["speed"].empty()) {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Rotator>();
+    } else {
+        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Rotator>(
+                getVector3D(args["speed"], fileName, line));
     }
 }
 
