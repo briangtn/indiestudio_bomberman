@@ -25,6 +25,7 @@
 #include "components/PointLight.hpp"
 #include "components/Hoverer.hpp"
 #include "components/Rotator.hpp"
+#include "components/PlayerController.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -92,6 +93,7 @@ indie::Parser::Parser()
         {(L"Camera"), &createCamera},
         {(L"Hoverer"), &createHoverer},
         {(L"Particle"), &createParticle},
+        {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
         {(L"Rotator"), &createRotator},
@@ -411,10 +413,10 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
 {
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
-            {"start", ""},
-            {"end", ""},
-            {"speed", ""},
-            {"loop", ""},
+            {"start",      ""},
+            {"end",        ""},
+            {"speed",      ""},
+            {"loop",       ""},
             {"transition", ""}
     };
     std::string animationName;
@@ -430,7 +432,7 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
                 }
                 fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAnimator", "animation");
                 for (auto &it : args) {
-                    if (it.second.empty()) {
+                    if (it.second.empty() && it.first != "transition") {
                         throw exceptions::ParserInvalidFileException(
                                 "Missing mandatory argument '" + it.first + "' at line " + std::to_string(line) + " in file "
                                 + fileName + ".", "indie::Parser::createMaterial");
@@ -452,8 +454,10 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
                         loop,
                         args["transition"]
                 });
+                for (auto &it : args) {
+                    it.second = "";
+                }
                 animationName.clear();
-                args.clear();
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
@@ -479,9 +483,9 @@ void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IX
 {
     ECSWrapper ecs;
     std::map<std::string, std::string> args = {
-            {"size", ""},
+            {"size",   ""},
             {"offset", ""},
-            {"layer", ""}
+            {"layer",  ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBoxCollider");
     if (args["size"].empty()) {
@@ -663,6 +667,227 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
     }
     if (!args["fadeTime"].empty()) {
         component->setFadeTime(std::stoi(args["fadeTime"]));
+    }
+}
+
+void indie::Parser::createPlayerController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                           const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"xMove",            ""},
+            {"yMove",            ""},
+            {"zMove",            ""},
+            {"lockXMove",        ""},
+            {"lockYMove",        ""},
+            {"lockZMove",        ""},
+            {"relativeMove",     ""},
+            {"moveSpeed",        ""},
+            {"xRotate",          ""},
+            {"yRotate",          ""},
+            {"zRotate",          ""},
+            {"lockXRotate",      ""},
+            {"lockYRotate",      ""},
+            {"lockZRotate",      ""},
+            {"lookForward",      ""},
+            {"rotateSpeed",      ""},
+            {"idleAnimation",    ""},
+            {"walkingAnimation", ""},
+            {"isWalking",        ""},
+            {"isTaunting",       ""},
+            {"tauntTime",        ""},
+            {"tauntButton",      ""},
+            {"tauntAnimation",   ""},
+            {"tauntDuration",    ""},
+            {"isPlacingBomb",    ""},
+            {"bombTime",         ""},
+            {"bombAnimation",    ""},
+            {"bombDuration",     ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::PlayerController>();
+    if (!args["xMove"].empty()) {
+        component->setXMovementAxis(args["xMove"]);
+    }
+    if (!args["yMove"].empty()) {
+        component->setYMovementAxis(args["yMove"]);
+    }
+    if (!args["zMove"].empty()) {
+        component->setZMovementAxis(args["zMove"]);
+    }
+    if (!args["lockXMove"].empty()) {
+        if (args["lockXMove"] == "true") {
+            component->setLockMovementX(true);
+        } else if (args["lockXMove"] == "false") {
+            component->setLockMovementX(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockXMove', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockXMove"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["lockYMove"].empty()) {
+        if (args["lockYMove"] == "true") {
+            component->setLockMovementY(true);
+        } else if (args["lockYMove"] == "false") {
+            component->setLockMovementY(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockYMove', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockYMove"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["lockZMove"].empty()) {
+        if (args["lockZMove"] == "true") {
+            component->setLockMovementZ(true);
+        } else if (args["lockZMove"] == "false") {
+            component->setLockMovementZ(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockZMove', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockZMove"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["relativeMove"].empty()) {
+        if (args["relativeMove"] == "true") {
+            component->setMovementRelativeToCamera(true);
+        } else if (args["relativeMove"] == "false") {
+            component->setMovementRelativeToCamera(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'relativeMove', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["relativeMove"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["moveSpeed"].empty()) {
+        component->setMovementSpeed(std::stof(args["moveSpeed"]));
+    }
+    if (!args["xRotate"].empty()) {
+        component->setXRotationAxis(args["xRotate"]);
+    }
+    if (!args["yRotate"].empty()) {
+        component->setYRotationAxis(args["yRotate"]);
+    }
+    if (!args["zRotate"].empty()) {
+        component->setZRotationAxis(args["zRotate"]);
+    }
+    if (!args["lockXRotate"].empty()) {
+        if (args["lockXRotate"] == "true") {
+            component->setLockRotationX(true);
+        } else if (args["lockXRotate"] == "false") {
+            component->setLockRotationX(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockXRotate', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockXRotate"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["lockYRotate"].empty()) {
+        if (args["lockYRotate"] == "true") {
+            component->setLockRotationY(true);
+        } else if (args["lockYRotate"] == "false") {
+            component->setLockRotationY(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockYRotate', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockYRotate"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["lockZRotate"].empty()) {
+        if (args["lockZRotate"] == "true") {
+            component->setLockRotationZ(true);
+        } else if (args["lockZRotate"] == "false") {
+            component->setLockRotationZ(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lockZRotate', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lockZRotate"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["lookForward"].empty()) {
+        if (args["lookForward"] == "true") {
+            component->setAlwaysLookForward(true);
+        } else if (args["lookForward"] == "false") {
+            component->setAlwaysLookForward(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'lookForward', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["lookForward"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["rotateSpeed"].empty()) {
+        component->setRotationSpeed(std::stof(args["rotateSpeed"]));
+    }
+    if (!args["idleAnimation"].empty()) {
+        component->setIdleAnimation(args["idleAnimation"]);
+    }
+    if (!args["walkingAnimation"].empty()) {
+        component->setWalkingAnimation(args["walkingAnimation"]);
+    }
+    if (!args["isWalking"].empty()) {
+        if (args["isWalking"] == "true") {
+            component->setIsWalking(true);
+        } else if (args["isWalking"] == "false") {
+            component->setIsWalking(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'isWalking', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["isWalking"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["isTaunting"].empty()) {
+        if (args["isTaunting"] == "true") {
+            component->setIsTaunting(true);
+        } else if (args["isTaunting"] == "false") {
+            component->setIsTaunting(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'isTaunting', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["isTaunting"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["tauntTime"].empty()) {
+        component->setTauntTime(std::stof(args["tauntTime"]));
+    }
+    if (!args["tauntButton"].empty()) {
+        component->setTauntButton(args["tauntButton"]);
+    }
+    if (!args["tauntAnimation"].empty()) {
+        component->setTauntAnimation(args["tauntAnimation"]);
+    }
+    if (!args["tauntDuration"].empty()) {
+        component->setTauntDuration(std::stof(args["tauntDuration"]));
+    }
+    if (!args["isPlacingBomb"].empty()) {
+        if (args["isPlacingBomb"] == "true") {
+            component->setIsPlacingBomb(true);
+        } else if (args["isPlacingBomb"] == "false") {
+            component->setIsPlacingBomb(false);
+        } else {
+            throw exceptions::ParserInvalidFileException(
+                    "Invalid value for argument 'isPlacingBomb', expected 'true' or 'false', but got '"
+                    + std::string(irr::core::stringc(args["isPlacingBomb"].c_str()).c_str()) + "' at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
+        }
+    }
+    if (!args["bombTime"].empty()) {
+        component->setBombPlacementTime(std::stof(args["bombTime"]));
+    }
+    if (!args["bombAnimation"].empty()) {
+        component->setBombPlacementAnimation(args["bombAnimation"]);
+    }
+    if (!args["bombDuration"].empty()) {
+        component->setBombPlacementDuration(std::stof(args["bombDuration"]));
     }
 }
 

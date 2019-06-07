@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<scene>
+    <entity name="testEntity" shouldBeKeeped="false">
+        <component type="Animator">
+            <animation name="animation">
+                <argument name="start" value="0"/>
+                <argument name="end" value="1"/>
+                <argument name="speed" value="1"/>
+                <argument name="loop" value="false"/>
+                <argument name="transition" value="transitionName"/>
+            </animation>
+        </component>
+        <component type="BoxCollider">
+            <argument name="size" value="1,1,1"/>
+            <argument name="offset" value="0,0,0"/>
+            <argument name="layer" value="0xffffffff"/>
+        </component>
+        <component type="Camera">
+            <argument name="FOV" value="45"/>
+        </component>
+        <component type="Hoverer">
+            <argument name="speed" value="1,1,1"/>
+            <argument name="amplitude" value="1,1,1"/>
+            <argument name="advancement" value="0,0,0"/>
+        </component>
+        <component type="Material">
+            <argument name="fileName" value="path/to/texture"/>
+            <argument name="type" value="EMT_SOLID"/>
+            <argument name="flags" value="EMF_WIREFRAME;!EMF_WIREFRAME"/>
+        </component>
+        <component type="Mesh">
+            <argument name="fileName" value="path/to/mesh"/>
+        </component>
+        <component type="Particle">
+            <argument name="name" value="testParticule"/>
+            <argument name="fileName" value="path/to/texture"/>
+            <argument name="layer" value="0"/>
+            <argument name="emitterSize" value="0,0,0;0,0,0"/>
+            <argument name="direction" value="0,0,0"/>
+            <argument name="emitRate" value="0,0"/>
+            <argument name="brightColor" value="0,0,0,0;0,0,0,0"/>
+            <argument name="age" value="0,1"/>
+            <argument name="angle" value="0"/>
+            <argument name="size" value="0,1;2,3"/>
+            <argument name="fadeColor" value="0,0,0,0"/>
+            <argument name="fadeTime" value="0"/>
+        </component>
+        <component type="PlayerController">
+            <argument name="xMove" value="xMovementAxis"/>
+            <argument name="yMove" value="yMovementAxis"/>
+            <argument name="zMove" value="zMovementAxis"/>
+            <argument name="lockXMove" value="true"/>
+            <argument name="lockYMove" value="false"/>
+            <argument name="lockZMove" value="true"/>
+            <argument name="relativeMove" value="false"/>
+            <argument name="moveSpeed" value="1.5"/>
+            <argument name="xRotate" value="xRotationAxis"/>
+            <argument name="yRotate" value="yRotationAxis"/>
+            <argument name="zRotate" value="zRotationAxis"/>
+            <argument name="lockXRotate" value="true"/>
+            <argument name="lockYRotate" value="false"/>
+            <argument name="lockZRotate" value="true"/>
+            <argument name="lookForward" value="false"/>
+            <argument name="rotateSpeed" value="1.0"/>
+            <argument name="idleAnimation" value="animationName"/>
+            <argument name="walkingAnimation" value="animationName"/>
+            <argument name="isWalking" value="true"/>
+            <argument name="isTaunting" value="false"/>
+            <argument name="tauntTime" value="3.5"/>
+            <argument name="tauntButton" value="buttonName"/>
+            <argument name="tauntAnimation" value="animationName"/>
+            <argument name="tauntDuration" value="3.0"/>
+            <argument name="isPlacingBomb" value="false"/>
+            <argument name="bombTime" value="1.3"/>
+            <argument name="bombAnimation" value="animationName"/>
+            <argument name="bombDuration" value="2.0"/>
+        </component>
+        <component type="Rotator">
+            <argument name="speed" value="1,1,1"/>
+        </component>
+        <component type="Sound">
+            <argument name="fileName" value="path/to/sound"/>
+            <argument name="type" value="MUSIC"/>
+            <argument name="position" value="0,0,0"/>
+        </component>
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="rotation" value="0,0,0"/>
+            <argument name="scale" value="0,0,0"/>
+        </component>
+    </entity>
+</scene>

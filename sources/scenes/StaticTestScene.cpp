@@ -31,11 +31,11 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({50, 130, -105});
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
-    //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    //cameraControler->setAlwaysLookForward(false);
-    //cameraControler->setXRotationAxis("xRotAxis");
-    //cameraControler->setYRotationAxis("yRotAxis");
-    //cameraControler->setRotationSpeed(100);
+    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
+    cameraControler->setAlwaysLookForward(false);
+    cameraControler->setXRotationAxis("xRotAxis");
+    cameraControler->setYRotationAxis("yRotAxis");
+    cameraControler->setRotationSpeed(100);
 
     auto cubeEntity = ecs.entityManager.createEntity("item");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();

@@ -49,8 +49,10 @@ int runBomberman()
 
     indie::InputManager::RegisterKey("taunt", 0, 1);
 
-    std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
+//    std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
 //    scenes.emplace_back("test", new indie::scenes::StaticTestScene());
+
+    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
