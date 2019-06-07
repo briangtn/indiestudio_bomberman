@@ -54,7 +54,6 @@ void indie::scenes::StaticTestScene::onStart()
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, indie::components::PlayerController::PlayerControllerSettings>({"xAxis", "zAxis", "taunt", "bomb"});
-    playerControler->setMovementSpeed(50.0f);
     auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
@@ -101,7 +100,7 @@ void indie::scenes::StaticTestScene::onStart()
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
-            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, components::BONUS_T_WALL_PASS}));
+            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB}));
         }
     });
     _listeners.emplace_back(id);

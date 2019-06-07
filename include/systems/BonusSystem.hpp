@@ -49,6 +49,11 @@ namespace indie {
 
             static const std::map<components::BonusType, float> _bonusDistributionRate;
             static const std::map<components::BonusType, BonusFunction> _bonusAffectorMap;
+            static const std::map<components::BonusType, std::pair<std::string, std::string>> _bonusModelMap;
+
+            static constexpr int _bombTileAdded = 1;
+            static constexpr float _speedAdded = 10.0f;
+            static constexpr int _maxBombAdded = 1;
 
         private:
             jf::internal::ID _bonusSpawnerDestroyedEventListenerID;

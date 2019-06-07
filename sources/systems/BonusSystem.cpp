@@ -31,6 +31,13 @@ const std::map<indie::components::BonusType, float> indie::systems::BonusSystem:
     {components::BONUS_T_WALL_PASS, 2.5f},
 };
 
+const std::map<indie::components::BonusType, std::pair<std::string, std::string>> indie::systems::BonusSystem::_bonusModelMap = {
+    {components::BONUS_T_BOMB_UP, {"../test_assets/Items/bombUpItem.b3d", "../test_assets/Items/itemTex.png"}},
+    {components::BONUS_T_FIRE_UP, {"../test_assets/Items/fireUpItem.b3d", "../test_assets/Items/itemTex.png"}},
+    {components::BONUS_T_SPEED_UP, {"../test_assets/Items/speedUpItem.b3d", "../test_assets/Items/itemTex.png"}},
+    {components::BONUS_T_WALL_PASS, {"../test_assets/Items/wallPassItem.b3d", "../test_assets/Items/itemTex.png"}},
+};
+
 indie::systems::BonusSystem::BonusSystem()
     : _bonusSpawnerDestroyedEventListenerID(),
       _re(time(nullptr)),
@@ -102,15 +109,13 @@ jf::entities::EntityHandler indie::systems::BonusSystem::spawnNewPowerUp(
     auto newPowerUp = ecs.entityManager.createEntity("powerUp");
     newPowerUp->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(pos, {0, 0, 0}, scale);
     newPowerUp->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.5, 0.5, 0.5}, {0, 0, 0}, 0);
-    newPowerUp->assignComponent<components::Rotator, maths::Vector3D>({0, 90, 0});
-    newPowerUp->assignComponent<components::Hoverer, maths::Vector3D, maths::Vector3D>({0, 1, 0}, {0, 0.5f * scale.y, 0});
+    newPowerUp->assignComponent<components::Rotator, maths::Vector3D>({0, 45, 0});
+    newPowerUp->assignComponent<components::Hoverer, maths::Vector3D, maths::Vector3D>({0, 0.75, 0}, {0, 0.25f * scale.y, 0});
     newPowerUp->assignComponent<components::BonusEffector, components::BonusType>(bonusType);
-    //TODO refacto this part to use the actual texture and model based on powerUp type
-    newPowerUp->assignComponent<components::Mesh, std::string>("../test_assets/cube.obj");
-    auto mat = newPowerUp->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
+    newPowerUp->assignComponent<components::Mesh, std::string>(_bonusModelMap.at(bonusType).first);
+    auto mat = newPowerUp->assignComponent<indie::components::Material, std::string>(_bonusModelMap.at(bonusType).second);
     mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    //ENDREFACTO
     return newPowerUp;
 }
 
@@ -118,7 +123,11 @@ bool indie::systems::BonusSystem::BombUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
-    //TODO
+    auto pc = affectTo->getComponent<components::PlayerController>();
+    if (pc.isValid()) {
+        pc->setMaxBomb(pc->getMaxBomb() + _maxBombAdded);
+        return true;
+    }
     return false;
 }
 
@@ -126,7 +135,11 @@ bool indie::systems::BonusSystem::FireUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
-    //TODO
+    auto pc = affectTo->getComponent<components::PlayerController>();
+    if (pc.isValid()) {
+        pc->setBombForce(pc->getBombForce() + _bombTileAdded);
+        return true;
+    }
     return false;
 }
 
@@ -134,7 +147,11 @@ bool indie::systems::BonusSystem::SpeedUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
-    //TODO
+    auto pc = affectTo->getComponent<components::PlayerController>();
+    if (pc.isValid()) {
+        pc->setMovementSpeed(pc->getMovementSpeed() + _speedAdded);
+        return true;
+    }
     return false;
 }
 

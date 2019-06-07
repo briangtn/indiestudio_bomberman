@@ -40,7 +40,9 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -77,7 +79,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -115,7 +119,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -153,7 +159,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -450,4 +458,24 @@ float indie::components::PlayerController::getBombPlacementDuration() const
 void indie::components::PlayerController::setBombPlacementDuration(float bombPlacementDuration)
 {
     _bombPlacementDuration = bombPlacementDuration;
+}
+
+int indie::components::PlayerController::getBombForce() const
+{
+    return _bombForce;
+}
+
+void indie::components::PlayerController::setBombForce(int bombForce)
+{
+    _bombForce = bombForce;
+}
+
+int indie::components::PlayerController::getMaxBomb() const
+{
+    return _maxBomb;
+}
+
+void indie::components::PlayerController::setMaxBomb(int maxBomb)
+{
+    _maxBomb = maxBomb;
 }
