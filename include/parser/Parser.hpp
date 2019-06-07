@@ -40,7 +40,8 @@ namespace indie {
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
         void loadScene(const std::string &fileName);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line, const std::string &callingMethod);
+                                const std::string &fileName, unsigned int &line, const std::string &callingMethod,
+                                const std::string &node="component");
 
     private: /* SYSTEMS */
         static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
@@ -53,6 +54,8 @@ namespace indie {
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
+        static void createAnimator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
         static void createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,

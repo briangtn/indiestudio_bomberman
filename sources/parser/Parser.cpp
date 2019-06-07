@@ -87,6 +87,7 @@ indie::Parser::Parser()
         {(L"Taunt"), &createTaunt}
     })
     , _components({
+        {(L"Animator"), &createAnimator},
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
         {(L"Hoverer"), &createHoverer},
@@ -405,6 +406,74 @@ void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::strin
     }
 }
 
+void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"start", ""},
+            {"end", ""},
+            {"speed", ""},
+            {"loop", ""},
+            {"transition", ""}
+    };
+    std::string animationName;
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Animator>();
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (irr::core::stringw(L"animation").equals_ignore_case(xmlReader->getNodeName())) {
+                animationName = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                if (animationName.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'name' for node 'animation' at line " + std::to_string(line) + " in file "
+                            + fileName + ".", "indie::Parser::createAnimator");
+                }
+                fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAnimator", "animation");
+                for (auto &it : args) {
+                    if (it.second.empty()) {
+                        throw exceptions::ParserInvalidFileException(
+                                "Missing mandatory argument '" + it.first + "' at line " + std::to_string(line) + " in file "
+                                + fileName + ".", "indie::Parser::createMaterial");
+                    }
+                }
+                bool loop = false;
+                if (args["loop"] == "true") {
+                    loop = true;
+                } else if (args["loop"] != "false") {
+                    throw exceptions::ParserInvalidFileException(
+                            "Invalid value for attribute 'loop', expected 'true' or 'false', but got '"
+                            + args["loop"] + "' at line " + std::to_string(line) + " in file " + fileName + ".",
+                            "indie::Parser::loadScene");
+                }
+                component->addAnimation(animationName, {
+                        static_cast<unsigned int>(std::stoul(args["start"])),
+                        static_cast<unsigned int>(std::stoul(args["end"])),
+                        static_cast<unsigned int>(std::stoul(args["speed"])),
+                        loop,
+                        args["transition"]
+                });
+                animationName.clear();
+                args.clear();
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
+                        + " at line " + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createAnimator");
+            }
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (!(irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName()))) {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        "indie::Parser::createAnimator");
+            }
+            line++;
+            return;
+        } else {
+            continue;
+        }
+    }
+}
+
 void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line)
 {
@@ -414,7 +483,6 @@ void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IX
             {"offset", ""},
             {"layer", ""}
     };
-
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBoxCollider");
     if (args["size"].empty()) {
         args["size"] = "1,1,1";
@@ -718,7 +786,8 @@ void indie::Parser::createTransform(const std::string &entityName, irr::io::IXML
 }
 
 void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
-                                const std::string &fileName, unsigned int &line, const std::string &callingMethod)
+                                const std::string &fileName, unsigned int &line, const std::string &callingMethod,
+                                const std::string &node)
 {
     for (; xmlReader->read(); line++) {
         if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
@@ -748,9 +817,9 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                         + " at line " + std::to_string(line) + " in file " + fileName + ".", callingMethod);
             }
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (!(irr::core::stringw(L"component").equals_ignore_case(xmlReader->getNodeName()))) {
+            if (!(irr::core::stringw(node.c_str()).equals_ignore_case(xmlReader->getNodeName()))) {
                 throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected '" + node + "' but got '"
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
                         callingMethod);
             }
