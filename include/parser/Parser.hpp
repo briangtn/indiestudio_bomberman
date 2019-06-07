@@ -53,10 +53,12 @@ namespace indie {
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
-        static void createBoxCollider(const std::string &entity, irr::io::IXMLReader *xmlReader,
+        static void createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,

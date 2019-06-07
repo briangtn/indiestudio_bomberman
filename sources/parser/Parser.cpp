@@ -23,6 +23,7 @@
 #include <systems/TauntSystem.hpp>
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
+#include "components/Hoverer.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -87,6 +88,7 @@ indie::Parser::Parser()
     , _components({
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
+        {(L"Hoverer"), &createHoverer},
         {(L"Particle"), &createParticle},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
@@ -401,7 +403,7 @@ void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::strin
     }
 }
 
-void indie::Parser::createBoxCollider(const std::string &entity, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
@@ -413,18 +415,17 @@ void indie::Parser::createBoxCollider(const std::string &entity, irr::io::IXMLRe
 
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBoxCollider");
     if (args["size"].empty()) {
-        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>();
-    } else if (args["offset"].empty()) {
-        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
-                getVector3D(args["size"], fileName, line));
-    } else if (args["layer"].empty()) {
-        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
-                getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line));
-    } else {
-        ecs.entityManager.getEntitiesByName(entity)[0]->assignComponent<components::BoxCollider>(
-                getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line),
-                std::stoull(args["layer"], nullptr, 16));
+        args["size"] = "1,1,1";
     }
+    if (args["offset"].empty()) {
+        args["offset"] = "0,0,0";
+    }
+    if (args["layer"].empty()) {
+        args["layer"] = "0xffffffff";
+    }
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::BoxCollider>(
+            getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line),
+            std::stoull(args["layer"], nullptr, 16));
 }
 
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -441,6 +442,33 @@ void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLRea
     } else {
         ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
                 std::stof(args["FOV"]));
+    }
+}
+
+void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"speed",       ""},
+            {"amplitude",   ""},
+            {"advancement", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createHoverer");
+    jf::components::ComponentHandler<components::Hoverer> component;
+    if (!args["speed"].empty() && !args["amplitude"].empty()) {
+        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Hoverer>(
+                getVector3D(args["speed"], fileName, line), getVector3D(args["amplitude"], fileName, line));
+    } else {
+        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Hoverer>();
+        if (!args["speed"].empty()) {
+            component->setSpeed(getVector3D(args["speed"], fileName, line));
+        } else if (!args["amplitude"].empty()) {
+            component->setAmplitude(getVector3D(args["amplitude"], fileName, line));
+        }
+    }
+    if (!args["advancement"].empty()) {
+        component->setAdvancement(getVector3D(args["advancement"], fileName, line));
     }
 }
 
