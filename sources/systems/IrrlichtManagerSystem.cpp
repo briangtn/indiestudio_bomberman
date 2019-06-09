@@ -21,6 +21,7 @@
 #include "components/GUI/Button.hpp"
 #include "components/GUI/Text.hpp"
 #include "components/GUI/Font.hpp"
+#include "components/GUI/Image.hpp"
 #include "components/Transform.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
@@ -91,6 +92,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
+    ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -573,6 +575,27 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
         textNode->setOverrideFont(font->getFontNode());
     }
 }
+
+void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandler entity,
+                                                      jf::components::ComponentHandler<indie::components::Transform> tr,
+                                                      jf::components::ComponentHandler<indie::components::Image> image)
+{
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto pos = tr->getPosition();
+    irr::core::position2d<irr::s32> irrPos = irr::core::position2d<irr::s32>(pos.x, pos.y);
+    irr::video::ITexture *textureNode = nullptr;
+
+    if (!image->isTextureInit()) {
+        textureNode = driver->getTexture(image->getPath().c_str());
+        driver->makeColorKeyTexture(textureNode, irr::core::position2d<irr::s32>(0, 0));
+        image->setTextureNode(textureNode);
+    }
+    textureNode = image->getTextureNode();
+    env->addImage(textureNode, irrPos, false);
+}
+
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {

@@ -67,6 +67,7 @@ namespace indie {
             irr::video::SColor _backgroundColor;
             HorizontalAlignement _horizontalAlignement;
             VerticalAlignement _verticalAlignement;
+            jf::internal::ID _eventCloseID;
         };
     }
 }

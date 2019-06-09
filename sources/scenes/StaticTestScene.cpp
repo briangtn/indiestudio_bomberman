@@ -140,25 +140,19 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
     sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
 
-    auto btnEntity = ecs.entityManager.createEntity("testBtn");
-    btnEntity->assignComponent<components::Transform>();
-    auto btnCmp = btnEntity->assignComponent<components::Button, std::string, int>("La bite sur ton front", 1);
-    btnEntity->assignComponent<components::Font, std::string>("../bigfont.png");
-    btnEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
-    btnCmp->setTexturePath("../4.png");
-    btnCmp->setOnClicked([]() {
-        std::cout << "I'm clicked" << std::endl;
-    });
-
     auto textEntity = ecs.entityManager.createEntity("testText");
     textEntity->assignComponent<components::Transform>();
     auto textComp = textEntity->assignComponent<components::Text, std::string>("Salut toi");
-    btnEntity->assignComponent<components::Font, std::string>("../bigfont.png");
     textEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
     textEntity->getComponent<components::Transform>()->setPosition(maths::Vector3D(400, 400, 0));
     textComp->setHorizontalAlignement(components::Text::CENTER);
     textComp->setBackgroundColor(irr::video::SColor(255, 255, 0, 0));
     textComp->setColor(irr::video::SColor(255, 0, 0, 255));
+
+    auto imageEntity = ecs.entityManager.createEntity("testImage");
+    imageEntity->assignComponent<components::Transform>();
+    auto imageComp = imageEntity->assignComponent<components::Image, std::string>("../test.jpg");
+    imageEntity->getComponent<components::Transform>()->setPosition(maths::Vector3D(0, 0, 0));
 }
 
 void indie::scenes::StaticTestScene::onStop()

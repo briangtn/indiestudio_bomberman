@@ -25,6 +25,7 @@
 #include "components/PointLight.hpp"
 #include "components/GUI/Button.hpp"
 #include "components/GUI/Text.hpp"
+#include "components/GUI/Image.hpp"
 
 namespace indie {
 
@@ -122,6 +123,10 @@ namespace indie {
                     jf::entities::EntityHandler entity,
                     jf::components::ComponentHandler<components::Transform> tr,
                     jf::components::ComponentHandler<components::Text> text);
+            static void drawImage(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Image> image);
 
 
         private:

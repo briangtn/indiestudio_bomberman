@@ -7,7 +7,9 @@
 
 /* Created the 06/06/2019 at 09:40 by brian */
 
+#include "ECSWrapper.hpp"
 #include "Events.hpp"
+#include "events/IrrlichtClosingWindowEvent.hpp"
 #include "components/GUI/GuiBase.hpp"
 #include "components/GUI/Text.hpp"
 
@@ -27,12 +29,22 @@ indie::components::Text::Text(
         _horizontalAlignement(horizontalAlignement),
         _verticalAlignement(verticalAlignement)
 {
+    ECSWrapper ecs;
+
+    _eventCloseID = ecs.eventManager.addListener<Text, events::IrrlichtClosingWindowEvent>(this, [](Text *text, events::IrrlichtClosingWindowEvent e){
+        if (text->_textNode != nullptr)
+            text->_textNode->remove();
+        text->_textNode= nullptr;
+    });
     EMIT_CREATE(Text);
 }
 
 indie::components::Text::~Text()
 {
     EMIT_DELETE(Text);
+
+    if (_textNode != nullptr)
+        _textNode->remove();
 }
 
 const std::string &indie::components::Text::getText() const
