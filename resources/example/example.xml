@@ -72,6 +72,7 @@
             <argument name="tauntDuration" value="3.0"/>
             <argument name="isPlacingBomb" value="false"/>
             <argument name="bombTime" value="1.3"/>
+            <argument name="bombButton" value="buttonName"/>
             <argument name="bombAnimation" value="animationName"/>
             <argument name="bombDuration" value="2.0"/>
         </component>

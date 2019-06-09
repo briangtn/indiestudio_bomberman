@@ -104,6 +104,10 @@
             </animation>
         </component>
         <component type="PlayerController">
+            <argument name="xMove" value="xAxis"/>
+            <argument name="zMove" value="zAxis"/>
+            <argument name="tauntButton" value="taunt"/>
+            <argument name="bombButton" value="bomb"/>
             <argument name="moveSpeed" value="50"/>
         </component>
     </entity>

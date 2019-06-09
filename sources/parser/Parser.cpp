@@ -701,6 +701,7 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
             {"tauntDuration",    ""},
             {"isPlacingBomb",    ""},
             {"bombTime",         ""},
+            {"bombButton",       ""},
             {"bombAnimation",    ""},
             {"bombDuration",     ""}
     };
@@ -882,6 +883,9 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
     }
     if (!args["bombTime"].empty()) {
         component->setBombPlacementTime(std::stof(args["bombTime"]));
+    }
+    if (!args["bombButton"].empty()) {
+        component->setBombPlacementButton(args["bombButton"]);
     }
     if (!args["bombAnimation"].empty()) {
         component->setBombPlacementAnimation(args["bombAnimation"]);
