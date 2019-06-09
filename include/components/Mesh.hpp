@@ -33,6 +33,9 @@ namespace indie {
             bool applyChanges();
 
             irr::scene::IAnimatedMeshSceneNode *getAnimatedMeshNode();
+
+            std::ostream &operator<<(std::ostream &file);
+
         protected:
         private:
             irr::scene::IAnimatedMesh *_mesh;

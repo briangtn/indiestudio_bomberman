@@ -10,6 +10,7 @@
 #include <ECSWrapper.hpp>
 #include <components/Transform.hpp>
 #include <maths/Geometry3D.hpp>
+#include <iomanip>
 #include "Events.hpp"
 #include "components/BoxCollider.hpp"
 
@@ -110,4 +111,14 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
             colliding.push_back(entity);
     }
     return colliding;
+}
+
+std::ostream &indie::components::BoxCollider::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="BoxCollider">)" << std::endl;
+    file << std::setw(12) << R"(<argument name="size" value=")" << _size << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="offset" value=")" << _offset << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="layer" value="0x)" << std::setfill('0') << std::hex <<  _layer << R"("/>)" << std::endl;
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
 }

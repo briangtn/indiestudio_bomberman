@@ -40,6 +40,8 @@ namespace indie {
             bool hasCollisions();
             std::vector<jf::entities::EntityHandler> getCollisions();
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             maths::Vector3D _size;
             maths::Vector3D _offset;

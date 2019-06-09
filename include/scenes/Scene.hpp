@@ -14,6 +14,7 @@
 #include <vector>
 #include "IScene.hpp"
 #include "ID.hpp"
+#include "EntityHandler.hpp"
 
 namespace indie {
 
@@ -27,6 +28,8 @@ namespace indie {
         public:
             void onStart() override;
             void onStop() override;
+            void save(bool override, bool saveShouldBeKeeped) override;
+            void save(const std::string &saveName, bool override, bool saveShouldBeKeeped) override;
 
         private:
             const std::string _fileName;
@@ -34,6 +37,7 @@ namespace indie {
             std::vector<jf::internal::ID> _listeners;
         };
     }
+    std::ostream &operator<<(std::ostream &file, jf::entities::EntityHandler entity);
 }
 
 #endif //INDIESTUDIO_SCENE_HPP

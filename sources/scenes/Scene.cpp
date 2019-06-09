@@ -7,6 +7,11 @@
 
 /* Created the 27/05/2019 at 15:27 by jbulteau */
 
+#include <sstream>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <boost/hana.hpp>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -87,4 +92,43 @@ void indie::scenes::Scene::onStop()
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
     _listeners.clear();
+}
+
+void indie::scenes::Scene::save(bool override, bool saveShouldBeKeeped)
+{
+    std::time_t time = std::time(nullptr);
+    std::stringstream date;
+    std::string fileName = "save " + _fileName.substr(0, _fileName.length() - 4);
+
+    date << std::put_time(std::localtime(&time), " %Y-%m-%d %H-%M-%S.xml");
+    fileName += date.str();
+    save(fileName, override, saveShouldBeKeeped);
+}
+
+void indie::scenes::Scene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
+{
+    ECSWrapper ecs;
+    std::ofstream file(saveName);
+
+    file << "<?xml version=\"1.0\"?>" << std::endl << "<scene>" << std::endl;
+    ecs.entityManager.applyToEach(
+            [&](jf::entities::EntityHandler entity) {
+                if (!(!saveShouldBeKeeped && entity->shouldBeKeeped())) {
+                    file << entity;
+                }
+            });
+    file << "</scene>" << std::endl;
+}
+
+std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler entity)
+{
+    file << "<entity name=\"" << entity->getName() << "\" shouldBeKeeped=\"" << std::boolalpha
+         << entity->shouldBeKeeped() << "\">" << std::endl;
+
+    auto components = entity->getComponents<jf::components::Component>();
+    boost::hana::for_each(components, [&](jf::components::Component component) {
+        file << component;
+    });
+    file << "</entity>" << std::endl;
+    return file;
 }

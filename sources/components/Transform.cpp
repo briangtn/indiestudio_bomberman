@@ -8,6 +8,7 @@
 /* Created the 02/05/2019 at 15:25 by jfrabel */
 
 #include <cmath>
+#include <iomanip>
 #include "Events.hpp"
 #include "components/Transform.hpp"
 #include "maths/Matrices.hpp"
@@ -92,4 +93,14 @@ void indie::components::Transform::lookAt(const indie::maths::Vector3D &point)
 void indie::components::Transform::lookAt(jf::components::ComponentHandler<indie::components::Transform> point)
 {
     lookAt(point->_position);
+}
+
+std::ostream &indie::components::Transform::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="Transform">)" << std::endl;
+    file << std::setw(12) << R"(<argument name="position" value=")" << _position << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="rotation" value=")" << _rotation << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="scale" value=")" << _scale << R"("/>)" << std::endl;
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
 }

@@ -27,6 +27,8 @@ namespace indie {
             void setFOV(float FOV);
             float getFOV() const;
 
+            std::ostream &operator<<(std::ostream &file);
+
         protected:
             irr::scene::ICameraSceneNode *_cameraNode;
             jf::internal::ID _eventCloseID;

@@ -5,6 +5,7 @@
 ** Mesh
 */
 
+#include <iomanip>
 #include "Entity.hpp"
 #include "components/Mesh.hpp"
 #include "ECSWrapper.hpp"
@@ -153,4 +154,12 @@ void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
 irr::scene::IAnimatedMeshSceneNode *indie::components::Mesh::getAnimatedMeshNode()
 {
     return _node;
+}
+
+std::ostream &indie::components::Mesh::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="Mesh">)" << std::endl;
+    file << std::setw(12) << R"(<argument name="fileName" value=")" << _meshFilename << R"("/>)" << std::endl;
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
 }

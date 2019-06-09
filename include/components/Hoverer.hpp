@@ -33,6 +33,8 @@ namespace indie {
             void setAdvancement(const indie::maths::Vector3D &advancement);
             const indie::maths::Vector3D &getAdvancement() const;
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             indie::maths::Vector3D _speed;
             indie::maths::Vector3D _amplitude;
