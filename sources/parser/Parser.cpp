@@ -8,6 +8,9 @@
 /* Created the 27/05/2019 at 16:12 by jbulteau */
 
 #include <iostream>
+#include <regex>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include "parser/Parser.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "exceptions/ParserExceptions.hpp"
@@ -16,11 +19,8 @@
 #include "components/SoundComponent.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-#include <regex>
-#include <systems/MovementSystem.hpp>
-#include <systems/TauntSystem.hpp>
+#include "systems/MovementSystem.hpp"
+#include "systems/TauntSystem.hpp"
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 #include "components/Hoverer.hpp"
