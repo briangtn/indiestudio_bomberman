@@ -504,11 +504,6 @@ bool indie::systems::IrrlichtManagerSystem::getDrawGizmos()
     return _drawGizmos;
 }
 
-void indie::systems::IrrlichtManagerSystem::drawGUIs()
-{
-
-}
-
 void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandler entity,
                                                        jf::components::ComponentHandler<components::Transform> tr,
                                                        jf::components::ComponentHandler<components::Button> button)

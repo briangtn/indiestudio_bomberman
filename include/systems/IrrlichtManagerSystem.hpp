@@ -114,7 +114,6 @@ namespace indie {
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
 
         private:
-            static void drawGUIs();
             static void drawButton(
                     jf::entities::EntityHandler entity,
                     jf::components::ComponentHandler<components::Transform> tr,
