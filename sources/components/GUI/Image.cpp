@@ -7,12 +7,38 @@
 
 /* Created the 06/06/2019 at 14:43 by brian */
 
+#include "events/IrrlichtClosingWindowEvent.hpp"
+#include "ECSWrapper.hpp"
+#include "Events.hpp"
 #include "components/GUI/Image.hpp"
 
 indie::components::Image::Image(jf::entities::Entity &entity, const std::string &path)
-    :   Component(entity), _path(path), _textureNode(nullptr)
+    :   Component(entity), _path(path), _textureNode(nullptr), _imageNode(nullptr)
 {
+    ECSWrapper ecs;
 
+    _eventCloseID = ecs.eventManager.addListener<Image, events::IrrlichtClosingWindowEvent>(this, [](Image *image, events::IrrlichtClosingWindowEvent e) {
+        if (image->_textureNode != nullptr) {
+            image->_textureNode->drop();
+            image->_textureNode = nullptr;
+        }
+        if (image->_imageNode != nullptr) {
+            image->_imageNode->remove();
+            image->_imageNode = nullptr;
+        }
+    });
+    EMIT_CREATE(Image);
+}
+
+indie::components::Image::~Image()
+{
+    EMIT_DELETE(Image);
+    if (_textureNode != nullptr) {
+        _textureNode->drop();
+    }
+    if (_imageNode != nullptr) {
+        _imageNode->remove();
+    }
 }
 
 const std::string &indie::components::Image::getPath() const
@@ -35,7 +61,22 @@ void indie::components::Image::setTextureNode(irr::video::ITexture *textureNode)
     _textureNode = textureNode;
 }
 
+irr::gui::IGUIImage *indie::components::Image::getImageNode() const
+{
+    return _imageNode;
+}
+
+void indie::components::Image::setImageNode(irr::gui::IGUIImage *imageNode)
+{
+    _imageNode = imageNode;
+}
+
 bool indie::components::Image::isTextureInit() const
 {
-    return _textureNode;
+    return _textureNode != nullptr;
+}
+
+bool indie::components::Image::isImageInit() const
+{
+    return _imageNode != nullptr;
 }

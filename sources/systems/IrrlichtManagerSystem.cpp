@@ -592,8 +592,10 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
         driver->makeColorKeyTexture(textureNode, irr::core::position2d<irr::s32>(0, 0));
         image->setTextureNode(textureNode);
     }
-    textureNode = image->getTextureNode();
-    env->addImage(textureNode, irrPos, false);
+    if (image->isTextureInit() && !image->isImageInit()) {
+        textureNode = image->getTextureNode();
+        image->setImageNode(env->addImage(textureNode, irrPos, false));
+    }
 }
 
 
