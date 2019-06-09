@@ -232,15 +232,10 @@ void indie::Parser::loadScene(const std::string &fileName)
                     currentEntity = irr::core::stringc(name.c_str()).c_str();
                     auto entity = ecs.entityManager.createEntity(currentEntity);
                     irr::core::stringw shouldBeKeeped = _xmlReader->getAttributeValueSafe(L"shouldBeKeeped");
-                    if (shouldBeKeeped.empty() || std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) == "false") {
+                    if (shouldBeKeeped.empty()) {
                         entity->setShouldBeKeeped(false);
-                    } else if (std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) == "true") {
-                        entity->setShouldBeKeeped(true);
                     } else {
-                        throw exceptions::ParserInvalidFileException(
-                                "Invalid value for attribute 'shouldBeKeeped', expected 'true' or 'false', but got '"
-                                + std::string(irr::core::stringc(shouldBeKeeped.c_str()).c_str()) + "' at line "
-                                + std::to_string(i) + " in file " + fileName + ".", "indie::Parser::loadScene");
+                        entity->setShouldBeKeeped(getBool(irr::core::stringc(shouldBeKeeped.c_str()).c_str(), fileName, i));
                     }
                 }
             } else if (irr::core::stringw(L"component").equals_ignore_case(_xmlReader->getNodeName())) {
@@ -438,15 +433,7 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
                                 + fileName + ".", "indie::Parser::createMaterial");
                     }
                 }
-                bool loop = false;
-                if (args["loop"] == "true") {
-                    loop = true;
-                } else if (args["loop"] != "false") {
-                    throw exceptions::ParserInvalidFileException(
-                            "Invalid value for attribute 'loop', expected 'true' or 'false', but got '"
-                            + args["loop"] + "' at line " + std::to_string(line) + " in file " + fileName + ".",
-                            "indie::Parser::loadScene");
-                }
+                bool loop = getBool(args["loop"], fileName, line);
                 component->addAnimation(animationName, {
                         static_cast<unsigned int>(std::stoul(args["start"])),
                         static_cast<unsigned int>(std::stoul(args["end"])),
@@ -717,52 +704,16 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
         component->setZMovementAxis(args["zMove"]);
     }
     if (!args["lockXMove"].empty()) {
-        if (args["lockXMove"] == "true") {
-            component->setLockMovementX(true);
-        } else if (args["lockXMove"] == "false") {
-            component->setLockMovementX(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockXMove', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockXMove"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockMovementX(getBool(args["lockXMove"], fileName, line));
     }
     if (!args["lockYMove"].empty()) {
-        if (args["lockYMove"] == "true") {
-            component->setLockMovementY(true);
-        } else if (args["lockYMove"] == "false") {
-            component->setLockMovementY(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockYMove', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockYMove"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockMovementY(getBool(args["lockYMove"], fileName, line));
     }
     if (!args["lockZMove"].empty()) {
-        if (args["lockZMove"] == "true") {
-            component->setLockMovementZ(true);
-        } else if (args["lockZMove"] == "false") {
-            component->setLockMovementZ(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockZMove', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockZMove"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockMovementZ(getBool(args["lockZMove"], fileName, line));
     }
     if (!args["relativeMove"].empty()) {
-        if (args["relativeMove"] == "true") {
-            component->setMovementRelativeToCamera(true);
-        } else if (args["relativeMove"] == "false") {
-            component->setMovementRelativeToCamera(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'relativeMove', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["relativeMove"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setMovementRelativeToCamera(getBool(args["relativeMove"], fileName, line));
     }
     if (!args["moveSpeed"].empty()) {
         component->setMovementSpeed(std::stof(args["moveSpeed"]));
@@ -777,52 +728,16 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
         component->setZRotationAxis(args["zRotate"]);
     }
     if (!args["lockXRotate"].empty()) {
-        if (args["lockXRotate"] == "true") {
-            component->setLockRotationX(true);
-        } else if (args["lockXRotate"] == "false") {
-            component->setLockRotationX(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockXRotate', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockXRotate"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockRotationX(getBool(args["lockXRotate"], fileName, line));
     }
     if (!args["lockYRotate"].empty()) {
-        if (args["lockYRotate"] == "true") {
-            component->setLockRotationY(true);
-        } else if (args["lockYRotate"] == "false") {
-            component->setLockRotationY(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockYRotate', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockYRotate"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockRotationY(getBool(args["lockYRotate"], fileName, line));
     }
     if (!args["lockZRotate"].empty()) {
-        if (args["lockZRotate"] == "true") {
-            component->setLockRotationZ(true);
-        } else if (args["lockZRotate"] == "false") {
-            component->setLockRotationZ(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lockZRotate', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lockZRotate"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setLockRotationZ(getBool(args["lockZRotate"], fileName, line));
     }
     if (!args["lookForward"].empty()) {
-        if (args["lookForward"] == "true") {
-            component->setAlwaysLookForward(true);
-        } else if (args["lookForward"] == "false") {
-            component->setAlwaysLookForward(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'lookForward', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["lookForward"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setAlwaysLookForward(getBool(args["lookForward"], fileName, line));
     }
     if (!args["rotateSpeed"].empty()) {
         component->setRotationSpeed(std::stof(args["rotateSpeed"]));
@@ -834,28 +749,10 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
         component->setWalkingAnimation(args["walkingAnimation"]);
     }
     if (!args["isWalking"].empty()) {
-        if (args["isWalking"] == "true") {
-            component->setIsWalking(true);
-        } else if (args["isWalking"] == "false") {
-            component->setIsWalking(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'isWalking', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["isWalking"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setIsWalking(getBool(args["isWalking"], fileName, line));
     }
     if (!args["isTaunting"].empty()) {
-        if (args["isTaunting"] == "true") {
-            component->setIsTaunting(true);
-        } else if (args["isTaunting"] == "false") {
-            component->setIsTaunting(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'isTaunting', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["isTaunting"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setIsTaunting(getBool(args["isTaunting"], fileName, line));
     }
     if (!args["tauntTime"].empty()) {
         component->setTauntTime(std::stof(args["tauntTime"]));
@@ -870,16 +767,7 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
         component->setTauntDuration(std::stof(args["tauntDuration"]));
     }
     if (!args["isPlacingBomb"].empty()) {
-        if (args["isPlacingBomb"] == "true") {
-            component->setIsPlacingBomb(true);
-        } else if (args["isPlacingBomb"] == "false") {
-            component->setIsPlacingBomb(false);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'isPlacingBomb', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["isPlacingBomb"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createPlayerController");
-        }
+        component->setIsPlacingBomb(getBool(args["isPlacingBomb"], fileName, line));
     }
     if (!args["bombTime"].empty()) {
         component->setBombPlacementTime(std::stof(args["bombTime"]));
@@ -949,28 +837,10 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
                 getVector3D(args["position"], fileName, line));
     }
     if (!args["playLooped"].empty()) {
-        if (args["playLooped"] == "false") {
-            component->setIsLooped(false);
-        } else if (args["playLooped"] == "true") {
-            component->setIsLooped(true);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'playLooped', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["playLooped"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
-        }
+        component->setIsLooped(getBool(args["playLooped"], fileName, line));
     }
     if (!args["startPaused"].empty()) {
-        if (args["startPaused"] == "false") {
-            component->setIsPaused(false);
-        } else if (args["startPaused"] == "true") {
-            component->setIsPaused(true);
-        } else {
-            throw exceptions::ParserInvalidFileException(
-                    "Invalid value for argument 'startPaused', expected 'true' or 'false', but got '"
-                    + std::string(irr::core::stringc(args["startPaused"].c_str()).c_str()) + "' at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createSound");
-        }
+        component->setIsPaused(getBool(args["startPaused"], fileName, line));
     }
     if (component->getSpatialization()) {
         component->setSound(audioSystem.add3DSound(
@@ -1142,4 +1012,18 @@ const irr::video::SColor indie::Parser::getColor(const std::string &value, const
     pos = newPos;
     b = std::stoi(value.substr(pos + 1));
     return irr::video::SColor(a, r, g, b);
+}
+
+bool indie::Parser::getBool(const std::string &value, const std::string &fileName, unsigned int &line)
+{
+    if (value == "true") {
+        return true;
+    } else if (value == "false") {
+        return false;
+    } else {
+        throw exceptions::ParserInvalidFileException(
+                "Invalid value for attribute 'shouldBeKeeped', expected 'true' or 'false', but got '"
+                + value + "' at line " + std::to_string(line) + " in file " + fileName + ".",
+                "indie::Parser::getBool");
+    }
 }

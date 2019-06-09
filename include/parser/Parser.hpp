@@ -88,6 +88,7 @@ namespace indie {
                                                  unsigned int &line);
         static const irr::video::SColor getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line);
+        static bool getBool(const std::string &value, const std::string &fileName, unsigned int &line);
 
     private:
         irr::IrrlichtDevice *_device;
