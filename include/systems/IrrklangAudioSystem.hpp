@@ -31,8 +31,9 @@ namespace indie {
             void onTearDown() override;
 
         public:
-            irrklang::ISound *add2DSound(const std::string &sourceFile);
-            irrklang::ISound *add3DSound(const std::string &sourceFile, indie::maths::Vector3D position);
+            irrklang::ISound *add2DSound(const std::string &sourceFile, bool playLooped = false, bool startPaused = true);
+            irrklang::ISound *add3DSound(const std::string &sourceFile, indie::maths::Vector3D position,
+                                         bool playLooped = false, bool startPaused = true);
             void removeSound(jf::components::ComponentHandler<components::SoundComponent> component);
             void playSounds(bool onlyEnabled = true);
             void playSounds(components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
