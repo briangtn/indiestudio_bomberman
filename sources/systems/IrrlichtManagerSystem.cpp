@@ -459,7 +459,7 @@ void indie::systems::IrrlichtManagerSystem::drawBoxColliderGizmos(jf::entities::
     auto tr = entity->getComponent<components::Transform>();
     auto rot = tr.isValid() ? tr->getRotation() : maths::Vector3D();
     maths::Vector3D position = tr.isValid() ? tr->getPosition() + collider->getOffset() : collider->getOffset();
-    maths::Vector3D size = collider->getSize();
+    maths::Vector3D size = collider->getSize() * tr->getScale();
     maths::Matrix3 rotation = maths::Matrix3::Rotation(rot.x, rot.y, rot.z);
     maths::Vector3D axes[] = {
         maths::Vector3D(rotation.asArray[0], rotation.asArray[1], rotation.asArray[2]),
