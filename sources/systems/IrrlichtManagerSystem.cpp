@@ -644,7 +644,21 @@ void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendGUIEvent(
         ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
             if (button->getId() == event.GUIEvent.Caller->getID()) {
                 if (button->getOnClicked() != nullptr)
-                    button->getOnClicked()();
+                    button->getOnClicked()(button.get());
+            }
+        });
+    } else if (event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnHovered() != nullptr)
+                    button->getOnHovered()(button.get(), true);
+            }
+        });
+    } else if (event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnHovered() != nullptr)
+                    button->getOnHovered()(button.get(), false);
             }
         });
     }
