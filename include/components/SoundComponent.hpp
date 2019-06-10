@@ -70,6 +70,9 @@ namespace indie {
             bool _isPaused;
 
             indie::maths::Vector3D _position;
+
+            std::ostream &operator<<(std::ostream &file);
+
         };
     }
 }

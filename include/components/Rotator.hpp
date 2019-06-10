@@ -37,6 +37,8 @@ namespace indie {
             void setSpeedZ(float speedZ);
             float getSpeedZ() const;
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             indie::maths::Vector3D _speed;
         };

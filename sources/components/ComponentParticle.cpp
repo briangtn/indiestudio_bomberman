@@ -5,6 +5,7 @@
 ** ComponentParticle
 */
 
+#include <iomanip>
 #include "components/ComponentParticle.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
 
@@ -115,7 +116,7 @@ void indie::components::Particle::createBoxEmitter()
     if (_particle == nullptr)
         throw indie::exceptions::IrrlichtParticleException("Particle not init.", "indie::components::Particle::createBoxEmitter");
     _emitter = _particle->createBoxEmitter(
-        _emiterSize,
+        _emitterSize,
         _initialDirection,
         _emitRate.first,
         _emitRate.second,
@@ -151,12 +152,12 @@ const irr::scene::IParticleEmitter *indie::components::Particle::getEmitter() co
 
 irr::core::aabbox3d<irr::f32> indie::components::Particle::getEmitterSize() const
 {
-    return _emiterSize;
+    return _emitterSize;
 }
 
 void indie::components::Particle::setEmitterSize(const irr::core::aabbox3d<irr::f32> &newEmitterSize)
 {
-    _emiterSize = newEmitterSize;
+    _emitterSize = newEmitterSize;
     _emiterSizeInitialize = true;
 }
 
@@ -347,4 +348,57 @@ void indie::components::Particle::render()
         _particle->setVisible(_isVisible);
         _particle->render();
     }
+}
+
+std::ostream &indie::components::Particle::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="Particle">)" << std::endl;
+    file << std::setw(12) << R"(<argument name="name" value=")" << _name << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="fileName" value=")" << _texturePath << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="layer" value=")" << _layer << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="emitterSize" value=")"  << _emitterSize << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="direction" value=")" << _initialDirection << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="emitRate" value=")" << _emitRate << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="brightColor value=")" << _darkBrightColor << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="age" value=")" << _minMaxAge << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="angle" value=")" << _angle << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="size" value=")" << _minMaxSize << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="fadeColor" value=")" << _fadeColor << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="fadeTime" value=")" << _fadeTime << R"("/>)" << std::endl;
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const irr::core::aabbox3d<irr::f32> &box)
+{
+    file << box.MinEdge << ";" << box.MaxEdge;
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<int, int> &pair)
+{
+    file << pair.first << "," << pair.second << std::endl;
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<irr::video::SColor, irr::video::SColor> &pair)
+{
+    file << pair.first << ";" << pair.second;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const irr::video::SColor &color)
+{
+    file << color.getAlpha() << "," << color.getRed() << "," << color.getGreen() << "," << color.getBlue();
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<irr::core::dimension2df, irr::core::dimension2df> &pair)
+{
+    file << pair.first << ";" << pair.second;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const irr::core::dimension2df &vector)
+{
+    file << vector.Width << "," << vector.Height;
+    return file;
 }
