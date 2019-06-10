@@ -100,9 +100,9 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
     }
 
-    ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
-    ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
+    ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
+    ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
