@@ -63,6 +63,8 @@ namespace indie {
                                  const std::string &fileName, unsigned int &line);
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createFont(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
         static void createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
         static void createImage(const std::string &entityName, irr::io::IXMLReader *xmlReader,

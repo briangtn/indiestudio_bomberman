@@ -138,6 +138,11 @@
         <component type="Text">
             <argument name="text" value="    Salut julo le dozo"/>
             <argument name="backgroundColor" value="255,255,0,0"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+            <argument name="verticalAlignement" value="BOTTOM"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
         </component>
     </entity>
 </scene>

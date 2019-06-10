@@ -26,6 +26,7 @@
 #include "components/Hoverer.hpp"
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
+#include "components/GUI/Font.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -104,6 +105,7 @@ indie::Parser::Parser()
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Button"), &createButton},
         {(L"Camera"), &createCamera},
+        {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
         {(L"Image"), &createTransform},
         {(L"Particle"), &createParticle},
@@ -510,6 +512,22 @@ void indie::Parser::createButton(const std::string &entityName, irr::io::IXMLRea
 
 }
 
+void indie::Parser::createFont(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createText");
+    }
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<indie::components::Font>(args["fileName"]);
+}
+
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
@@ -914,8 +932,8 @@ void indie::Parser::createText(const std::string &entityName, irr::io::IXMLReade
         component->setColor(getColor(args["color"], fileName, line));
     if (!args["backgroundColor"].empty())
         component->setBackgroundColor(getColor(args["backgroundColor"], fileName, line));
-    /*if (!args["id"].empty())
-        component->setId(static_cast<int>(std::stol(args["id"])));*/
+    if (!args["id"].empty())
+        component->setId(static_cast<int>(std::stol(args["id"])));
 }
 
 void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
