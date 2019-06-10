@@ -77,6 +77,18 @@ const std::map<std::string, irr::video::E_MATERIAL_FLAG> indie::Parser::_materia
         {"EMF_POLYGON_OFFSET", irr::video::EMF_POLYGON_OFFSET}
 };
 
+const std::map<std::string, indie::components::Text::VerticalAlignement> indie::Parser::_verticalAlignements = {
+        {"TOP", indie::components::Text::TOP},
+        {"MIDDLE", indie::components::Text::MIDDLE},
+        {"BOTTOM", indie::components::Text::BOTTOM},
+};
+
+const std::map<std::string, indie::components::Text::HorizontalAlignement> indie::Parser::_horizontalAlignements = {
+        {"LEFT", indie::components::Text::LEFT},
+        {"CENTER", indie::components::Text::CENTER},
+        {"RIGHT", indie::components::Text::RIGHT},
+};
+
 indie::Parser::Parser()
     : _device(irr::createDevice(irr::video::EDT_NULL))
     , _xmlReader(nullptr)
@@ -90,14 +102,17 @@ indie::Parser::Parser()
     , _components({
         {(L"Animator"), &createAnimator},
         {(L"BoxCollider"), &createBoxCollider},
+        {(L"Button"), &createButton},
         {(L"Camera"), &createCamera},
         {(L"Hoverer"), &createHoverer},
+        {(L"Image"), &createTransform},
         {(L"Particle"), &createParticle},
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
         {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
+        {(L"Text"), &createText},
         {(L"Transform"), &createTransform}
     })
 {
@@ -489,6 +504,12 @@ void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IX
             std::stoull(args["layer"], nullptr, 16));
 }
 
+void indie::Parser::createButton(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line)
+{
+
+}
+
 void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
@@ -531,6 +552,12 @@ void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLRe
     if (!args["advancement"].empty()) {
         component->setAdvancement(getVector3D(args["advancement"], fileName, line));
     }
+}
+
+void indie::Parser::createImage(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line)
+{
+
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -860,6 +887,37 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
     }
 }
 
+void indie::Parser::createText(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"text", ""},
+            {"horizontalAlignement", ""},
+            {"verticalAlignement", ""},
+            {"color", ""},
+            {"backgroundColor", ""},
+            {"id", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    if (args["text"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createText");
+    }
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<indie::components::Text>(args["text"]);
+    if (!args["horizontalAlignement"].empty())
+        component->setHorizontalAlignement(getHorizontalAlignement(args["horizontalAlignement"]));
+    if (!args["verticalAlignement"].empty())
+        component->setVerticalAlignement(getVerticalAlignement(args["verticalAlignement"]));
+    if (!args["color"].empty())
+        component->setColor(getColor(args["color"], fileName, line));
+    if (!args["backgroundColor"].empty())
+        component->setBackgroundColor(getColor(args["backgroundColor"], fileName, line));
+    /*if (!args["id"].empty())
+        component->setId(static_cast<int>(std::stol(args["id"])));*/
+}
+
 void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                     const std::string &fileName, unsigned int &line)
 {
@@ -1026,4 +1084,14 @@ bool indie::Parser::getBool(const std::string &value, const std::string &fileNam
                 + value + "' at line " + std::to_string(line) + " in file " + fileName + ".",
                 "indie::Parser::getBool");
     }
+}
+
+indie::components::Text::VerticalAlignement indie::Parser::getVerticalAlignement(const std::string &align)
+{
+    return _verticalAlignements.at(align);
+}
+
+indie::components::Text::HorizontalAlignement indie::Parser::getHorizontalAlignement(const std::string &align)
+{
+    return _horizontalAlignements.at(align);
 }

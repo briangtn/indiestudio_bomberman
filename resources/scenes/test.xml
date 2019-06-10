@@ -130,4 +130,14 @@
             <argument name="direction" value="0,0.06,0"/>
         </component>
     </entity>
+    <entity name="testText">
+        <component type="Transform">
+            <argument name="position" value="100,100,0"/>
+            <argument name="scale" value="300,150,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="    Salut julo le dozo"/>
+            <argument name="backgroundColor" value="255,255,0,0"/>
+        </component>
+    </entity>
 </scene>

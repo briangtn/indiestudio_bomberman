@@ -12,6 +12,7 @@
 
 #include <string>
 #include "irrlicht.h"
+#include "components/GUI/GuiBase.hpp"
 #include "Entity.hpp"
 
 namespace indie {

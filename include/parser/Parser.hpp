@@ -17,6 +17,7 @@
 #include <functional>
 #include "scenes/IScene.hpp"
 #include "components/SoundComponent.hpp"
+#include "components/GUI/Text.hpp"
 #include "scenes/Scene.hpp"
 
 #define SYSTEMS_FILE_PATH   "../resources/systems.xml"
@@ -58,10 +59,14 @@ namespace indie {
                                    const std::string &fileName, unsigned int &line);
         static void createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
+        static void createButton(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
         static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
         static void createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
+        static void createImage(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
@@ -74,12 +79,16 @@ namespace indie {
                                   const std::string &fileName, unsigned int &line);
         static void createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
+        static void createText(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line);
         static void createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                     const std::string &fileName, unsigned int &line);
 
     private: /* CONVERTORS */
         static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
         static irr::video::E_MATERIAL_FLAG getMaterialFlag(const std::string &flag);
+        static indie::components::Text::VerticalAlignement getVerticalAlignement(const std::string &align);
+        static indie::components::Text::HorizontalAlignement getHorizontalAlignement(const std::string &align);
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
                                                                         unsigned int &line);
         static const maths::Vector2D getVector2D(const std::string &value, const std::string &fileName,
@@ -100,6 +109,8 @@ namespace indie {
         std::map<const irr::core::stringw, std::function<void(std::string, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
         static const std::map<std::string, irr::video::E_MATERIAL_TYPE> _materialTypes;
         static const std::map<std::string, irr::video::E_MATERIAL_FLAG> _materialFlags;
+        static const std::map<std::string, indie::components::Text::VerticalAlignement> _verticalAlignements;
+        static const std::map<std::string, indie::components::Text::HorizontalAlignement> _horizontalAlignements;
     };
 
 }
