@@ -20,8 +20,8 @@ namespace indie {
     }
 }
 
-typedef void (*onClickedFuncPtr)(indie::components::Button *button);
-typedef void (*onHoverFuncPtr)(indie::components::Button *button, bool hovered);
+typedef void (*onClickedFuncPtr)(indie::components::Button *);
+typedef void (*onHoverFuncPtr)(indie::components::Button *, bool);
 
 namespace indie {
     namespace components {
