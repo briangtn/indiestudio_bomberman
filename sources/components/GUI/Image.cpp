@@ -13,15 +13,11 @@
 #include "components/GUI/Image.hpp"
 
 indie::components::Image::Image(jf::entities::Entity &entity, const std::string &path)
-    :   Component(entity), _path(path), _textureNode(nullptr), _imageNode(nullptr)
+        :   Component(entity), _path(path), _textureNode(nullptr), _imageNode(nullptr)
 {
     ECSWrapper ecs;
 
     _eventCloseID = ecs.eventManager.addListener<Image, events::IrrlichtClosingWindowEvent>(this, [](Image *image, events::IrrlichtClosingWindowEvent e) {
-        if (image->_textureNode != nullptr) {
-            image->_textureNode->drop();
-            image->_textureNode = nullptr;
-        }
         if (image->_imageNode != nullptr) {
             image->_imageNode->remove();
             image->_imageNode = nullptr;
@@ -33,9 +29,9 @@ indie::components::Image::Image(jf::entities::Entity &entity, const std::string 
 indie::components::Image::~Image()
 {
     EMIT_DELETE(Image);
-    if (_textureNode != nullptr) {
-        _textureNode->drop();
-    }
+    ECSWrapper ecs;
+
+    ecs.eventManager.removeListener(_eventCloseID);
     if (_imageNode != nullptr) {
         _imageNode->remove();
     }
