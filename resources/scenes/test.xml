@@ -130,14 +130,7 @@
             <argument name="direction" value="0,0.06,0"/>
         </component>
     </entity>
-    <entity name="testImage">
-        <component type="Transform">
-            <argument name="position" value="0,0,0"/>
-        </component>
-        <component type="Image">
-            <argument name="fileName" value="../test.jpg"/>
-        </component>
-    </entity>
+
     <entity name="testText">
         <component type="Transform">
             <argument name="position" value="100,100,0"/>
@@ -148,6 +141,19 @@
             <argument name="backgroundColor" value="255,255,0,0"/>
             <argument name="horizontalAlignement" value="CENTER"/>
             <argument name="verticalAlignement" value="BOTTOM"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
+        </component>
+    </entity>
+    <entity name="testButton">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="scale" value="200,80,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="Je suis le bouton"/>
+            <argument name="textureFileName" value="../4.png"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="../bigfont.png"/>

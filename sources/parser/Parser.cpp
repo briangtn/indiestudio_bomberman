@@ -510,7 +510,23 @@ void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IX
 void indie::Parser::createButton(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
+    ECSWrapper ecs;
 
+    std::map<std::string, std::string> args = {
+            {"text", ""},
+            {"id", ""},
+            {"textureFileName", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    if (args["text"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createButton");
+    }
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<indie::components::Button>(args["text"]);
+    if (!args["id"].empty())
+        component->setId(static_cast<int>(std::stol(args["id"])));
+    if (!args["textureFileName"].empty())
+        component->setTexturePath(args["textureFileName"]);
 }
 
 void indie::Parser::createFont(const std::string &entityName, irr::io::IXMLReader *xmlReader,
