@@ -22,7 +22,8 @@ indie::components::Button::Button(
         _buttonNode(nullptr),
         _textureNode(nullptr),
         _texturePath(texturePath),
-        _onClicked(nullptr)
+        _onClicked(nullptr),
+        _onHovered(nullptr)
 {
     ECSWrapper ecs;
 
@@ -106,4 +107,14 @@ onClickedFuncPtr indie::components::Button::getOnClicked() const
 void indie::components::Button::setOnClicked(onClickedFuncPtr function)
 {
     _onClicked = function;
+}
+
+onHoverFuncPtr indie::components::Button::getOnHovered() const
+{
+    return _onHovered;
+}
+
+void indie::components::Button::setOnHovered(onHoverFuncPtr func)
+{
+    _onHovered = func;
 }

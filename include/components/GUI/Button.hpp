@@ -14,7 +14,14 @@
 #include <irrlicht.h>
 #include "GuiBase.hpp"
 
-typedef void (*onClickedFuncPtr)();
+namespace indie {
+    namespace components {
+        class Button;
+    }
+}
+
+typedef void (*onClickedFuncPtr)(indie::components::Button *button);
+typedef void (*onHoverFuncPtr)(indie::components::Button *button, bool hovered);
 
 namespace indie {
     namespace components {
@@ -43,6 +50,9 @@ namespace indie {
             onClickedFuncPtr getOnClicked() const;
             void setOnClicked(onClickedFuncPtr function);
 
+            onHoverFuncPtr getOnHovered() const;
+            void setOnHovered(onHoverFuncPtr func);
+
             bool isInit() const;
             bool isTextureNeedInit() const;
 
@@ -53,6 +63,7 @@ namespace indie {
             irr::video::ITexture *_textureNode;
             jf::internal::ID _eventCloseID;
             onClickedFuncPtr _onClicked;
+            onHoverFuncPtr _onHovered;
         };
     };
 };
