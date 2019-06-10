@@ -55,11 +55,16 @@ namespace indie {
 
             void OnAnimationEnd(irr::scene::IAnimatedMeshSceneNode *node) override;
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             std::string _currentAnimation;
             bool _animationJustChanged;
             std::map<std::string, Animation> _animations;
         };
+
+        std::ostream &operator<<(std::ostream &file, const std::pair<std::string, Animator::Animation> &pair);
+
     }
 }
 

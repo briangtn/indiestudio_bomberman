@@ -7,6 +7,7 @@
 
 /* Created the 26/05/2019 at 11:34 by jfrabel */
 
+#include <iomanip>
 #include "Events.hpp"
 #include "components/PlayerController.hpp"
 
@@ -450,4 +451,40 @@ float indie::components::PlayerController::getBombPlacementDuration() const
 void indie::components::PlayerController::setBombPlacementDuration(float bombPlacementDuration)
 {
     _bombPlacementDuration = bombPlacementDuration;
+}
+
+std::ostream &indie::components::PlayerController::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="PlayerController">)" << std::endl;
+    file << std::setw(12) << R"(<argument name="xMove" value=")" << _xMovementAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="yMove" value=")" << _yMovementAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="zMove" value=")" << _zMovementAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockXMove" value=")" << std::boolalpha << _lockMovementX << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockYMove" value=")" << std::boolalpha << _lockMovementY << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockZMove" value=")" << std::boolalpha << _lockMovementZ << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="relativeMove value=")" << std::boolalpha << _movementRelativeToCamera << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="moveSpeed" value=")" << _movementSpeed << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="xRotate" value=")" << _xRotationAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="yRotate" value=")" << _yRotationAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="zRotate" value=")" << _zRotationAxis << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockXRotate" value=")" << std::boolalpha << _lockRotationX << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockYRotate" value=")" << std::boolalpha << _lockRotationY << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lockZRotate" value=")" << std::boolalpha << _lockRotationZ << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="lookForward" value=")" << std::boolalpha << _alwaysLookForward << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="rotateSpeed" value=")" << _rotationSpeed << R"("/>")" << std::endl;
+    file << std::setw(12) << R"(<argument name="idleAnimation" value=")" << _idleAnimation << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="walkingAnimation" value=">)" << _walkingAnimation << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="isWalking" value=")" << std::boolalpha << _isWalking << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="isTaunting" value=")" << std::boolalpha << _isTaunting << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="tauntTime" value=")" << _tauntTime << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="tauntButton" value=")" << _tauntButton << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="tauntAnimation" value=")" << _tauntAnimation << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="tauntDuration" value=")" << _tauntDuration << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="isPlacingBomb" value=")" << std::boolalpha << _isPlacingBomb << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="bombTime" value=")" << _bombPlacementTime << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="bombButton" value=")" << _bombPlacementButton << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
+    file << std::setw(12) << R"(<argument name="bombDuration" value=")" << _bombPlacementDuration << R"("/>)" << std::endl;
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
 }

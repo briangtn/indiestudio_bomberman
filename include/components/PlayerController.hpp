@@ -111,6 +111,8 @@ namespace indie {
             float getBombPlacementDuration() const;
             void setBombPlacementDuration(float bombPlacementDuration);
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;

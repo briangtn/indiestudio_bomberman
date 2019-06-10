@@ -8,6 +8,7 @@
 /* Created the 28/05/2019 at 16:30 by jfrabel */
 
 #include <components/Mesh.hpp>
+#include <iomanip>
 #include "Events.hpp"
 #include "components/Animator.hpp"
 #include "exceptions/AnimatorException.hpp"
@@ -123,4 +124,28 @@ void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneN
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }
+}
+
+std::ostream &indie::components::Animator::operator<<(std::ostream &file)
+{
+    file << std::setw(8) << R"(<component type="Animator">)" << std::endl;
+    for (auto &it : _animations) {
+        file << it;
+    }
+    file << std::setw(8) << "</component>" << std::endl;
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<std::string, indie::components::Animator::Animation> &pair)
+{
+    file << std::setw(12) << R"(<animation name=")" << pair.first << R"(">)" << std::endl;
+    file << std::setw(16) << R"(<argument name="start" value=")" << pair.second.start << R"("/>)" << std::endl;
+    file << std::setw(16) << R"(<argument name="end" value=")" << pair.second.end << R"("/>)" << std::endl;
+    file << std::setw(16) << R"(<argument name="speed" value=")" << pair.second.speed << R"("/>)" << std::endl;
+    file << std::setw(16) << R"(<argument name="loop" value=")" << std::boolalpha << pair.second.loop << R"("/>)" << std::endl;
+    if (!pair.second.loop) {
+        file << std::setw(16) << R"(<argument name="transition" value=")" << pair.second.transition << R"("/>)" << std::endl;
+    }
+    file << std::setw(12) << "</animation>" << std::endl;
+    return file;
 }

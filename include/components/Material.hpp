@@ -68,6 +68,8 @@ namespace indie {
             bool hasMaterialTypeChanged() const;
             void resetHasMaterialChanged();
 
+            std::ostream &operator<<(std::ostream &file);
+
         private:
             irr::video::E_MATERIAL_TYPE _materialType;
             bool _materialTypeChanged;
@@ -75,6 +77,9 @@ namespace indie {
             bool _materialTextureChanged;
             std::map<irr::video::E_MATERIAL_FLAG, bool> _materialFlags;
             bool _materialFlagsChanged;
+
+            static const std::map<irr::video::E_MATERIAL_TYPE, std::string> materialTypes;
+            static const std::map<irr::video::E_MATERIAL_FLAG, std::string> materialFlags;
         };
     }
 }
