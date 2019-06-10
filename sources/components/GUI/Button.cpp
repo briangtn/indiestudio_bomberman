@@ -29,10 +29,7 @@ indie::components::Button::Button(
     _eventCloseID = ecs.eventManager.addListener<Button, events::IrrlichtClosingWindowEvent>(this, [](Button *button, events::IrrlichtClosingWindowEvent e){
         if (button->_buttonNode != nullptr)
             button->_buttonNode->remove();
-        if (button->_textureNode != nullptr)
-            button->_textureNode->drop();
         button->_buttonNode = nullptr;
-        button->_textureNode = nullptr;
     });
     EMIT_CREATE(Button);
 }
@@ -45,8 +42,6 @@ indie::components::Button::~Button()
     ecs.eventManager.removeListener(_eventCloseID);
     if (_buttonNode != nullptr)
         _buttonNode->remove();
-    if (_textureNode != nullptr)
-        _textureNode->drop();
 }
 
 const std::string &indie::components::Button::getText() const

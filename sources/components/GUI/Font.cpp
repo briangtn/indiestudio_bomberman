@@ -17,24 +17,12 @@ indie::components::Font::Font(jf::entities::Entity &entity, const std::string &p
         _path(path),
         _fontNode(nullptr)
 {
-    ECSWrapper ecs;
-
-    _eventCloseID = ecs.eventManager.addListener<Font, events::IrrlichtClosingWindowEvent>(this, [](Font *font, events::IrrlichtClosingWindowEvent e){
-        if (font->_fontNode != nullptr)
-            font->_fontNode->drop();
-        font->_fontNode = nullptr;
-    });
     EMIT_CREATE(Font);
 }
 
 indie::components::Font::~Font()
 {
     EMIT_DELETE(Font);
-
-    ECSWrapper ecs;
-    ecs.eventManager.removeListener(_eventCloseID);
-    if (_fontNode != nullptr)
-        _fontNode->drop();
 }
 
 const std::string &indie::components::Font::getPath() const

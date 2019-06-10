@@ -32,7 +32,6 @@ namespace indie {
         protected:
             std::string _path;
             irr::gui::IGUIFont *_fontNode;
-            jf::internal::ID _eventCloseID;
         };
     }
 }

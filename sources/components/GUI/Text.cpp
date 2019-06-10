@@ -43,6 +43,8 @@ indie::components::Text::~Text()
 {
     EMIT_DELETE(Text);
 
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_eventCloseID);
     if (_textNode != nullptr)
         _textNode->remove();
 }

@@ -140,6 +140,7 @@ void indie::scenes::StaticTestScene::onStart()
     auto textEntity = ecs.entityManager.createEntity("testText");
     textEntity->assignComponent<components::Transform>();
     auto textComp = textEntity->assignComponent<components::Text, std::string>("Salut toi");
+    auto fontComp = textEntity->assignComponent<components::Font, std::string>("../bigfont.png");
     textEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
     textEntity->getComponent<components::Transform>()->setPosition(maths::Vector3D(400, 400, 0));
     textComp->setHorizontalAlignement(components::Text::CENTER);
