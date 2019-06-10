@@ -27,6 +27,7 @@
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
 #include "components/GUI/Font.hpp"
+#include "components/GUI/Image.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -107,7 +108,7 @@ indie::Parser::Parser()
         {(L"Camera"), &createCamera},
         {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
-        {(L"Image"), &createTransform},
+        {(L"Image"), &createImage},
         {(L"Particle"), &createParticle},
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
@@ -520,10 +521,10 @@ void indie::Parser::createFont(const std::string &entityName, irr::io::IXMLReade
     std::map<std::string, std::string> args = {
             {"fileName", ""},
     };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createText");
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
     }
     auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<indie::components::Font>(args["fileName"]);
 }
@@ -575,7 +576,17 @@ void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLRe
 void indie::Parser::createImage(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line)
 {
+    ECSWrapper ecs;
 
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createImage");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createImage");
+    }
+    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<indie::components::Image>(args["fileName"]);
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,

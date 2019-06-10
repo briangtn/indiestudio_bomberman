@@ -130,6 +130,14 @@
             <argument name="direction" value="0,0.06,0"/>
         </component>
     </entity>
+    <entity name="testImage">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="../test.jpg"/>
+        </component>
+    </entity>
     <entity name="testText">
         <component type="Transform">
             <argument name="position" value="100,100,0"/>
