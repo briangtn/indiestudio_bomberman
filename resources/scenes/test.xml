@@ -137,7 +137,7 @@
             <argument name="scale" value="300,150,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="    Salut julo le dozo"/>
+            <argument name="text" value="Ola"/>
             <argument name="backgroundColor" value="255,255,0,0"/>
             <argument name="horizontalAlignement" value="CENTER"/>
             <argument name="verticalAlignement" value="BOTTOM"/>
@@ -152,7 +152,7 @@
             <argument name="scale" value="200,80,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="Je suis le bouton"/>
+            <argument name="text" value="Allo"/>
             <argument name="textureFileName" value="../4.png"/>
         </component>
         <component type="Font">

@@ -529,7 +529,8 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
     auto font = entity->getComponent<components::Font>();
     irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
     irr::gui::IGUIButton *buttonNode = nullptr;
-    const wchar_t *text = irr::core::stringw(button->getText().c_str()).c_str(); // TODO: Seems to have a problem here (Text is not complete)
+    std::wstring wideString = std::wstring(button->getText().begin(), button->getText().end());
+    const wchar_t *text = wideString.c_str();
 
     if (!button->isInit()) {
         buttonNode = env->addButton(rect, nullptr, button->getId(), text);
@@ -562,7 +563,8 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
     auto font = entity->getComponent<components::Font>();
     irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
     irr::gui::IGUIStaticText *textNode = nullptr;
-    const wchar_t *textStr = irr::core::stringw(text->getText().c_str()).c_str(); // TODO: Seems to have a problem here (Text is not complete)
+    std::wstring wideString = std::wstring(text->getText().begin(), text->getText().end());
+    const wchar_t *textStr = wideString.c_str();
 
     if (!text->isInit()) {
         textNode = env->addStaticText(textStr, rect, false, true, nullptr, text->getId());
