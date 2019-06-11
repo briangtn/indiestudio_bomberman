@@ -8,7 +8,8 @@
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
 #include <iostream>
-#include <systems/TauntSystem.hpp>
+#include "systems/TauntSystem.hpp"
+#include "systems/BonusSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/StaticTestScene.hpp"
@@ -44,6 +45,9 @@ int runBomberman()
 
 //    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
 //    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
+    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
@@ -102,6 +106,8 @@ int runBomberman()
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
+        ecs.entityManager.applySafeDelete();
+        indie::scenes::SceneManager::triggerSafeFunctions();
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {
             for (auto &err : errors) {
