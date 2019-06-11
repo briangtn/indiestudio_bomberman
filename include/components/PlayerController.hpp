@@ -151,6 +151,14 @@ namespace indie {
             float _bombPlacementTime;
             std::string _bombPlacementButton;
             std::string _bombPlacementAnimation;
+
+            int _bombForce;
+            int _maxBomb;
+        public:
+            int getBombForce() const;
+            void setBombForce(int bombForce);
+            int getMaxBomb() const;
+            void setMaxBomb(int maxBomb);
         };
     }
 }
