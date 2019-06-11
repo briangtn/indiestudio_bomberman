@@ -91,11 +91,17 @@ void indie::Map::drawCorner(unsigned int width, unsigned int height)
 
 void indie::Map::drawFloor(unsigned int width, unsigned int height)
 {
-    for (int y = 0; y > height * -10.0f; y -= 10) {
-        for (int x = 0; x < width * 10.0f; x+= 10) {
-            drawElement("../test_assets/cube.obj", "../test_assets/grass_texture.png", {static_cast<float>(x), -10, static_cast<float>(y)}, 0);
-        }
-    }
+    ECSWrapper ecs;
+
+    auto groundEntity = ecs.entityManager.createEntity("ground");
+    auto tr = groundEntity->assignComponent<indie::components::Transform>();
+    tr->setPosition({(width * 10.0f - 10.0f) / 2.0f, -10.0f, -(height * 10.0f - 10.0f) / 2.0f});
+    tr->setScale({width * 10.0f + 20.0f, 0.1f, height * 10.0f + 20.0f});
+    groundEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/ground.obj");
+    auto mat = groundEntity->assignComponent<indie::components::Material, std::string>("../test_assets/grass_texture.png");
+    mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    mat->setMaterialFlag(irr::video::EMF_TEXTURE_WRAP, true);
 }
 
 int indie::Map::generateMap(unsigned int width, unsigned int height, unsigned int seed, bool clamped)
