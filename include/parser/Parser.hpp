@@ -52,6 +52,8 @@ namespace indie {
                                    const std::string &fileName, unsigned int &line);
         static void createTaunt(irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
+        static void createAI(irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
         static void createAnimator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
