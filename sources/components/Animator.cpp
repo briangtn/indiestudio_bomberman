@@ -10,6 +10,7 @@
 #include <components/Mesh.hpp>
 #include "Events.hpp"
 #include "components/Animator.hpp"
+#include "events/IrrlichtAnimationEndEvent.hpp"
 #include "exceptions/AnimatorException.hpp"
 
 indie::components::Animator::Animator(jf::entities::Entity &entity)
@@ -117,10 +118,13 @@ void indie::components::Animator::resetAnimationChanged()
 
 void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneNode *node)
 {
+    ECSWrapper ecs;
+
     if (!doesAnimationExist(_currentAnimation))
         throw exceptions::AnimatorException(_currentAnimation + " does not exist");
     auto &data = _animations.at(_currentAnimation);
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
 }
