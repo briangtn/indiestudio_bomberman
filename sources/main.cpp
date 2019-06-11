@@ -90,8 +90,7 @@ int runBomberman()
             auto playerPos = ecs.entityManager.getEntityByName("player")->getComponent<indie::components::Transform>();
             std::cout << "Bombe created" << std::endl;
             auto entityBomb = ecs.entityManager.createEntity("bomb");
-            entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType>(5, 50, indie::components::ELECTRIC);
-            std::cout << "Position Player : x = " << playerPos->getPosition().x << " y = " << playerPos->getPosition().y << " z = " << playerPos->getPosition().z << std::endl;
+            entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType, indie::components::PlayerType>(5, 50, indie::components::ELECTRIC, indie::components::PlayerType::P1);
             entityBomb->assignComponent<indie::components::Transform, indie::maths::Vector3D>({playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z - 10});
             ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entityBomb->getComponent<indie::components::Bomb>(), entityBomb->getComponent<indie::components::Transform>());
         }

@@ -67,15 +67,17 @@ jf::components::ComponentHandler<components::Transform> tr)
 {
     ECSWrapper ecs;
 
+    auto player = ecs.entityManager.getEntitiesByName("player")->getComponent<indie::components::
     auto playerPos = ecs.entityManager.getEntityByName("player")->getComponent<indie::components::Transform>();
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z});
     bombTr->setScale({8, 8, 8});
-    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType>(bomb->getStrength(), bomb->getTimeBeforeExplose(), bomb->getBombType());
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(bomb->getStrength(), bomb->getTimeBeforeExplose(), bomb->getBombType(), bomb->getPlayerType());
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
     auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
-    std::cout << bombComponent->getTexturePath() << bombComponent->getTextureMesh() << std::endl;
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    if (getNumberBombPlacer(bombComponent->getPlayerType()) >= )
+
 }
 
 void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, indie::maths::Vector3D posLimit)
@@ -172,4 +174,32 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
     else {
         std::cout << "throw error : unknown type bomb" << std::endl;
     }
+}
+
+void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberBombPlace,const indie::components::PlayerType &newPlayerType)
+{
+    for (int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
+        if (s == newPlayerType)
+            _NumberBombPlace[static_cast<indie::components::PlayerType>(s)] = newNumberBombPlace;
+}
+
+unsigned int indie::systems::BombManagerSystem::getNumberBombPlacer(const indie::components::PlayerType &playerType) const
+{
+    for (auto &it : _NumberBombPlace)
+        if (it.first == playerType)
+            return it.second;
+}
+
+void indie::systems::BombManagerSystem::addBombPlace(indie::components::PlayerType playerType)
+{
+    for (int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
+        if (s == playerType)
+            _NumberBombPlace[static_cast<indie::components::PlayerType>(s)] += 1;
+}
+
+void indie::systems::BombManagerSystem::removeBombPlace(indie::components::PlayerType playerType)
+{
+    for (int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
+        if (s == playerType)
+            _NumberBombPlace[static_cast<indie::components::PlayerType>(s)] -= 1;
 }

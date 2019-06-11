@@ -17,19 +17,19 @@ const std::map<int, std::pair<std::string, std::string>> indie::components::Bomb
 };
 
 indie::components::Bomb::Bomb(jf::entities::Entity &entity, const int &strength,\
-const float &timeBeforeExplose, indie::components::BombType bomb)
+const float &timeBeforeExplose, indie::components::BombType bomb, indie::components::PlayerType player)
     :   Component(entity),
         _strength(strength),
         _timeBeforeExplose(timeBeforeExplose),
-        _bombID(bomb),        
-        _bombType(bomb)
+        _bombID(bomb),
+        _bombType(bomb),
+        _Player(player)
 {
     for (auto &it : _pathTextureBomb)
         if (it.first == _bombID) {
             _texturePath = it.second.second;
             _meshPath = it.second.first;
         }
-
     EMIT_CREATE(Bomb);
 }
 
@@ -96,4 +96,14 @@ void indie::components::Bomb::setInitialPosition(const indie::maths::Vector3D &v
 indie::maths::Vector3D indie::components::Bomb::getInitialPosition() const
 {
     return _vectPos;
+}
+
+void indie::components::Bomb::setPlayerType(const PlayerType &player)
+{
+    _Player = player;
+}
+
+indie::components::PlayerType indie::components::Bomb::getPlayerType() const
+{
+    return _Player;
 }
