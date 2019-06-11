@@ -16,6 +16,7 @@
 #include "components/Animator.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
+#include "ai/AiView.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -76,6 +77,7 @@ void indie::scenes::Scene::onStart()
         ECSWrapper ecs;
         if (e.wasPressed) {
             indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+            indie::ai::AIView::recomputeViewGrid(15, 15);
         }
     });
     _listeners.emplace_back(id);
