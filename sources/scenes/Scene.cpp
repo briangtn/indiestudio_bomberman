@@ -70,7 +70,7 @@ void indie::scenes::Scene::onStart()
     });
     _listeners.emplace_back(id);
 
-    indie::Map::generateMap(15, 13, 420, false);
+    indie::Map::generateMap(15, 15, 42, false);
 
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
