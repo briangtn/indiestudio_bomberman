@@ -711,7 +711,9 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
             {"bombTime",         ""},
             {"bombButton",       ""},
             {"bombAnimation",    ""},
-            {"bombDuration",     ""}
+            {"bombDuration",     ""},
+            {"bombForce",        ""},
+            {"maxBomb",          ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
     auto component = entity->assignComponent<components::PlayerController>();
@@ -801,6 +803,12 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
     }
     if (!args["bombDuration"].empty()) {
         component->setBombPlacementDuration(std::stof(args["bombDuration"]));
+    }
+    if (!args["bombForce"].empty()) {
+        component->setBombForce(std::stoi(args["bombForce"]));
+    }
+    if (!args["maxBomb"].empty()) {
+        component->setMaxBomb(std::stoi(args["maxBomb"]));
     }
 }
 

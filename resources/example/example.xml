@@ -75,6 +75,8 @@
             <argument name="bombButton" value="buttonName"/>
             <argument name="bombAnimation" value="animationName"/>
             <argument name="bombDuration" value="2.0"/>
+            <argument name="bombForce" value="1"/>
+            <argument name="maxBomb" value="10"/>
         </component>
         <component type="Rotator">
             <argument name="speed" value="1,1,1"/>

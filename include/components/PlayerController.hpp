@@ -111,6 +111,12 @@ namespace indie {
             float getBombPlacementDuration() const;
             void setBombPlacementDuration(float bombPlacementDuration);
 
+            int getBombForce() const;
+            void setBombForce(int bombForce);
+
+            int getMaxBomb() const;
+            void setMaxBomb(int maxBomb);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;
@@ -154,11 +160,6 @@ namespace indie {
 
             int _bombForce;
             int _maxBomb;
-        public:
-            int getBombForce() const;
-            void setBombForce(int bombForce);
-            int getMaxBomb() const;
-            void setMaxBomb(int maxBomb);
         };
     }
 }
