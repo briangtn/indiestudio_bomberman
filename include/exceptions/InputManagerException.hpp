@@ -43,6 +43,36 @@ namespace indie {
     protected:
         std::string _inputName;
     };
+
+    class KeyNotFoundException : public InputManagerException {
+    public:
+        KeyNotFoundException(const std::string &inputName);
+
+        std::string getName() const;
+
+    protected:
+        std::string _inputName;
+    };
+
+    class KeyAlreadyExistException : public InputManagerException {
+    public:
+        KeyAlreadyExistException(const std::string &inputName);
+
+        std::string getName() const;
+
+    protected:
+        std::string _inputName;
+    };
+
+    class InvalidAxisType : public InputManagerException {
+    public:
+        InvalidAxisType(const std::string &name);
+
+        std::string getAxisTypeName();
+
+    protected:
+        std::string _typeName;
+    };
 }
 
 

@@ -7,8 +7,10 @@
 
 /* Created the 02/05/2019 at 15:25 by jfrabel */
 
+#include <cmath>
 #include "Events.hpp"
 #include "components/Transform.hpp"
+#include "maths/Matrices.hpp"
 
 /* ================================================================================================================ */
 /* ----------------------------------------------------Ctor&Dtor--------------------------------------------------- */
@@ -58,4 +60,36 @@ const indie::maths::Vector3D &indie::components::Transform::getScale() const
 void indie::components::Transform::setScale(const indie::maths::Vector3D &scale)
 {
     _scale = scale;
+}
+
+indie::maths::Vector3D indie::components::Transform::getForward() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(0, 0, 1), rotMat).normalized();
+}
+
+indie::maths::Vector3D indie::components::Transform::getLocalAxes() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(1, 1, 1), rotMat).normalized();
+}
+
+void indie::components::Transform::lookAt(const indie::maths::Vector3D &point)
+{
+    auto forward = maths::Vector3D({0, 0, 1});
+    auto target = (point - _position).normalized();
+    auto cross = maths::Vector3D::Cross(forward, target);
+    if (cross.magnitudeSq() != 0) {
+        cross.normalize();
+    } else {
+        cross = maths::Vector3D(0, 1, 0);
+    }
+    auto angle = RAD2DEG(acosf(maths::Vector3D::Dot(forward, target)));
+    auto rotation = maths::Matrix3::AxisAngle(cross, angle);
+    _rotation = maths::Matrix3::ToEulerAngles(rotation);
+}
+
+void indie::components::Transform::lookAt(jf::components::ComponentHandler<indie::components::Transform> point)
+{
+    lookAt(point->_position);
 }

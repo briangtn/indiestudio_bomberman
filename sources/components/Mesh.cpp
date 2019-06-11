@@ -39,10 +39,10 @@ indie::components::Mesh::~Mesh()
         _node->remove();
 }
 
-void indie::components::Mesh::linkFilenameToMesh()
+bool indie::components::Mesh::linkFilenameToMesh()
 {
     if (_mesh != nullptr)
-        return;
+        return false;
     ECSWrapper ecs;
     irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
     if (sceneManager == nullptr)
@@ -50,6 +50,7 @@ void indie::components::Mesh::linkFilenameToMesh()
     _mesh = sceneManager->getMesh(_meshFilename.c_str());
     if (_mesh == nullptr)
         throw exceptions::MeshExceptions("Mesh creation failed");
+    return true;
 }
 
 void indie::components::Mesh::setPos(irr::core::vector3df &vector)
@@ -100,7 +101,7 @@ void indie::components::Mesh::setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, 
     _node->setMaterialFlag(flag, value);
 }
 
-void indie::components::Mesh::applyChanges()
+bool indie::components::Mesh::applyChanges()
 {
     if (_shouldMeshChange) {
         if (_meshFilename.c_str() == nullptr)
@@ -113,7 +114,9 @@ void indie::components::Mesh::applyChanges()
         if (_mesh == nullptr)
             throw exceptions::MeshExceptions("Mesh creation failed");
         _shouldMeshChange = false;
+        return true;
     }
+    return false;
 }
 
 void indie::components::Mesh::changeMesh(const std::string &filename)
@@ -145,4 +148,9 @@ void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
     if (_node == nullptr)
         throw exceptions::MeshExceptions("no Mesh Node available");
     _node->setVisible(shouldBeSeen);
+}
+
+irr::scene::IAnimatedMeshSceneNode *indie::components::Mesh::getAnimatedMeshNode()
+{
+    return _node;
 }

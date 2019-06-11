@@ -20,7 +20,7 @@ namespace indie {
 
         class StaticTestScene : public IScene {
         public:
-            StaticTestScene() = default;
+            StaticTestScene();
             ~StaticTestScene() = default;
             void onStart() override;
             void onStop() override;

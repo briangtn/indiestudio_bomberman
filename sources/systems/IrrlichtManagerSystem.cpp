@@ -7,6 +7,9 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include "maths/Vectors.hpp"
+#include "maths/Matrices.hpp"
+#include "maths/Geometry3D.hpp"
 #include "components/Camera.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "ECSWrapper.hpp"
@@ -20,11 +23,14 @@
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
+#include "exceptions/AnimatorException.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
+
+bool indie::systems::IrrlichtManagerSystem::_drawGizmos = false;
 
 indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
     : _eventReceiver(),
@@ -37,7 +43,8 @@ indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _fullscreenEnabled(false),
       _vsyncEnabled(false),
       _windowCaption("Irrlicht window"),
-      _windowDimension(800, 600)
+      _windowDimension(800, 600),
+      _needToReload(false)
 {
 }
 
@@ -64,6 +71,15 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 {
     if (!_driver || !_sceneManager || !_guiEnvironment)
         return;
+
+    if (_needToReload) {
+        if (_device != nullptr)
+            closeWindow();
+        if (_device == nullptr)
+            openWindow();
+        _needToReload = false;
+    }
+
     ECSWrapper ecs;
 
     _driver->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
@@ -76,6 +92,11 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     ecs.entityManager.applyToEach<components::Transform, components::Particle>(&syncParticlePos);
     /* 3DModel */
     ecs.entityManager.applyToEach<components::Mesh>(&syncModel);
+
+    if (_drawGizmos) {
+        ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
+    }
+
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
 
@@ -183,6 +204,8 @@ void indie::systems::IrrlichtManagerSystem::closeWindow()
     if (_device != nullptr) {
         ECSWrapper ecs;
         ecs.eventManager.emit(events::IrrlichtClosingWindowEvent());
+        _device->closeDevice();
+        _device->run();
         _device->drop();
     }
     _device = nullptr;
@@ -192,10 +215,7 @@ void indie::systems::IrrlichtManagerSystem::reloadWindow()
 {
     if (!isWindowOpen())
         return;
-    if (_device != nullptr)
-        closeWindow();
-    if (_device == nullptr)
-        openWindow();
+    _needToReload = true;
 }
 
 void indie::systems::IrrlichtManagerSystem::activateJoysticks()
@@ -239,30 +259,36 @@ void indie::systems::IrrlichtManagerSystem::syncModel(jf::entities::EntityHandle
 {
     auto tr = entity->getComponent<components::Transform>();
     auto mat = entity->getComponent<components::Material>();
+    auto animator = entity->getComponent<components::Animator>();
+    bool forceReload = false;
 
-    mesh->linkFilenameToMesh();
-    mesh->applyChanges();
+    forceReload = forceReload || mesh->linkFilenameToMesh();
+    forceReload = forceReload || mesh->applyChanges();
     mesh->addToScene();
     if (tr.isValid()) {
-        syncModelPos(tr, mesh);
+        syncModelPos(tr, mesh, forceReload);
     }
     if (mat.isValid()) {
-        syncModelMaterial(mat, mesh);
+        syncModelMaterial(mat, mesh, forceReload);
+    }
+    if (animator.isValid()) {
+        syncModelAnimation(animator, mesh, forceReload);
     }
 }
 
 void indie::systems::IrrlichtManagerSystem::syncModelMaterial(
     jf::components::ComponentHandler<indie::components::Material> mat,
-    jf::components::ComponentHandler<indie::components::Mesh> mesh)
+    jf::components::ComponentHandler<indie::components::Mesh> mesh,
+    bool force)
 {
-    if (mat->hasMaterialChanged()) {
-        if (mat->hasMaterialTextureChanged()) {
+    if (mat->hasMaterialChanged() || force) {
+        if (mat->hasMaterialTextureChanged() || force) {
             mesh->setMaterialTexture(mat->getMaterialTexture());
         }
-        if (mat->hasMaterialTypeChanged()) {
+        if (mat->hasMaterialTypeChanged() || force) {
             mesh->setMaterialType(mat->getMaterialType());
         }
-        if (mat->hasMaterialFlagsChanged()) {
+        if (mat->hasMaterialFlagsChanged() || force) {
             for (const auto &flag : mat->getMaterialFlags()) {
                 mesh->setMaterialFlag(flag.first, flag.second);
             }
@@ -273,7 +299,8 @@ void indie::systems::IrrlichtManagerSystem::syncModelMaterial(
 
 void indie::systems::IrrlichtManagerSystem::syncModelPos(
     jf::components::ComponentHandler<components::Transform> tr,
-    jf::components::ComponentHandler<components::Mesh> mesh)
+    jf::components::ComponentHandler<components::Mesh> mesh,
+    bool force)
 {
     auto pos = tr->getPosition();
     irr::core::vector3df vector(pos.x, pos.y, pos.z);
@@ -286,7 +313,32 @@ void indie::systems::IrrlichtManagerSystem::syncModelPos(
     mesh->rotate(vectorRotation);
 }
 
-void indie::systems::IrrlichtManagerSystem::syncParticlePos(__attribute__((unused))jf::entities::EntityHandler entity,
+void indie::systems::IrrlichtManagerSystem::syncModelAnimation(
+    jf::components::ComponentHandler<indie::components::Animator> animator,
+    jf::components::ComponentHandler<indie::components::Mesh> mesh,
+    bool force)
+{
+    if ((animator->hasAnimationChanged() || force) && !animator->getCurrentAnimation().empty()) {
+        animator->resetAnimationChanged();
+        components::Animator::Animation data;
+        try {
+            data = animator->getCurrentAnimationData();
+        } catch (exceptions::AnimatorException &e) {
+            std::cerr << "[WARNING][IrrlichtManagerSystem] an animation was set but not found: " << e.what() << std::endl;
+            return;
+        }
+        auto *node = mesh->getAnimatedMeshNode();
+        if (node == nullptr) {
+            return;
+        }
+        node->setAnimationSpeed(data.speed);
+        node->setFrameLoop(data.start, data.end);
+        node->setLoopMode(data.loop);
+        node->setAnimationEndCallback(animator.get());
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::syncParticlePos(jf::entities::EntityHandler entity,
                                                             jf::components::ComponentHandler<components::Transform> tr,
                                                             jf::components::ComponentHandler<components::Particle> particle)
 {
@@ -399,6 +451,58 @@ void indie::systems::IrrlichtManagerSystem::syncPointChanges(jf::components::Com
         pl->getLightNode()->setLightData(lightData);
     }
     pl->resetChanges();
+}
+
+void indie::systems::IrrlichtManagerSystem::drawBoxColliderGizmos(jf::entities::EntityHandler entity,
+                                                                  jf::components::ComponentHandler<indie::components::BoxCollider> collider)
+{
+    ECSWrapper ecs;
+    auto tr = entity->getComponent<components::Transform>();
+    auto rot = tr.isValid() ? tr->getRotation() : maths::Vector3D();
+    maths::Vector3D position = tr.isValid() ? tr->getPosition() + collider->getOffset() : collider->getOffset();
+    maths::Vector3D size = collider->getSize() * tr->getScale();
+    maths::Matrix3 rotation = maths::Matrix3::Rotation(rot.x, rot.y, rot.z);
+    maths::Vector3D axes[] = {
+        maths::Vector3D(rotation.asArray[0], rotation.asArray[1], rotation.asArray[2]),
+        maths::Vector3D(rotation.asArray[3], rotation.asArray[4], rotation.asArray[5]),
+        maths::Vector3D(rotation.asArray[6], rotation.asArray[7], rotation.asArray[8]),
+    };
+    maths::Vector3D vertices[8];
+    vertices[0] = position + axes[0] * size[0] + axes[1] * size[1] + axes[2] * size[2];
+    vertices[1] = position - axes[0] * size[0] + axes[1] * size[1] + axes[2] * size[2];
+    vertices[2] = position + axes[0] * size[0] - axes[1] * size[1] + axes[2] * size[2];
+    vertices[3] = position + axes[0] * size[0] + axes[1] * size[1] - axes[2] * size[2];
+    vertices[4] = position - axes[0] * size[0] - axes[1] * size[1] - axes[2] * size[2];
+    vertices[5] = position + axes[0] * size[0] - axes[1] * size[1] - axes[2] * size[2];
+    vertices[6] = position - axes[0] * size[0] + axes[1] * size[1] - axes[2] * size[2];
+    vertices[7] = position - axes[0] * size[0] - axes[1] * size[1] + axes[2] * size[2];
+
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    irr::video::SMaterial mat;
+    mat.Lighting = false;
+    driver->setMaterial(mat);
+
+    irr::core::matrix4 identity;
+    driver->setTransform(irr::video::ETS_WORLD, identity);
+    for (int i = 0; i < 7; ++i) {
+        for (int j = i + 1; j < 8; ++j) {
+            driver->draw3DLine(
+                irr::core::vector3df(vertices[i].x, vertices[i].y, vertices[i].z),
+                irr::core::vector3df(vertices[j].x, vertices[j].y, vertices[j].z),
+                irr::video::SColor(255, 0, 255, 0));
+        }
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
+{
+    _drawGizmos = value;
+}
+
+bool indie::systems::IrrlichtManagerSystem::getDrawGizmos()
+{
+    return _drawGizmos;
 }
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)

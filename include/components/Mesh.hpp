@@ -29,8 +29,10 @@ namespace indie {
             void setMaterialFlag(irr::video::E_MATERIAL_FLAG flag, bool value);
             void setScale(irr::core::vector3df &vector);
             void rotate(irr::core::vector3df &vector);
-            void linkFilenameToMesh();
-            void applyChanges();
+            bool linkFilenameToMesh();
+            bool applyChanges();
+
+            irr::scene::IAnimatedMeshSceneNode *getAnimatedMeshNode();
         protected:
         private:
             irr::scene::IAnimatedMesh *_mesh;

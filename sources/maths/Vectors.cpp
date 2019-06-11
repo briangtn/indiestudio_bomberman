@@ -289,3 +289,15 @@ bool indie::maths::operator!=(const indie::maths::Vector3D &lhs, const indie::ma
 {
     return !(lhs == rhs);
 }
+
+std::ostream &indie::operator<<(std::ostream &s, const indie::maths::Vector2D &vec)
+{
+    s << "Vector2D(x: " << vec.x << ", y: " << vec.y << ")";
+    return s;
+}
+
+std::ostream &indie::operator<<(std::ostream &s, const indie::maths::Vector3D &vec)
+{
+    s << "Vector3D(x: " << vec.x << ", y: " << vec.y << ", z: " << vec.z << ")";
+    return s;
+}
