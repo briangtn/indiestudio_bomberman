@@ -58,7 +58,6 @@ void indie::ai::AIView::recomputePlayers(int width, int height)
         auto tr = player->getComponent<components::Transform>();
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
-        std::cout << "Found player at " << x << " " << z << std::endl;
         if (x >= 0 && x < width && z >= 0 && z < height) {
             _viewGrid[z][x] = AI_CELL_TYPE_PLAYER;
         }
