@@ -14,12 +14,17 @@
 #include <vector>
 #include "IScene.hpp"
 #include "ID.hpp"
+#include "input/Controller.hpp"
 
 namespace indie {
 
     namespace scenes {
 
         class Scene : public IScene {
+        public:
+            static std::map<std::string, Controller> controllers;
+
+            static void InitControllers();
         public:
             Scene(const std::string &fileName);
             ~Scene() = default;

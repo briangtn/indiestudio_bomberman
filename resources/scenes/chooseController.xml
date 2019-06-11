@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<scene>
+    <entity name="camera">
+        <component type="Transform">
+            <argument name="position" value="0, 0, 0"/>
+            <argument name="rotation" value="0,0,0"/>
+        </component>
+        <component type="Camera">
+        </component>
+    </entity>
+    <entity name="backgroundImage">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="scale" value="800,600,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="../background.png"/>
+        </component>
+    </entity>
+    <entity name="mainText">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="scale" value="800,600,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="Appuyez sur la touche de votre controller"/>
+            <argument name="color" value="255, 255, 0, 0"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
+        </component>
+    </entity>
+</scene>

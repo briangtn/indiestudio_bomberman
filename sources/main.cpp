@@ -26,6 +26,7 @@ int runBomberman()
     std::vector<jf::internal::ID> listeners;
 
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
+    indie::scenes::Scene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
@@ -38,7 +39,6 @@ int runBomberman()
     indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
     indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
 
-    indie::InputManager::RegisterKey("taunt", 0, 1);
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 

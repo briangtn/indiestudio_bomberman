@@ -7,6 +7,7 @@
 
 /* Created the 27/05/2019 at 15:27 by jbulteau */
 
+#include <regex>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -18,6 +19,37 @@
 #include "map/Map.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
+#include "input/Controller.hpp"
+
+std::map<std::string, indie::Controller> indie::scenes::Scene::controllers;
+
+void indie::scenes::Scene::InitControllers()
+{
+    Controller controller = Controller("lol");
+
+    controller.addAxis<KeyAxis>("xAxis", {irr::KEY_KEY_D, irr::KEY_KEY_Q});
+    controller.addAxis<KeyAxis>("zAxis", {irr::KEY_KEY_Z, irr::KEY_KEY_S});
+    controller.addKey("taunt", irr::KEY_KEY_U);
+    controller.addKey("bomb", irr::KEY_KEY_B);
+
+    controllers.emplace("IndieDefaultKeyboard", controller);
+
+    controller = Controller("slt");
+    controller.addAxis<JoystickAxis>("xAxis", {0, 0});
+    controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
+    controller.addKey("taunt", 0, 1);
+    controller.addKey("bomb", 0, 2);
+
+    controllers.emplace(".*Xbox One Controller.*", controller);
+
+    controller = Controller("slt");
+    controller.addAxis<JoystickAxis>("xAxis", {0, 0});
+    controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
+    controller.addKey("taunt", 0, 0);
+    controller.addKey("bomb", 0, 2);
+
+    controllers.emplace(".*Sony.*Controller.*", controller);
+}
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -31,7 +63,7 @@ void indie::scenes::Scene::onStart()
 
     if (_fileName == "mainMenu.xml") {
         ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
-            indie::scenes::SceneManager::safeChangeScene("test");
+            indie::scenes::SceneManager::safeChangeScene("chooseController");
         });
         ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
             ECSWrapper ecs;
@@ -41,9 +73,38 @@ void indie::scenes::Scene::onStart()
 
             }
         });
-        ecs.eventManager.addListener<void, indie::events::IrrlichtJoystickEvent>(nullptr, [](void *a, indie::events::IrrlichtJoystickEvent e){
-            ECSWrapper ecs;
+    }
+    if (_fileName == "chooseController.xml") {
+        auto id = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a, events::IrrlichtKeyInputEvent e){
+            auto controller = controllers.find("IndieDefaultKeyboard");
+            if (controller == controllers.end()) {
+                return;
+            }
+            controller->second.generateKeysAndAxes("player1");
+            SceneManager::safeChangeScene("test");
         });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [](void *a, events::IrrlichtJoystickEvent e) {
+            for (int i = 0; i < e.data.NUMBER_OF_BUTTONS; i++) {
+                if (e.data.IsButtonPressed(i)) {
+                    ECSWrapper ecs;
+                    auto &system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
+                    std::string name = std::string(system.getJoystickInfos()[e.data.Joystick].Name.c_str());
+                    std::cout << i << std::endl;
+
+                    for (auto &controller : controllers) {
+                        std::regex reg(controller.first);
+                        if (std::regex_match(name, reg)) {
+                            controller.second.setControllerId(e.data.Joystick);
+                            controller.second.generateKeysAndAxes("player1");
+                            SceneManager::safeChangeScene("test");
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        _listeners.emplace_back(id);
     }
     if (_fileName == "test.xml") {
         auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
