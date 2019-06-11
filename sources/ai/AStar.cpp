@@ -110,7 +110,9 @@ indie::ai::AStar::findPath(
     endNode.isEnd = true;
     _openSet.push_front(&startNode);
     while (!_openSet.empty()) {
-        _openSet.sort();
+        _openSet.sort([](const Node *nodeA, const Node *nodeB) {
+            return *nodeA < *nodeB;
+        });
         currentNode = _openSet.front();
         _openSet.remove(currentNode);
         _closeSet.push_front(currentNode);
