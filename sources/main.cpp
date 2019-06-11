@@ -61,6 +61,7 @@ int runBomberman()
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
+        indie::scenes::SceneManager::triggerSafeFunctions();
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {
             for (auto &err : errors) {
