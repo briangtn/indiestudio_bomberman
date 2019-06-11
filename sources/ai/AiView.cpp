@@ -56,9 +56,10 @@ void indie::ai::AIView::recomputePlayers(int width, int height)
     auto players = ecs.entityManager.getEntitiesWith<indie::components::PlayerController, indie::components::Transform>();
     for (auto &player : players) {
         auto tr = player->getComponent<components::Transform>();
-        int x = static_cast<int>(tr->getPosition().x / 10.0f);
-        int z = -static_cast<int>(tr->getPosition().z / 10.0f);
-        std::cout << "Found player at " << x << " " << z << std::endl;
+        std::cout << "real x: " << tr->getPosition().x << "x: " << tr->getPosition().x / 10.0f << " rounded: " << std::round(tr->getPosition().x / 10.0f) << "casted: " << static_cast<int>(std::round(tr->getPosition().x / 10.0f)) << std::endl;
+        std::cout << "real z: " << tr->getPosition().z << "z: " << tr->getPosition().z / 10.0f << " rounded: " << std::round(tr->getPosition().z / 10.0f) << "casted: " << static_cast<int>(std::round(tr->getPosition().z / 10.0f)) << std::endl;
+        int x = static_cast<int>(std::round(tr->getPosition().x / 10.0f));
+        int z = -static_cast<int>(std::round(tr->getPosition().z / 10.0f));
         if (x >= 0 && x < width && z >= 0 && z < height) {
             _viewGrid[z][x] = AI_CELL_TYPE_PLAYER;
         }

@@ -20,6 +20,7 @@
 #include "ai/AiView.hpp"
 #include "components/BonusSpawner.hpp"
 #include "events/AskingForBonusSpawnEvent.hpp"
+#include "ai/AStar.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -97,14 +98,35 @@ void indie::scenes::Scene::onStart()
                 }
                 std::cout << std::endl;
             }
-            auto &collisionGrid = indie::ai::AIView::getCollisionGrid();
-            std::cout << "Collision Grid:" << std::endl;
-            for (int z = 0; z < mapHeight; ++z) {
-                for (int x = 0; x < mapWidth; ++x) {
-                    std::cout << std::boolalpha << collisionGrid[z][x] << " ";
+            int playerX;
+            int playerZ;
+            for (int z = 0; z < viewGrid.size(); ++z) {
+                for (int x = 0; x < viewGrid[z].size(); ++x) {
+                    if (viewGrid[z][x] == indie::ai::AIView::AI_CELL_TYPE_PLAYER) {
+                        playerX = x;
+                        playerZ = z;
+                    }
                 }
-                std::cout << std::endl;
             }
+            auto path = indie::ai::AStar::findPath(viewGrid, {playerX, playerZ}, {5, 8});
+            for (auto &entity : ecs.entityManager.getEntitiesByName("path")) {
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+            }
+            if (path.empty()) {
+                std::cout << "Found no path" << std::endl;
+            }
+            while (!path.empty()) {
+                auto node = path.top();
+                path.pop();
+                std::cout << "path : " << node.pos.x << " " << node.pos.y;
+                auto pathEntity = ecs.entityManager.createEntity("path");
+                pathEntity->assignComponent<components::Transform, maths::Vector3D>({node.pos.x * 10.0f, 0, -node.pos.y * 10.0f});
+                pathEntity->assignComponent<components::Mesh>("../test_assets/cube.obj");
+                auto mat = pathEntity->assignComponent<components::Material, std::string>("../test_assets/cube_texture.png");
+                mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+                mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
+            }
+            std::cout << std::endl;
         }
     });
 
