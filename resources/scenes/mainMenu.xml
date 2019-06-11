@@ -39,6 +39,7 @@
         <component type="Button">
             <argument name="text" value="Start game"/>
             <argument name="textureFileName" value="../button.png"/>
+            <argument name="id" value="1"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="../bigfont.png"/>
@@ -52,6 +53,7 @@
         <component type="Button">
             <argument name="text" value="Close window"/>
             <argument name="textureFileName" value="../button.png"/>
+            <argument name="id" value="2"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="../bigfont.png"/>

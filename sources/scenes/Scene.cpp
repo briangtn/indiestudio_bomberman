@@ -17,6 +17,7 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
 #include "scenes/SceneManager.hpp"
+#include "events/IrrlichtJoystickInputEvent.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -29,16 +30,19 @@ void indie::scenes::Scene::onStart()
     ECSWrapper ecs;
 
     if (_fileName == "mainMenu.xml") {
-        ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](){
-            indie::scenes::SceneManager::changeScene("test");
+        ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
+            indie::scenes::SceneManager::safeChangeScene("test");
         });
-        ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](){
+        ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
             ECSWrapper ecs;
             try {
                 ecs.systemManager.stopSystem<indie::systems::IrrlichtManagerSystem>();
             } catch (std::exception e) {
 
             }
+        });
+        ecs.eventManager.addListener<void, indie::events::IrrlichtJoystickEvent>(nullptr, [](void *a, indie::events::IrrlichtJoystickEvent e){
+            ECSWrapper ecs;
         });
     }
     if (_fileName == "test.xml") {
