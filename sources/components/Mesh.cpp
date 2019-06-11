@@ -156,10 +156,10 @@ irr::scene::IAnimatedMeshSceneNode *indie::components::Mesh::getAnimatedMeshNode
     return _node;
 }
 
-std::ostream &indie::components::Mesh::operator<<(std::ostream &file)
+indie::components::Mesh &indie::components::Mesh::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Mesh">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="fileName" value=")" << _meshFilename << R"("/>)" << std::endl;
-    file << std::setw(8) << "</component>" << std::endl;
-    return file;
+    file << R"(        <component type="Mesh">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _meshFilename << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

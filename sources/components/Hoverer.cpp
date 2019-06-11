@@ -58,12 +58,12 @@ const indie::maths::Vector3D &indie::components::Hoverer::getAdvancement() const
     return _advancement;
 }
 
-std::ostream &indie::components::Hoverer::operator<<(std::ostream &file)
+indie::components::Hoverer &indie::components::Hoverer::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Hoverer">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="amplitude" value=")" << _amplitude << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="advancement" value=")" << _advancement << R"("/>)" << std::endl;
-    file << std::setw(8) << "</component>" << std::endl;
-    return file;
+    file << R"(        <component type="Hoverer">)" << std::endl;
+    file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
+    file << R"(            <argument name="amplitude" value=")" << _amplitude << R"("/>)" << std::endl;
+    file << R"(            <argument name="advancement" value=")" << _advancement << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

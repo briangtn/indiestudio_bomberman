@@ -81,10 +81,10 @@ irr::scene::ICameraSceneNode *indie::components::Camera::getCameraNode()
     return _cameraNode;
 }
 
-std::ostream &indie::components::Camera::operator<<(std::ostream &file)
+indie::components::Camera &indie::components::Camera::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Camera">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="FOV" value=")" << _FOV << R"("/>)" << std::endl;
-    file << std::setw(8) << "</components>" << std::endl;
-    return file;
+    file << R"(        <component type="Camera">)" << std::endl;
+    file << R"(            <argument name="FOV" value=")" << _FOV << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

@@ -74,10 +74,10 @@ float indie::components::Rotator::getSpeedZ() const
     return _speed.z;
 }
 
-std::ostream &indie::components::Rotator::operator<<(std::ostream &file)
+indie::components::Rotator &indie::components::Rotator::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Rotator"/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
-    file << std::setw(8) << "</component>" << std::endl;
-    return file;
+    file << R"(        <component type="Rotator">)" << std::endl;
+    file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

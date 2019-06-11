@@ -11,7 +11,6 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-#include <boost/hana.hpp>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -21,6 +20,10 @@
 #include "components/Animator.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
+#include "components/Camera.hpp"
+#include "components/Hoverer.hpp"
+#include "components/PlayerController.hpp"
+#include "components/Rotator.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -88,6 +91,7 @@ void indie::scenes::Scene::onStart()
 
 void indie::scenes::Scene::onStop()
 {
+    save(false, false);
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
@@ -108,7 +112,7 @@ void indie::scenes::Scene::save(bool override, bool saveShouldBeKeeped)
 void indie::scenes::Scene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
     ECSWrapper ecs;
-    std::ofstream file(saveName);
+    std::ofstream file(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
 
     file << "<?xml version=\"1.0\"?>" << std::endl << "<scene>" << std::endl;
     ecs.entityManager.applyToEach(
@@ -122,13 +126,52 @@ void indie::scenes::Scene::save(const std::string &saveName, bool override, bool
 
 std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler entity)
 {
-    file << "<entity name=\"" << entity->getName() << "\" shouldBeKeeped=\"" << std::boolalpha
+    file << "    <entity name=\"" << entity->getName() << "\" shouldBeKeeped=\"" << std::boolalpha
          << entity->shouldBeKeeped() << "\">" << std::endl;
-
-    auto components = entity->getComponents<jf::components::Component>();
-    boost::hana::for_each(components, [&](jf::components::Component component) {
-        file << component;
-    });
-    file << "</entity>" << std::endl;
+    if (entity->hasComponent<components::Animator>()) {
+        components::Animator &component = *(entity->getComponent<components::Animator>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::BoxCollider>()) {
+        components::BoxCollider &component = *(entity->getComponent<components::BoxCollider>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Camera>()) {
+        components::Camera &component = *(entity->getComponent<components::Camera>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Hoverer>()) {
+        components::Hoverer &component = *(entity->getComponent<components::Hoverer>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Material>()) {
+        components::Material &component = *(entity->getComponent<components::Material>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Mesh>()) {
+        components::Mesh &component = *(entity->getComponent<components::Mesh>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Particle>()) {
+        components::Particle &component =  *(entity->getComponent<components::Particle>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::PlayerController>()) {
+        components::PlayerController &component = *(entity->getComponent<components::PlayerController>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Rotator>()) {
+        components::Rotator &component = *(entity->getComponent<components::Rotator>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::SoundComponent>()) {
+        components::SoundComponent &component = *(entity->getComponent<components::SoundComponent>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Transform>()) {
+        components::Transform &component = *(entity->getComponent<components::Transform>().get());
+        component >> file;
+    }
+    file << "    </entity>" << std::endl;
     return file;
 }

@@ -95,12 +95,12 @@ void indie::components::Transform::lookAt(jf::components::ComponentHandler<indie
     lookAt(point->_position);
 }
 
-std::ostream &indie::components::Transform::operator<<(std::ostream &file)
+indie::components::Transform &indie::components::Transform::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Transform">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="position" value=")" << _position << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="rotation" value=")" << _rotation << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="scale" value=")" << _scale << R"("/>)" << std::endl;
-    file << std::setw(8) << "</component>" << std::endl;
-    return file;
+    file << R"(        <component type="Transform">)" << std::endl;
+    file << R"(            <argument name="position" value=")" << _position << R"("/>)" << std::endl;
+    file << R"(            <argument name="rotation" value=")" << _rotation << R"("/>)" << std::endl;
+    file << R"(            <argument name="scale" value=")" << _scale << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

@@ -184,14 +184,14 @@ void indie::components::SoundComponent::setVelocity(const indie::maths::Vector3D
     }
 }
 
-std::ostream &indie::components::SoundComponent::operator<<(std::ostream &file)
+indie::components::SoundComponent &indie::components::SoundComponent::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="Sound">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="fileName" value=")" << _sourceFile << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="type" value=")" << ((_soundType == MUSIC) ? "MUSIC" : "EFFECT") << R"("/>)" << std::endl;
+    file << R"(        <component type="Sound">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _sourceFile << R"("/>)" << std::endl;
+    file << R"(            <argument name="type" value=")" << ((_soundType == MUSIC) ? "MUSIC" : "EFFECT") << R"("/>)" << std::endl;
     if (_spatialization) {
-        file << std::setw(12) << R"(<argument name="position" value=")" << _position << R"("/>)" << std::endl;
+        file << R"(            <argument name="position" value=")" << _position << R"("/>)" << std::endl;
     }
-    file << std::setw(8) << R"(</component>)" << std::endl;
-    return file;
+    file << "        </component>" << std::endl;
+    return *this;
 }

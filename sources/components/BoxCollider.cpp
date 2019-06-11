@@ -113,12 +113,12 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
     return colliding;
 }
 
-std::ostream &indie::components::BoxCollider::operator<<(std::ostream &file)
+indie::components::BoxCollider &indie::components::BoxCollider::operator>>(std::ostream &file)
 {
-    file << std::setw(8) << R"(<component type="BoxCollider">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="size" value=")" << _size << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="offset" value=")" << _offset << R"("/>)" << std::endl;
-    file << std::setw(12) << R"(<argument name="layer" value="0x)" << std::setfill('0') << std::hex <<  _layer << R"("/>)" << std::endl;
-    file << std::setw(8) << "</component>" << std::endl;
-    return file;
+    file << R"(        <component type="BoxCollider">)" << std::endl;
+    file << R"(            <argument name="size" value=")" << _size << R"("/>)" << std::endl;
+    file << R"(            <argument name="offset" value=")" << _offset << R"("/>)" << std::endl;
+    file << R"(            <argument name="layer" value="0x)" << std::setfill('0') << std::hex <<  _layer << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

@@ -51,6 +51,8 @@ namespace indie {
                               irr::video::E_MATERIAL_TYPE materialType = irr::video::EMT_SOLID);
             ~Material() override;
 
+            Material &operator>>(std::ostream &file);
+
             irr::video::E_MATERIAL_TYPE getMaterialType() const;
             void setMaterialType(irr::video::E_MATERIAL_TYPE type);
 
@@ -67,8 +69,6 @@ namespace indie {
             bool hasMaterialFlagsChanged() const;
             bool hasMaterialTypeChanged() const;
             void resetHasMaterialChanged();
-
-            std::ostream &operator<<(std::ostream &file);
 
         private:
             irr::video::E_MATERIAL_TYPE _materialType;

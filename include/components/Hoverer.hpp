@@ -27,13 +27,13 @@ namespace indie {
             void setSpeed(const indie::maths::Vector3D &speed);
             indie::maths::Vector3D getSpeed() const;
 
+            Hoverer &operator>>(std::ostream &file);
+
             void setAmplitude(const indie::maths::Vector3D &amplitude);
             const indie::maths::Vector3D &getAmplitude() const;
 
             void setAdvancement(const indie::maths::Vector3D &advancement);
             const indie::maths::Vector3D &getAdvancement() const;
-
-            std::ostream &operator<<(std::ostream &file);
 
         private:
             indie::maths::Vector3D _speed;

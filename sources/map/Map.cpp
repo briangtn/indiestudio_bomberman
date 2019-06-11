@@ -36,6 +36,7 @@ void indie::Map::drawElement(const std::string &objPath, const std::string &text
     ECSWrapper ecs;
 
     auto cubeEntity = ecs.entityManager.createEntity("cube");
+    cubeEntity->setShouldBeKeeped(true);
     auto tr = cubeEntity->assignComponent<indie::components::Transform>();
     tr->setPosition(position);
     tr->setScale(scale);

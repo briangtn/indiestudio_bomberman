@@ -20,7 +20,7 @@
     <entity name="item">
         <component type="Transform">
             <argument name="position" value="10,1,0"/>
-            <argument name="scale" value="8,8,8"/>
+r            <argument name="scale" value="8,8,8"/>
         </component>
         <component type="BoxCollider">
             <argument name="size" value="0.5,0.5,0.5"/>

@@ -153,19 +153,19 @@ bool indie::components::Material::hasMaterialTypeChanged() const
     return _materialTypeChanged;
 }
 
-std::ostream &indie::components::Material::operator<<(std::ostream &file)
+indie::components::Material &indie::components::Material::operator>>(std::ostream &file)
 {
     std::map<irr::video::E_MATERIAL_FLAG, bool> defaultMap = DEFAULT_MATERIAL_FLAGS;
     unsigned int nbFlags = 0;
 
-    file << std::setw(8) << R"(<component type="Material">)" << std::endl;
-    file << std::setw(12) << R"(<argument name="fileName" value=")" << _materialTexture << std::endl;
-    file << std::setw(12) << R"(<argument name="type" value=")" << materialTypes.at(_materialType) << std::endl;
-    file << std::setw(12) << R"(<argument name="flags" value=")";
+    file << R"(        <component type="Material">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _materialTexture << R"("/>)" << std::endl;
+    file << R"(            <argument name="type" value=")" << materialTypes.at(_materialType) << R"("/>)" << std::endl;
+    file << R"(            <argument name="flags" value=")";
     for (auto &it : _materialFlags) {
         if (it.second != defaultMap[it.first]) {
             if (nbFlags > 0) {
-                file << ",";
+                file << ";";
             }
             if (!it.second) {
                 file << "!" << materialFlags.at(it.first);
@@ -176,6 +176,6 @@ std::ostream &indie::components::Material::operator<<(std::ostream &file)
         }
     }
     file << R"("/>)" << std::endl;
-    file << std::setw(8) << R"(</component>)";
-    return file;
+    file << R"(        </component>)" << std::endl;
+    return *this;
 }

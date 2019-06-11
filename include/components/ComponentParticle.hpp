@@ -27,7 +27,9 @@ namespace indie {
 
             /* Particle Destructor */
 
-            ~Particle();            
+            ~Particle();
+
+            Particle &operator>>(std::ostream &file);
 
             /* Init Function */
 
@@ -93,8 +95,6 @@ namespace indie {
             int getFadeTime() const;
             void setFadeTime(const int &newFadeTime);
 
-            std::ostream &operator<<(std::ostream &file);
-
         protected:
         private:
 
@@ -157,6 +157,7 @@ namespace indie {
         };
 
         std::ostream &operator<<(std::ostream &file, const irr::core::aabbox3d<irr::f32> &box);
+        std::ostream &operator<<(std::ostream &file, const irr::core::vector3d<float> &vector);
         std::ostream &operator<<(std::ostream &file, const std::pair<int, int> &pair);
         std::ostream &operator<<(std::ostream &file, const std::pair<irr::video::SColor, irr::video::SColor> &pair);
         std::ostream &operator<<(std::ostream &file, const irr::video::SColor &color);

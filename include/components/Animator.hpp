@@ -39,6 +39,8 @@ namespace indie {
             Animator(jf::entities::Entity &entity, const std::map<std::string, Animation> &animations);
             ~Animator() override;
 
+            Animator &operator>>(std::ostream &file);
+
             void addAnimation(const std::string &name, const Animation &anim);
             void addAnimations(const std::map<std::string, Animation> &animations);
             void removeAnimation(const std::string &name);
@@ -54,8 +56,6 @@ namespace indie {
             const Animation &getCurrentAnimationData() const;
 
             void OnAnimationEnd(irr::scene::IAnimatedMeshSceneNode *node) override;
-
-            std::ostream &operator<<(std::ostream &file);
 
         private:
             std::string _currentAnimation;

@@ -35,6 +35,8 @@ namespace indie {
             explicit SoundComponent(jf::entities::Entity &entity, const std::string &sourceFile, SoundType soundType, indie::maths::Vector3D position);
             ~SoundComponent() override;
 
+            SoundComponent &operator>>(std::ostream &file);
+
         public:
             const SoundComponentState getState() const;
             irrklang::ISound *getSound();
@@ -70,9 +72,6 @@ namespace indie {
             bool _isPaused;
 
             indie::maths::Vector3D _position;
-
-            std::ostream &operator<<(std::ostream &file);
-
         };
     }
 }

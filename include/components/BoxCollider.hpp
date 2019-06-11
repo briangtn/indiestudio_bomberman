@@ -28,6 +28,8 @@ namespace indie {
             explicit BoxCollider(jf::entities::Entity &entity, maths::Vector3D size = {1, 1, 1}, maths::Vector3D offset = {0, 0, 0}, uint64_t layer = 0xffffffff);
             ~BoxCollider() override;
 
+            BoxCollider &operator>>(std::ostream &file);
+
             const maths::Vector3D &getSize() const;
             void setSize(const maths::Vector3D &size);
 
@@ -39,8 +41,6 @@ namespace indie {
 
             bool hasCollisions();
             std::vector<jf::entities::EntityHandler> getCollisions();
-
-            std::ostream &operator<<(std::ostream &file);
 
         private:
             maths::Vector3D _size;

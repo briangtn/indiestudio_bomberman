@@ -20,14 +20,14 @@ namespace indie {
             explicit Camera(jf::entities::Entity &entity, float FOV = 45);
             ~Camera() override;
 
+            Camera &operator>>(std::ostream &file);
+
             void updateCamera();
 
             irr::scene::ICameraSceneNode *getCameraNode();
 
             void setFOV(float FOV);
             float getFOV() const;
-
-            std::ostream &operator<<(std::ostream &file);
 
         protected:
             irr::scene::ICameraSceneNode *_cameraNode;
