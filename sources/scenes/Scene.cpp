@@ -7,6 +7,7 @@
 
 /* Created the 27/05/2019 at 15:27 by jbulteau */
 
+#include <iostream>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -17,6 +18,8 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
 #include "ai/AiView.hpp"
+#include "components/BonusSpawner.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -71,15 +74,47 @@ void indie::scenes::Scene::onStart()
     });
     _listeners.emplace_back(id);
 
-    indie::Map::generateMap(15, 15, 42, false);
+    auto mapWidth = 15;
+    auto mapHeight = 15;
+    indie::Map::generateMap(mapWidth, mapHeight, 421, false);
 
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
             indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
-            indie::ai::AIView::recomputeViewGrid(15, 15);
         }
     });
+
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(nullptr, [mapWidth, mapHeight](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            indie::ai::AIView::recomputeViewGrid(mapWidth, mapHeight);
+            auto &viewGrid = indie::ai::AIView::getViewGrid();
+            std::cout << "View Grid:" << std::endl;
+            for (int z = 0; z < mapHeight; ++z) {
+                for (int x = 0; x < mapWidth; ++x) {
+                    std::cout << static_cast<int>(viewGrid[z][x]) << " ";
+                }
+                std::cout << std::endl;
+            }
+            auto &collisionGrid = indie::ai::AIView::getCollisionGrid();
+            std::cout << "Collision Grid:" << std::endl;
+            for (int z = 0; z < mapHeight; ++z) {
+                for (int x = 0; x < mapWidth; ++x) {
+                    std::cout << std::boolalpha << collisionGrid[z][x] << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+    });
+
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB}));
+        }
+    });
+
     _listeners.emplace_back(id);
 }
 

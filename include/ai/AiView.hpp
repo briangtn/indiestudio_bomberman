@@ -11,6 +11,7 @@
 #define INDIESTUDIO_AIVIEW_HPP
 
 #include <vector>
+#include <stdint.h>
 
 namespace indie {
 
@@ -18,26 +19,37 @@ namespace indie {
 
         class AIView {
         public:
-            enum AICellType {
-                AI_CELL_TYPE_AIR,
-                AI_CELL_TYPE_UNBREAKABLE_WALL,
-                AI_CELL_TYPE_BREAKABLE_WALL,
-                AI_CELL_TYPE_PLAYER,
-                AI_CELL_TYPE_POWER_UP_FIRE_UP,
-                AI_CELL_TYPE_POWER_UP_BOMB_UP,
-                AI_CELL_TYPE_POWER_UP_SPEED_UP,
-                AI_CELL_TYPE_POWER_UP_WALL_PASS,
-                AI_CELL_TYPE_UNKNOWN,
+            enum AICellType : uint16_t {
+                AI_CELL_TYPE_AIR                = 0b000000000,
+                AI_CELL_TYPE_UNBREAKABLE_WALL   = 0b000000001,
+                AI_CELL_TYPE_BREAKABLE_WALL     = 0b000000011,
+                AI_CELL_TYPE_PLAYER             = 0b000000100,
+                AI_CELL_TYPE_BOMB               = 0b000001001,
+                AI_CELL_TYPE_POWER_UP_FIRE_UP   = 0b000010000,
+                AI_CELL_TYPE_POWER_UP_BOMB_UP   = 0b000100000,
+                AI_CELL_TYPE_POWER_UP_SPEED_UP  = 0b001000000,
+                AI_CELL_TYPE_POWER_UP_WALL_PASS = 0b010000000,
+                AI_CELL_TYPE_UNKNOWN            = 0b100000000,
             };
 
             using AICellViewGrid = std::vector<std::vector<AICellType>>;
+            using AICellCollisionGrid = std::vector<std::vector<bool>>;
 
         public:
+            static const AICellCollisionGrid &getCollisionGrid();
             static const AICellViewGrid &getViewGrid();
             static void recomputeViewGrid(int width, int height);
 
         private:
+            static void recomputePlayers(int width, int height);
+            static void recomputeUnbreakableWalls(int width, int height);
+            static void recomputeBreakableWalls(int width, int height);
+            static void recomputeBombs(int width, int height);
+            static void recomputePowerUps(int width, int height);
+
+        private:
             static AICellViewGrid _viewGrid;
+            static AICellCollisionGrid _collisionGrid;
         };
     }
 }
