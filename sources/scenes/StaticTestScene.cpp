@@ -22,6 +22,7 @@
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
+#include "parser/Parser.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
 {
@@ -31,11 +32,11 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({50, 130, -105});
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
-    //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    //cameraControler->setAlwaysLookForward(false);
-    //cameraControler->setXRotationAxis("xRotAxis");
-    //cameraControler->setYRotationAxis("yRotAxis");
-    //cameraControler->setRotationSpeed(100);
+    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
+    cameraControler->setAlwaysLookForward(false);
+    cameraControler->setXRotationAxis("xRotAxis");
+    cameraControler->setYRotationAxis("yRotAxis");
+    cameraControler->setRotationSpeed(100);
 
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
@@ -121,7 +122,7 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setTexture(0, "../test_assets/particle_default.png");
     sys->setAngle(0);
     sys->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 255, 0, 0), irr::video::SColor(0, 0, 0, 255)));
-    sys->setEmiterSize(irr::core::aabbox3df(-100, 0, -100, 100, 1, 100));
+    sys->setEmitterSize(irr::core::aabbox3df(-100, 0, -100, 100, 1, 100));
     sys->setEmitRate(std::make_pair(40, 80));
     sys->setFadeColor(irr::video::SColor(0, 0, 255, 0));
     sys->setFadeTime(1000);
