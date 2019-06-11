@@ -17,6 +17,7 @@
 #include "Exceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "components/SoundComponent.hpp"
+#include "systems/AISystem.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -85,7 +86,8 @@ indie::Parser::Parser()
         {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"IrrklangAudio"), &createIrrklangAudio},
         {(L"Movement"), &createMovement},
-        {(L"Taunt"), &createTaunt}
+        {(L"Taunt"), &createTaunt},
+        {(L"AI"), &createAI}
     })
     , _components({
         {(L"Animator"), &createAnimator},
@@ -297,6 +299,32 @@ void indie::Parser::loadScene(const std::string &fileName)
     }
     _xmlReader->drop();
     _xmlReader = nullptr;
+}
+
+void indie::Parser::createAI(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            throw exceptions::ParserInvalidFileException(
+                    "Node 'system' of type 'AI' does not required subnodes, at line "
+                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createIrrlichtManager");
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+                ecs.systemManager.addSystem<systems::AISystem>();
+                ecs.systemManager.startSystem<systems::AISystem>();
+                break;
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                        "indie::Parser::createIA");
+            }
+        } else {
+            continue;
+        }
+    }  
 }
 
 void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
