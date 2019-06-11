@@ -9,7 +9,7 @@
 
 indie::systems::DestroyOnTimeSystem::DestroyOnTimeSystem()
 {
-
+    
 }
 
 indie::systems::DestroyOnTimeSystem::~DestroyOnTimeSystem()

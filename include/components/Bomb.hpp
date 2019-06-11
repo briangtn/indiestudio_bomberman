@@ -28,13 +28,22 @@ namespace indie {
                 LOVE
             };
 
+            /* enum for each type of player */
+
+            enum PlayerType {
+                P1,
+                P2,
+                P3,
+                P4
+            };
+
         class Bomb : public jf::components::Component {
         public:
 
             /* Bombe Constructor */
 
             Bomb(jf::entities::Entity &entity, const int &strength,\
-            const float &timeBeforeExplose, BombType bomb);
+            const float &timeBeforeExplose, BombType bomb, PlayerType player);
 
             /* Bombe Destructor */
 
@@ -70,12 +79,18 @@ namespace indie {
             void setInitialPosition(const indie::maths::Vector3D &vectPos);
             indie::maths::Vector3D getInitialPosition() const;
 
+            /* Set & Get PlayerType */
+
+            void setPlayerType(const PlayerType &player);
+            PlayerType getPlayerType() const;
+
         protected:
         private:
             int _strength;
             float _timeBeforeExplose;
             int _bombID;
             BombType _bombType;
+            PlayerType _Player;
             std::string _meshPath;
             std::string _texturePath;
             static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;

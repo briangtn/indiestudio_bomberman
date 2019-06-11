@@ -21,6 +21,7 @@
 #include "components/Bomb.hpp"
 #include "components/SoundComponent.hpp"
 #include "components/DestroyOnTime.hpp"
+#include "components/PlayerController.hpp"
 #include <unistd.h>
 
 namespace indie {
@@ -45,8 +46,19 @@ namespace indie {
 
                 void playSoundExplosion(indie::components::BombType typeBomb, bool &pass);
 
+                /* Set & Get bombPlace */
+
+                void setNumberBombPlace(const int &newNumberBombPlace, const components::PlayerType &newPlayerType);
+                unsigned int getNumberBombPlacer(const components::PlayerType &playerType) const;
+
+                /* Remove & Add Bomb */
+
+                void addBombPlace(components::PlayerType playerType);
+                void removeBombPlace(components::PlayerType playerType);
+
             protected:
             private:
+            std::map<components::PlayerType, unsigned int> _NumberBombPlace;
         };
     }
 }
