@@ -8,4 +8,6 @@
     </system>
     <system type="Taunt">
     </system>
+    <system type="Bonus">
+    </system>
 </ecs>

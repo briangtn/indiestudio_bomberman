@@ -39,8 +39,8 @@ int runBomberman()
 //    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
 //    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
 
-    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
-    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
+//    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
+//    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));

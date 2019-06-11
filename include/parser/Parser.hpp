@@ -44,6 +44,8 @@ namespace indie {
                                 const std::string &node="component");
 
     private: /* SYSTEMS */
+        static void createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName,
+                                unsigned int &line);
         static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
