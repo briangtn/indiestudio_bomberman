@@ -15,7 +15,6 @@
 # Object files
 *.o
 *.ko
-*.obj
 *.elf
 
 # Linker output
@@ -588,5 +587,9 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
+
+# Ignore Makefile And Game Binary Name
+Makefile
+bomberman
 
 # End of https://www.gitignore.io/api/c,vim,c++,emacs,clion+all,visualstudio,visualstudiocode

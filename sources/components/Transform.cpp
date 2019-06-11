@@ -7,20 +7,23 @@
 
 /* Created the 02/05/2019 at 15:25 by jfrabel */
 
+#include <cmath>
 #include "Events.hpp"
-#include "Transform.hpp"
+#include "components/Transform.hpp"
+#include "maths/Matrices.hpp"
 
 /* ================================================================================================================ */
 /* ----------------------------------------------------Ctor&Dtor--------------------------------------------------- */
 /* ================================================================================================================ */
 
-jf::components::Transform::Transform(jf::entities::Entity &entity)
-    : Component(entity), _position(), _rotation(), _scale(1.0f, 1.0f, 1.0f)
+
+indie::components::Transform::Transform(jf::entities::Entity &entity, indie::maths::Vector3D position, indie::maths::Vector3D rotation, indie::maths::Vector3D scale)
+    : Component(entity), _position(position), _rotation(rotation), _scale(scale)
 {
     EMIT_CREATE(Transform);
 }
 
-jf::components::Transform::~Transform()
+indie::components::Transform::~Transform()
 {
     EMIT_DELETE(Transform);
 }
@@ -29,32 +32,64 @@ jf::components::Transform::~Transform()
 /* -----------------------------------------------Setters and Getters---------------------------------------------- */
 /* ================================================================================================================ */
 
-const jf::maths::Vector3D &jf::components::Transform::getPosition() const
+const indie::maths::Vector3D &indie::components::Transform::getPosition() const
 {
     return _position;
 }
 
-void jf::components::Transform::setPosition(const jf::maths::Vector3D &position)
+void indie::components::Transform::setPosition(const indie::maths::Vector3D &position)
 {
     _position = position;
 }
 
-const jf::maths::Vector3D &jf::components::Transform::getRotation() const
+const indie::maths::Vector3D &indie::components::Transform::getRotation() const
 {
     return _rotation;
 }
 
-void jf::components::Transform::setRotation(const jf::maths::Vector3D &rotation)
+void indie::components::Transform::setRotation(const indie::maths::Vector3D &rotation)
 {
     _rotation = rotation;
 }
 
-const jf::maths::Vector3D &jf::components::Transform::getScale() const
+const indie::maths::Vector3D &indie::components::Transform::getScale() const
 {
     return _scale;
 }
 
-void jf::components::Transform::setScale(const jf::maths::Vector3D &scale)
+void indie::components::Transform::setScale(const indie::maths::Vector3D &scale)
 {
     _scale = scale;
+}
+
+indie::maths::Vector3D indie::components::Transform::getForward() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(0, 0, 1), rotMat).normalized();
+}
+
+indie::maths::Vector3D indie::components::Transform::getLocalAxes() const
+{
+    maths::Matrix4 rotMat = maths::Matrix4::Rotation(_rotation.x, _rotation.y, _rotation.z);
+    return maths::Matrix4::MultiplyVector(maths::Vector3D(1, 1, 1), rotMat).normalized();
+}
+
+void indie::components::Transform::lookAt(const indie::maths::Vector3D &point)
+{
+    auto forward = maths::Vector3D({0, 0, 1});
+    auto target = (point - _position).normalized();
+    auto cross = maths::Vector3D::Cross(forward, target);
+    if (cross.magnitudeSq() != 0) {
+        cross.normalize();
+    } else {
+        cross = maths::Vector3D(0, 1, 0);
+    }
+    auto angle = RAD2DEG(acosf(maths::Vector3D::Dot(forward, target)));
+    auto rotation = maths::Matrix3::AxisAngle(cross, angle);
+    _rotation = maths::Matrix3::ToEulerAngles(rotation);
+}
+
+void indie::components::Transform::lookAt(jf::components::ComponentHandler<indie::components::Transform> point)
+{
+    lookAt(point->_position);
 }
