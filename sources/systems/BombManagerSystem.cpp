@@ -332,15 +332,15 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER)))
+            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))) {
                 return 1;
-            else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
+            } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 return 2;
             }
             else if ((collider->getLayer() & PLAYER_LAYER)) {
-                std::cout << "PLAYER DEAD !!" << std::endl; // TODO KILL PLAYER
+                std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
                 return 0;
             }
             else {
