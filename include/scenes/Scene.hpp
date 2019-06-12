@@ -28,8 +28,8 @@ namespace indie {
         public:
             void onStart() override;
             void onStop() override;
-            void save(bool override, bool saveShouldBeKeeped) override;
-            void save(const std::string &saveName, bool override, bool saveShouldBeKeeped) override;
+            SaveState save(bool override, bool saveShouldBeKeeped) override;
+            SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped) override;
 
         private:
             const std::string _fileName;

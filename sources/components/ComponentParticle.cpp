@@ -390,6 +390,7 @@ std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<
 std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<irr::video::SColor, irr::video::SColor> &pair)
 {
     file << pair.first << ";" << pair.second;
+    return file;
 }
 
 std::ostream &indie::components::operator<<(std::ostream &file, const irr::video::SColor &color)
@@ -401,6 +402,7 @@ std::ostream &indie::components::operator<<(std::ostream &file, const irr::video
 std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<irr::core::dimension2df, irr::core::dimension2df> &pair)
 {
     file << pair.first << ";" << pair.second;
+    return file;
 }
 
 std::ostream &indie::components::operator<<(std::ostream &file, const irr::core::dimension2df &vector)

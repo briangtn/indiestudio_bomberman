@@ -12,12 +12,18 @@
 
 namespace indie {
     namespace scenes {
+
+        enum SaveState {
+            SUCCESS,
+            FAIL
+        };
+
         class IScene {
         public:
             virtual void onStart() = 0;
             virtual void onStop() = 0;
-            virtual void save(bool override, bool saveShouldBeKeeped) = 0;
-            virtual void save(const std::string &saveName, bool override, bool saveShouldBeKeeped) = 0;
+            virtual SaveState save(bool override, bool saveShouldBeKeeped) = 0;
+            virtual SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped) = 0;
         };
     }
 }

@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <boost/filesystem/operations.hpp>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -33,6 +34,7 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 void indie::scenes::Scene::onStart()
 {
     Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
+//    Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + "save.xml");
     ECSWrapper ecs;
 
     auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
@@ -98,7 +100,7 @@ void indie::scenes::Scene::onStop()
     _listeners.clear();
 }
 
-void indie::scenes::Scene::save(bool override, bool saveShouldBeKeeped)
+indie::scenes::SaveState indie::scenes::Scene::save(bool override, bool saveShouldBeKeeped)
 {
     std::time_t time = std::time(nullptr);
     std::stringstream date;
@@ -106,14 +108,22 @@ void indie::scenes::Scene::save(bool override, bool saveShouldBeKeeped)
 
     date << std::put_time(std::localtime(&time), " %Y-%m-%d %H-%M-%S.xml");
     fileName += date.str();
-    save(fileName, override, saveShouldBeKeeped);
+    return save(fileName, override, saveShouldBeKeeped);
 }
 
-void indie::scenes::Scene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
+indie::scenes::SaveState indie::scenes::Scene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
     ECSWrapper ecs;
-    std::ofstream file(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
+    std::string path(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
 
+    if (boost::filesystem::exists(path)) {
+        if (override) {
+            boost::filesystem::remove(path);
+        } else {
+            return FAIL;
+        }
+    }
+    std::ofstream file(path);
     file << "<?xml version=\"1.0\"?>" << std::endl << "<scene>" << std::endl;
     ecs.entityManager.applyToEach(
             [&](jf::entities::EntityHandler entity) {
@@ -122,6 +132,7 @@ void indie::scenes::Scene::save(const std::string &saveName, bool override, bool
                 }
             });
     file << "</scene>" << std::endl;
+    return SUCCESS;
 }
 
 std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler entity)
