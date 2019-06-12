@@ -62,7 +62,7 @@ namespace indie {
                 /* Set & Get bombPlace */
 
                 void setNumberBombPlace(const int &newNumberBombPlace, const components::PlayerType &newPlayerType);
-                unsigned int getNumberBombPlacer(const components::PlayerType &playerType) const;
+                unsigned int getNumberBombPlace(const components::PlayerType &playerType) const;
 
                 /* Remove & Add Bomb In NumberBombPlace */
 
