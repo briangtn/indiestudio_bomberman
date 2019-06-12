@@ -72,8 +72,7 @@ jf::components::ComponentHandler<components::Transform> tr)
 
     auto playerPos = player->getComponent<indie::components::Transform>();
     auto bombEntity = ecs.entityManager.createEntity("bomb");
-    std::cout << "position x = " << (std::floor((playerPos->getPosition().x / 10.0f)) * 10.0f + 5) << " position y = " << (std::floor((playerPos->getPosition().z / 10.0f)) * 10.0f + 5) << std::endl;
-    auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10 / 2) / 10) * 10.0f + 5), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10 / 2) / 10) * 10 + 5)});
+    auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
     auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(bomb->getStrength(), bomb->getTimeBeforeExplose(), bomb->getBombType(), bomb->getPlayerType());
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
