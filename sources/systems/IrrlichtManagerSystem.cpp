@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include <algorithm>
 #include "maths/Vectors.hpp"
 #include "maths/Matrices.hpp"
 #include "maths/Geometry3D.hpp"
@@ -46,7 +47,7 @@ indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _fullscreenEnabled(false),
       _vsyncEnabled(false),
       _windowCaption("Irrlicht window"),
-      _windowDimension(800, 600),
+      _windowDimension(1280, 720),
       _needToReload(false)
 {
 }
@@ -100,7 +101,23 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
     }
 
-    ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
+    //ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
+    auto imagesEntities = ecs.entityManager.getEntitiesWith<components::Transform, components::Image>();
+    std::sort(imagesEntities.begin(), imagesEntities.end(), [](jf::entities::EntityHandler a, jf::entities::EntityHandler b){
+        auto aTr = a->getComponent<components::Transform>();
+        auto bTr = b->getComponent<components::Transform>();
+
+        return (aTr->getPosition().z < bTr->getPosition().z);
+    });
+    std::for_each(imagesEntities.begin(), imagesEntities.end(), [](jf::entities::EntityHandler entity){
+        auto tr = entity->getComponent<components::Transform>();
+        auto image = entity->getComponent<components::Image>();
+
+        drawImage(entity, tr, image);
+    });
+
+    std::cout << std::endl << std::endl << std::endl << "===============" << std::endl;
+
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
@@ -542,6 +559,7 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
     buttonNode->setText(text);
     buttonNode->setRelativePosition(rect);
     buttonNode->setID(button->getId());
+    buttonNode->setVisible(button->isVisible());
     if (button->getTextureNode() != nullptr)
         buttonNode->setImage(button->getTextureNode());
     if (font.isValid()) {
@@ -578,6 +596,7 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
     textNode->setOverrideColor(text->getColor());
     textNode->setBackgroundColor(text->getBackgroundColor());
     textNode->setDrawBackground(true);
+    textNode->setVisible(text->isVisible());
     if (font.isValid()) {
         if (!font->isInit()) {
             font->setFontNode(env->getFont(font->getPath().c_str()));
@@ -597,6 +616,13 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
     irr::core::position2d<irr::s32> irrPos = irr::core::position2d<irr::s32>(pos.x, pos.y);
     irr::video::ITexture *textureNode = nullptr;
 
+    if (image->isWaitReload()) {
+        image->setTextureNode(nullptr);
+        if (image->isImageInit()) {
+            image->getImageNode()->remove();
+            image->setImageNode(nullptr);
+        }
+    }
     if (!image->isTextureInit()) {
         textureNode = driver->getTexture(image->getPath().c_str());
         driver->makeColorKeyTexture(textureNode, irr::core::position2d<irr::s32>(0, 0));
@@ -605,7 +631,10 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
     if (image->isTextureInit() && !image->isImageInit()) {
         textureNode = image->getTextureNode();
         image->setImageNode(env->addImage(textureNode, irrPos, false));
+        image->getImageNode()->setUseAlphaChannel(image->isUseAlpha());
     }
+    image->getImageNode()->setID(image->getId());
+    image->getImageNode()->setVisible(image->isVisible());
 }
 
 

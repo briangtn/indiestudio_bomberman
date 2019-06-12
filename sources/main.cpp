@@ -11,7 +11,7 @@
 #include <systems/TauntSystem.hpp>
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
-#include "scenes/StaticTestScene.hpp"
+#include "scenes/PlayerConfigScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -26,7 +26,7 @@ int runBomberman()
     std::vector<jf::internal::ID> listeners;
 
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
-    indie::scenes::Scene::InitControllers();
+    indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
@@ -41,6 +41,7 @@ int runBomberman()
 
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
+    indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
 
     indie::scenes::SceneManager::changeScene("mainMenu");
 

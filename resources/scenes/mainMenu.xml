@@ -8,19 +8,27 @@
         <component type="Camera">
         </component>
     </entity>
+    <entity name="monImage">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="../inputexist.png"/>
+        </component>
+    </entity>
     <entity name="backgroundImage">
         <component type="Transform">
             <argument name="position" value="0,0,0"/>
-            <argument name="scale" value="800,600,0"/>
         </component>
         <component type="Image">
             <argument name="fileName" value="../background.png"/>
         </component>
     </entity>
+
     <entity name="mainText">
         <component type="Transform">
             <argument name="position" value="0,0,0"/>
-            <argument name="scale" value="800,600,0"/>
+            <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
             <argument name="text" value="THE BOMBERMAN"/>
@@ -33,7 +41,7 @@
     </entity>
     <entity name="startButton">
         <component type="Transform">
-            <argument name="position" value="150,210,0"/> <!-- (600 / 2) - 80 - 10 -->
+            <argument name="position" value="365,270,0"/> <!-- (720 / 2) - 80 - 10 -->
             <argument name="scale" value="500,80,0"/>
         </component>
         <component type="Button">
@@ -47,7 +55,7 @@
     </entity>
     <entity name="closeButton">
         <component type="Transform">
-            <argument name="position" value="150,310,0"/> <!-- (600 / 2) + 10 -->
+            <argument name="position" value="365,370,0"/> <!-- (720 / 2) + 10 -->
             <argument name="scale" value="500,80,0"/>
         </component>
         <component type="Button">

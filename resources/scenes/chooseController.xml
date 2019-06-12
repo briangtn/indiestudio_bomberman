@@ -11,7 +11,7 @@
     <entity name="backgroundImage">
         <component type="Transform">
             <argument name="position" value="0,0,0"/>
-            <argument name="scale" value="800,600,0"/>
+            <argument name="scale" value="1280,600,0"/>
         </component>
         <component type="Image">
             <argument name="fileName" value="../background.png"/>
