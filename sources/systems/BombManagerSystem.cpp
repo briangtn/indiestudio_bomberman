@@ -10,7 +10,7 @@
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
     for (unsigned int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
-        _NumberBombPlace[static_cast<indie::components::PlayerType>(s)] = 0;
+        _numberBombPlace[static_cast<indie::components::PlayerType>(s)] = 0;
 }
 
 indie::systems::BombManagerSystem::~BombManagerSystem()
@@ -40,12 +40,13 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplose() <= 0) {
             if (pass == true) {
-                this->displayParticle(bomb->getBombType(), bomb->getStrength(), vectLimit);
+                this->displayParticle(bomb->getBombType(), bomb->getStrength(), bomb);
                 this->playSoundExplosion(bomb->getBombType(), pass);
                 this->removeBombPlace(bomb->getPlayerType());
             }
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
+            this->shakeBomb(bomb);
             bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
         }
         });
@@ -80,14 +81,14 @@ jf::components::ComponentHandler<components::Transform> tr)
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
-void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, indie::maths::Vector3D posLimit)
+void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, jf::components::ComponentHandler<indie::components::Bomb> bomb)
 {
     ECSWrapper ecs;
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
     componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
-    auto playerPos = ecs.entityManager.getEntityByName("bomb")->getComponent<indie::components::Transform>();
+    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
     if (typeBomb == 0) {
         std::cout << "Normal Particle" << std::endl;
     }
@@ -101,7 +102,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_02.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
     }
     else if (typeBomb == 2) {
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
@@ -113,7 +114,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/circle_05.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
     }
     else if (typeBomb == 3) {
         auto bombPos = ecs.entityManager.getEntityByName("bomb")->getComponent<indie::components::Transform>();
@@ -126,7 +127,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/spark_01.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(bombPos->getPosition().x, bombPos->getPosition().y, bombPos->getPosition().z));
+        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z));
     }
     else if (typeBomb == 4) {
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-15, -13, -15, 15, 13, 15));
@@ -138,7 +139,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/symbol_01.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
     }
     else {
         std::cout << "throw error : unknown type bomb" << std::endl;
@@ -180,24 +181,41 @@ void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberB
 {
     for (int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
         if (s == newPlayerType)
-            _NumberBombPlace[static_cast<indie::components::PlayerType>(s)] = newNumberBombPlace;
+            _numberBombPlace[static_cast<indie::components::PlayerType>(s)] = newNumberBombPlace;
 }
 
 unsigned int indie::systems::BombManagerSystem::getNumberBombPlacer(const indie::components::PlayerType &playerType) const
 {
-    for (auto &it : _NumberBombPlace)
+    for (auto &it : _numberBombPlace)
         if (it.first == playerType)
             return it.second;
 }
 
 void indie::systems::BombManagerSystem::addBombPlace(indie::components::PlayerType playerType)
 {
-    _NumberBombPlace[playerType] += 1;
+    _numberBombPlace[playerType] += 1;
 }
 
 void indie::systems::BombManagerSystem::removeBombPlace(indie::components::PlayerType playerType)
 {
-    if (_NumberBombPlace[playerType] == 0)
+    if (_numberBombPlace[playerType] == 0)
         return;
-   _NumberBombPlace[playerType] -= 1;
+   _numberBombPlace[playerType] -= 1;
+}
+
+void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandler<indie::components::Bomb> bomb)
+{
+    ECSWrapper ecs;
+    int time = 0;
+
+    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
+    time = bomb->getTimeBeforeExplose();
+    if (time % 5 == 0 && time > 15)
+        bombTr->setScale({7, 7, 7});
+    else if (time > 15)
+        bombTr->setScale({8, 8, 8});
+    if (time <= 15 && time % 2 == 0)
+        bombTr->setScale({7, 7, 7});
+    else if (time <= 15)
+        bombTr->setScale({8, 8, 8});
 }
