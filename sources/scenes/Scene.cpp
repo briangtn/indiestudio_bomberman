@@ -34,7 +34,6 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 void indie::scenes::Scene::onStart()
 {
     Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
-//    Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + "save.xml");
     ECSWrapper ecs;
 
     auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
