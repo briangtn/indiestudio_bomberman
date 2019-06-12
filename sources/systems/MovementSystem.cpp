@@ -21,6 +21,8 @@
 #include "components/Camera.hpp"
 #include "maths/Matrices.hpp"
 #include "components/Animator.hpp"
+#include "components/AIController.hpp"
+#include "components/DynamicCamera.hpp"
 
 indie::systems::MovementSystem::MovementSystem(): _mapSize(), _viewGridCache(), _pathsCache(), _timeBeforeCacheComputation(recomputeCacheDeltaTime)
 {
@@ -48,6 +50,7 @@ void indie::systems::MovementSystem::onUpdate(const std::chrono::nanoseconds &el
     updateHoverer(elapsedTime);
     updatePlayerMovement(elapsedTime);
     updateMoveToTargetMovement(elapsedTime);
+    updateDynamicCameras(elapsedTime);
 }
 
 void indie::systems::MovementSystem::onStop()
@@ -230,6 +233,49 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
             }
         }
     }
+}
+
+void indie::systems::MovementSystem::updateDynamicCameras(const std::chrono::nanoseconds &elapsedTime) const
+{
+    ECSWrapper ecs;
+    float elapsedTimeAsSeconds = elapsedTime.count() / 1000000000.0f;
+    auto players = ecs.entityManager.getEntitiesWith<components::PlayerController, components::Transform>();
+    auto bots = ecs.entityManager.getEntitiesWith<components::AIController, components::Transform>();
+    std::list<jf::components::ComponentHandler<components::Transform>> trs;
+    for (auto &player : players)
+        trs.push_front(player->getComponent<components::Transform>());
+    for (auto &bot : bots)
+        trs.push_front(bot->getComponent<components::Transform>());
+    maths::Vector3D minTr(MAXFLOAT, MAXFLOAT, MAXFLOAT);
+    maths::Vector3D maxTr(-MAXFLOAT, -MAXFLOAT, -MAXFLOAT);
+    for (auto &tr : trs) {
+        auto trPos = tr->getPosition();
+        if (trPos.x < minTr.x)
+            minTr.x = trPos.x;
+        if (trPos.y < minTr.y)
+            minTr.y = trPos.y;
+        if (trPos.z < minTr.z)
+            minTr.z = trPos.z;
+        if (trPos.x > maxTr.x)
+            maxTr.x = trPos.x;
+        if (trPos.y > maxTr.y)
+            maxTr.y = trPos.y;
+        if (trPos.z > maxTr.z)
+            maxTr.z = trPos.z;
+    }
+    ecs.entityManager.applyToEach<components::DynamicCamera, components::Transform>([&elapsedTimeAsSeconds, &minTr, &maxTr](jf::entities::EntityHandler entity, auto dynamicCamera, auto tr) {
+        maths::Vector3D minCorner = minTr - maths::Vector3D(10 * dynamicCamera->getBlockBorders(), 0, 10 * dynamicCamera->getBlockBorders());
+        maths::Vector3D maxCorner = maxTr + maths::Vector3D(10 * dynamicCamera->getBlockBorders(), 0, 10 * dynamicCamera->getBlockBorders());
+        float diagonal = (maxCorner - minCorner).magnitude();
+        float zoomMultiplyer = diagonal / 250.0f;
+        maths::Vector3D targetedPos((maxCorner.x + minCorner.x) / 2, 150 * zoomMultiplyer, (maxCorner.z + minCorner.z) / 2 - 50.0f * zoomMultiplyer);
+        targetedPos.y = targetedPos.y < 100 ? 100 : targetedPos.y;
+        auto movementSpeed = dynamicCamera->getMovementSpeed();
+        auto cameraPosition = tr->getPosition();
+        auto direction = targetedPos - cameraPosition;
+        if (direction.magnitudeSq() >= 10)
+            tr->setPosition(cameraPosition + direction.normalized() * movementSpeed * elapsedTimeAsSeconds);
+    });
 }
 
 void indie::systems::MovementSystem::recomputeCaches()

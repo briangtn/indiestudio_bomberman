@@ -62,6 +62,8 @@ namespace indie {
                                       const std::string &fileName, unsigned int &line);
         static void createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
         static void createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
         static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,

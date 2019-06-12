@@ -7,12 +7,18 @@
 
 /* Created the 12/06/2019 at 11:32 by jfrabel */
 
+#include "Events.hpp"
 #include "components/MoveToTarget.hpp"
 
 indie::components::MoveToTarget::MoveToTarget(jf::entities::Entity &entity)
     : Component(entity), _target(), _followTarget(false)
 {
+    EMIT_CREATE(MoveToTarget);
+}
 
+indie::components::MoveToTarget::~MoveToTarget()
+{
+    EMIT_DELETE(MoveToTarget);
 }
 
 const indie::maths::Vector3D &indie::components::MoveToTarget::getTarget() const

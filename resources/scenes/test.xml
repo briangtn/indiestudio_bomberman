@@ -2,10 +2,14 @@
 <scene>
     <entity name="camera">
         <component type="Transform">
-            <argument name="position" value="50,130,-105"/>
+            <argument name="position" value="70,150,-120"/>
             <argument name="rotation" value="75,0,0"/>
         </component>
         <component type="Camera">
+        </component>
+        <component type="DynamicCamera">
+            <argument name="movementSpeed" value="30.0"/>
+            <argument name="blockBorders" value="2"/>
         </component>
     </entity>
     <entity name="follower">
@@ -101,23 +105,76 @@
             <argument name="moveSpeed" value="50"/>
         </component>
     </entity>
-    <entity name="particle">
+    <entity name="player2">
         <component type="Transform">
-            <argument name="position" value="0,1,0"/>
+            <argument name="position" value="140,-5,-140"/>
+            <argument name="scale" value="8,8,8"/>
         </component>
-        <component type="Particle">
-            <argument name="name" value="p1"/>
-            <argument name="fileName" value="../test_assets/particle_default.png"/>
-            <argument name="layer" value="0"/>
-            <argument name="angle" value="0"/>
-            <argument name="brightColor" value="0,255,0,0;0,0,0,255"/>
-            <argument name="emitterSize" value="-100,0,-100;100,1,100"/>
-            <argument name="emitRate" value="40,80"/>
-            <argument name="fadeColor" value="0,0,255,0"/>
-            <argument name="fadeTime" value="1000"/>
-            <argument name="age" value="800,2000"/>
-            <argument name="size" value="1,1;2,2"/>
-            <argument name="direction" value="0,0.06,0"/>
+        <component type="BoxCollider">
+            <argument name="size" value="0.25,0.5,0.25"/>
+            <argument name="offset" value="0,5,0"/>
+            <argument name="layer" value="0x7"/>
+        </component>
+        <component type="Mesh">
+            <argument name="fileName" value="../test_assets/Players/player.b3d"/>
+        </component>
+        <component type="Material">
+            <argument name="fileName" value="../test_assets/Players/white.png"/>
+            <argument name="flags" value="!EMF_LIGHTING"/>
+        </component>
+        <component type="Animator">
+            <animation name="default">
+                <argument name="start" value="0"/>
+                <argument name="end" value="0"/>
+                <argument name="speed" value="0"/>
+                <argument name="loop" value="true"/>
+            </animation>
+            <animation name="idle">
+                <argument name="start" value="2"/>
+                <argument name="end" value="60"/>
+                <argument name="speed" value="20"/>
+                <argument name="loop" value="true"/>
+            </animation>
+            <animation name="walk">
+                <argument name="start" value="62"/>
+                <argument name="end" value="121"/>
+                <argument name="speed" value="60"/>
+                <argument name="loop" value="true"/>
+            </animation>
+            <animation name="taunt">
+                <argument name="start" value="123"/>
+                <argument name="end" value="145"/>
+                <argument name="speed" value="40"/>
+                <argument name="loop" value="false"/>
+                <argument name="transition" value="idle"/>
+            </animation>
+            <animation name="place bomb">
+                <argument name="start" value="184"/>
+                <argument name="end" value="243"/>
+                <argument name="speed" value="100"/>
+                <argument name="loop" value="false"/>
+                <argument name="transition" value="idle"/>
+            </animation>
+            <animation name="die">
+                <argument name="start" value="245"/>
+                <argument name="end" value="304"/>
+                <argument name="speed" value="100"/>
+                <argument name="loop" value="false"/>
+                <argument name="transition" value="dead"/>
+            </animation>
+            <animation name="dead">
+                <argument name="start" value="305"/>
+                <argument name="end" value="305"/>
+                <argument name="speed" value="0"/>
+                <argument name="loop" value="true"/>
+            </animation>
+        </component>
+        <component type="PlayerController">
+            <argument name="xMove" value="xAxis"/>
+            <argument name="zMove" value="zAxis"/>
+            <argument name="tauntButton" value="taunt"/>
+            <argument name="bombButton" value="bomb"/>
+            <argument name="moveSpeed" value="50"/>
         </component>
     </entity>
 </scene>

@@ -39,6 +39,7 @@ namespace indie {
             void updateRotator(const std::chrono::nanoseconds &elapsedTime) const;
             void updateHoverer(const std::chrono::nanoseconds &elapsedTime) const;
             void updatePlayerMovement(const std::chrono::nanoseconds &elapsedTime) const;
+            void updateDynamicCameras(const std::chrono::nanoseconds &elapsedTime) const;
             void updateMoveToTargetMovement(const std::chrono::nanoseconds &elapsedTime);
 
             void recomputeCaches();

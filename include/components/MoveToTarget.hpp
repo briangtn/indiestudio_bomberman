@@ -20,6 +20,7 @@ namespace indie {
         class MoveToTarget : public jf::components::Component {
         public:
             explicit MoveToTarget(jf::entities::Entity &entity);
+            ~MoveToTarget() override;
 
             const maths::Vector3D &getTarget() const;
             void setTarget(const maths::Vector3D &target);

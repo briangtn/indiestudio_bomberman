@@ -28,6 +28,7 @@
 #include "components/AIController.hpp"
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
+#include "components/DynamicCamera.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -94,6 +95,7 @@ indie::Parser::Parser()
         {(L"Animator"), &createAnimator},
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
+        {(L"DynamicCamera"), &createDynamicCamera},
         {(L"Hoverer"), &createHoverer},
         {(L"Particle"), &createParticle},
         {(L"PlayerController"), &createPlayerController},
@@ -528,6 +530,23 @@ void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::I
     } else {
         entity->assignComponent<components::Camera>(
                 std::stof(args["FOV"]));
+    }
+}
+
+void indie::Parser::createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+        {"movementSpeed", ""},
+        {"blockBorders",  ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDynamicCamera");
+    auto component = entity->assignComponent<components::DynamicCamera>();
+    if (!args["movementSpeed"].empty()) {
+        component->setMovementSpeed(std::atof(args["movementSpeed"].c_str()));
+    }
+    if (!args["blockBorders"].empty()) {
+        component->setBlockBorders(std::atoi(args["blockBorders"].c_str()));
     }
 }
 
