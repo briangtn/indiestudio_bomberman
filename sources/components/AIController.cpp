@@ -13,6 +13,7 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
     : Component(entity), 
       _target(0, 0, 0),
       _isTaunting(false),
+      _needToTaunt(false),
       _isPlacingBombs(false),
       _state(UNKNOWN)
 {
@@ -45,6 +46,21 @@ void indie::components::AIController::setIsTaunting(bool assign)
 void indie::components::AIController::setIsPlacingBombs(bool assign)
 {
     _isPlacingBombs = assign;
+}
+
+void indie::components::AIController::setState(indie::components::AIController::state assign)
+{
+    _state = assign;
+}
+
+void indie::components::AIController::setNeedToTaunt(bool assign)
+{
+    _needToTaunt = assign;
+}
+
+bool indie::components::AIController::getNeedToTaunt() const
+{
+    return _needToTaunt;
 }
 
 indie::maths::Vector3D indie::components::AIController::getTarget() const

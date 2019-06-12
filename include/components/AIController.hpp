@@ -34,15 +34,18 @@ namespace indie {
                 void setIsTaunting(bool assign);
                 void setIsPlacingBombs(bool assign);
                 void setState(state);
+                void setNeedToTaunt(bool assign);
 
                 bool getIsTaunting() const;
                 bool getIsPlacingBombs() const;
                 indie::maths::Vector3D getTarget() const;
                 state getState() const;
+                bool getNeedToTaunt() const;
 
             private:
                 indie::maths::Vector3D _target;
                 bool _isTaunting;
+                bool _needToTaunt;
                 bool _isPlacingBombs;
                 state _state;
         };
