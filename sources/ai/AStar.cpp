@@ -57,6 +57,11 @@ bool indie::ai::AStar::Node::operator!=(const indie::ai::AStar::Node &rhs) const
     return !(rhs == *this);
 }
 
+indie::maths::Vector3D indie::ai::AStar::Node::toWorldPos() const
+{
+    return indie::maths::Vector3D(pos.x * 10.0f, 0, -pos.y * 10.0f);
+}
+
 indie::ai::AStar::NodeGrid indie::ai::AStar::computeNodeGrid(const indie::ai::AIView::AICellViewGrid &viewGrid, bool ignoreBreakableWalls)
 {
     NodeGrid grid;
@@ -95,10 +100,14 @@ indie::ai::AStar::findPath(
     const indie::ai::AStar::Node::position &start,
     const indie::ai::AStar::Node::position &end)
 {
-    if (start.y < 0 || start.y >= grid.size() || start.x < 0 || start.x >= grid[start.y].size())
+    if (start.y < 0 || start.y >= grid.size() || start.x < 0 || start.x >= grid[start.y].size()) {
+        std::cerr << "[AStar][Warning]Start position not in grid" << std::endl;
         return std::stack<indie::ai::AStar::Node>();
-    if (end.y < 0 || end.y >= grid.size() || end.x < 0 || end.x >= grid[start.y].size())
+    }
+    if (end.y < 0 || end.y >= grid.size() || end.x < 0 || end.x >= grid[start.y].size()) {
+        std::cerr << "[AStar][Warning]End position not in grid" << std::endl;
         return std::stack<indie::ai::AStar::Node>();
+    }
     Node &startNode = grid[start.y][start.x];
     Node &endNode = grid[end.y][end.x];
     Node *currentNode = &startNode;

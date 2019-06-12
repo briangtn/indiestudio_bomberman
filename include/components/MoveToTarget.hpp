@@ -27,9 +27,13 @@ namespace indie {
             bool isFollowTarget() const;
             void setFollowTarget(bool followTarget);
 
+            float getSpeed() const;
+            void setSpeed(float speed);
+
         private:
             maths::Vector3D _target;
             bool _followTarget;
+            float _speed;
         };
     }
 }

@@ -8,13 +8,13 @@
         <component type="Camera">
         </component>
     </entity>
-    <entity name="test">
+    <entity name="follower">
         <component type="Transform">
-            <argument name="position" value="-10,0,10"/>
-            <argument name="scale" value="10,10,10"/>
+            <argument name="scale" value="5,5,5"/>
         </component>
         <component type="BoxCollider">
             <argument name="size" value="0.5,0.5,0.5"/>
+            <argument name="layer" value="0x10"/>
         </component>
         <component type="Mesh">
             <argument name="fileName" value="../test_assets/cube.obj"/>
@@ -22,6 +22,11 @@
         <component type="Material">
             <argument name="fileName" value="../test_assets/cube_texture.png"/>
             <argument name="flags" value="!EMF_BILINEAR_FILTER;!EMF_LIGHTING"/>
+        </component>
+        <component type="MoveToTarget">
+            <argument name="target" value="0,0,0"/>
+            <argument name="followTarget" value="true"/>
+            <argument name="speed" value="25"/>
         </component>
     </entity>
     <entity name="player">

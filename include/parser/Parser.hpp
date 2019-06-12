@@ -70,6 +70,8 @@ namespace indie {
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line);
+        static void createMoveToTarget(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createPlayerController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
