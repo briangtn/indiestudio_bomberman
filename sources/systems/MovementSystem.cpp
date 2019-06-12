@@ -222,7 +222,6 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
 
 void indie::systems::MovementSystem::recomputeCaches()
 {
-    std::cout << "recomputing view grid cache of size " << _mapSize.x << " by " << _mapSize.y << std::endl;
     ai::AIView::recomputeViewGrid(static_cast<int>(_mapSize.x), static_cast<int>(_mapSize.y));
     _viewGridCache = ai::AIView::getViewGrid();
     _pathsCache.clear();
@@ -235,28 +234,8 @@ void indie::systems::MovementSystem::recomputeCaches()
             int targetZ = -std::round(mtt->getTarget().z / 10.0f);
             auto collider = entity->getComponent<components::BoxCollider>();
             bool canGoThroughCrate = !collider.isValid() || !(collider->getLayer() & BREAKABLE_BLOCK_LAYER);
-            std::cout << "Searching path from {" << playerX << ", " << playerZ << "} to {" << targetX << ", " << targetZ << "}. Can go through crates? " << std::boolalpha << canGoThroughCrate << std::endl;
             auto path = ai::AStar::findPath(_viewGridCache, {playerX, playerZ}, {targetX, targetZ}, canGoThroughCrate);
-
-            auto path2 = path;
-            for (auto &entity : ecs.entityManager.getEntitiesByName("path")) {
-                ecs.entityManager.safeDeleteEntity(entity->getID());
-            }
-            while (!path2.empty()) {
-                auto node = path2.top();
-                path2.pop();
-                std::cout << "path : " << node.pos.x << " " << node.pos.y;
-                auto pathEntity = ecs.entityManager.createEntity("path");
-                pathEntity->assignComponent<components::Transform, maths::Vector3D>({node.pos.x * 10.0f, 0, -node.pos.y * 10.0f});
-                pathEntity->assignComponent<components::Mesh>("../test_assets/cube.obj");
-                auto mat = pathEntity->assignComponent<components::Material, std::string>("../test_assets/cube_texture.png");
-                mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-                mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
-            }
-
-            std::cout << "Path lenght: " << path.size() << std::endl;
             _pathsCache.push_front(std::make_tuple(mtt, tr, path));
-            std::cout << "Added cache for entity: " << entity->getName() << std::endl;
         }
     );
 }

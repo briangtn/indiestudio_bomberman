@@ -94,6 +94,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
+        ecs.entityManager.applyToEach<components::MoveToTarget>(&drawMoveToTargetGizmos);
     }
 
     _sceneManager->drawAll();
@@ -492,6 +493,26 @@ void indie::systems::IrrlichtManagerSystem::drawBoxColliderGizmos(jf::entities::
                 irr::video::SColor(255, 0, 255, 0));
         }
     }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawMoveToTargetGizmos(
+    jf::entities::EntityHandler entity,
+    jf::components::ComponentHandler<indie::components::MoveToTarget> mtt)
+{
+    auto &target = mtt->getTarget();
+    auto position = entity->getComponent<components::Transform>()->getPosition();
+
+    irr::core::vector3df irrPos(position.x, position.y, position.z);
+    irr::core::vector3df irrTarget(target.x, target.y, target.z);
+
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 0, 0));
+    constexpr float boxSize = 1;
+    driver->draw3DBox(
+        irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
+        irr::video::SColor(255, 255, 0, 0));
 }
 
 void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
