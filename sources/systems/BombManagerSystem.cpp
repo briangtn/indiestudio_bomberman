@@ -94,7 +94,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
-        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 255, 255, 0)));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 255, 90, 0)));
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
