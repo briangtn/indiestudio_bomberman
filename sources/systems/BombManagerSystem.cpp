@@ -32,11 +32,10 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
 {
     ECSWrapper ecs;
     std::vector<jf::internal::ID> toDelete;
-    indie::maths::Vector3D vectLimit(-3, 1, 3);
     static bool pass = true;
 
     ecs.entityManager.applyToEach<components::Bomb>(
-    [elapsedTime, &toDelete, this, vectLimit](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
+    [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplose() <= 0) {
             if (pass == true) {
@@ -162,29 +161,28 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
 
     pass = false;
     auto componentMusic = ecs.entityManager.createEntity("sound");
+    std::string soundPath = "";
     if (typeBomb == 0) {
-        auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/ExplosionSoundNormalBomb.ogg", components::SoundComponent::SoundType::EFFECT);
-        soundBomb->setIsPaused(false);
-    }
-    else if (typeBomb == 1) {
-        auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/ExplosionSoundFireBomb.ogg", components::SoundComponent::SoundType::EFFECT);
-        soundBomb->setIsPaused(false);
-    }
-    else if (typeBomb == 2) {
-        auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/ExplosionSoundWaterBomb.ogg", components::SoundComponent::SoundType::EFFECT);
-        soundBomb->setIsPaused(false);
+        soundPath = "../Sound/BombSound/ExplosionSoundNormalBomb.ogg";
+    } else if (typeBomb == 1) {
+        soundPath = "../Sound/BombSound/ExplosionSoundFireBomb.ogg";
+    } else if (typeBomb == 2) {
+        soundPath = "../Sound/BombSound/ExplosionSoundWaterBomb.ogg";
     }
     else if (typeBomb == 3) {
-        auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/ExplosionSoundElectricBomb.ogg", components::SoundComponent::SoundType::EFFECT);
-        soundBomb->setIsPaused(false);
+        soundPath = "../Sound/BombSound/ExplosionSoundElectricBomb.ogg";
     }
     else if (typeBomb == 4) {
-        auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/ExplosionSoundLoveBomb.ogg", components::SoundComponent::SoundType::EFFECT);
-        soundBomb->setIsPaused(false);
+        soundPath = "../Sound/BombSound/ExplosionSoundLoveBomb.ogg";
     }
     else {
+        //TODO CREATE EXCEPTION
         std::cout << "throw error : unknown type bomb" << std::endl;
     }
+    if (soundPath == "")
+        return; // TODO THROW EXCEPTION
+    auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(, components::SoundComponent::SoundType::EFFECT);
+    soundBomb->setIsPaused(false);
 }
 
 void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberBombPlace,const indie::components::PlayerType &newPlayerType)
@@ -194,7 +192,7 @@ void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberB
             _numberBombPlace[static_cast<indie::components::PlayerType>(s)] = newNumberBombPlace;
 }
 
-unsigned int indie::systems::BombManagerSystem::getNumberBombPlacer(const indie::components::PlayerType &playerType) const
+unsigned int indie::systems::BombManagerSystem::getNumberBombPlace(const indie::components::PlayerType &playerType) const
 {
     for (auto &it : _numberBombPlace)
         if (it.first == playerType)
@@ -339,7 +337,7 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
                 return 2;
             }
             else if (collider->getLayer() & PLAYER_LAYER) {
-                std::cout << "PLAYER DEAD !!" << std::endl;
+                std::cout << "PLAYER DEAD !!" << std::endl; // TODO KILL PLAYER
                 return 0;
             }
             else {
