@@ -92,7 +92,16 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
     componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
     if (typeBomb == 0) {
-        std::cout << "Normal Particle" << std::endl;
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 255, 255, 0)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_04.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
     else if (typeBomb == 1) {
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
@@ -231,9 +240,10 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     /* check in right side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
         vect.x  = vect.x - 10;
-        if (checkIsCollide(false, vect) == 1)
+        auto col = checkIsCollide(vect);
+        if (col == 1)
             break;
-        else if (checkIsCollide(false, vect) == 2) {
+        else if (col == 2) {
             this->displayParticle(bomb->getBombType(), vect);
             break;
         }
@@ -246,9 +256,10 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     /* check in left side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
         vect.x = vect.x + 10;
-        if (checkIsCollide(false, vect) == 1)
+        auto col = checkIsCollide(vect);
+        if (col == 1)
             break;
-        else if (checkIsCollide(false, vect) == 2) {
+        else if (col == 2) {
             this->displayParticle(bomb->getBombType(), vect);
             break;
         }
@@ -261,9 +272,10 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     /* check in up side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
         vect.z = vect.z - 10;
-        if (checkIsCollide(false, vect) == 1)
+        auto col = checkIsCollide(vect);
+        if (col == 1)
             break;
-        else if (checkIsCollide(false, vect) == 2) {
+        else if (col == 2) {
             this->displayParticle(bomb->getBombType(), vect);
             break;
         }
@@ -276,9 +288,10 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     /* check in down side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
         vect.z = vect.z + 10;
-        if (checkIsCollide(false, vect) == 1)
+        auto col = checkIsCollide(vect);
+        if (col == 1)
             break;
-        else if (checkIsCollide(false, vect) == 2) {
+        else if (col == 2) {
             this->displayParticle(bomb->getBombType(), vect);
             break;
         }
@@ -287,7 +300,7 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     }
 }
 
-int indie::systems::BombManagerSystem::checkIsCollide(bool ignoreLayer, indie::maths::Vector3D vect)
+int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vect)
 {
     ECSWrapper ecs;
 
@@ -302,9 +315,6 @@ int indie::systems::BombManagerSystem::checkIsCollide(bool ignoreLayer, indie::m
     for (auto &entity : entitiesWithCollider) {
 
         auto collider = entity->getComponent<components::BoxCollider>();
-
-        if (!ignoreLayer && !(collider->getLayer()))
-            continue;
         
         auto tr = entity->getComponent<components::Transform>();
 
@@ -321,26 +331,61 @@ int indie::systems::BombManagerSystem::checkIsCollide(bool ignoreLayer, indie::m
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (collider->getLayer() & BOMB_LAYER || collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) {
-                std::cout << "1111111111111111111" << std::endl;
+            if (collider->getLayer() & BOMB_LAYER || collider->getLayer() & UNBREAKABLE_BLOCK_LAYER)
                 return 1;
-            }
             else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER) {
-                std::cout << "2222222222222222222222" << std::endl;
-                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 ecs.entityManager.safeDeleteEntity(entity->getID());
+                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 return 2;
             }
             else if (collider->getLayer() & PLAYER_LAYER) {
-                std::cout << "PLAYER DEAD" << std::endl;
+                std::cout << "PLAYER DEAD !!" << std::endl;
                 return 0;
             }
             else {
-                std::cout << "BOOOST SHOOOT" << std::endl;
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 return 0;
             }
         }
     }
     return 0;
+}
+
+bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D vect)
+{
+    ECSWrapper ecs;
+
+    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
+
+    indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
+    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D rotationHitBox = {0, 0, 0};
+
+    indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
+
+    for (auto &entity : entitiesWithCollider) {
+
+        auto collider = entity->getComponent<components::BoxCollider>();
+        
+        auto tr = entity->getComponent<components::Transform>();
+
+        indie::maths::Vector3D position;
+        indie::maths::Vector3D scale = {1, 1, 1};
+        indie::maths::Vector3D rotation;
+
+        if (tr.isValid()) {
+            position = tr->getPosition();
+            scale = tr->getScale();
+            rotation = tr->getRotation();
+        }
+
+        indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
+
+        if (obb.collides(hitBoxOBB)) {
+            if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
+                return false;
+            else
+                return true;
+        }
+    }
 }

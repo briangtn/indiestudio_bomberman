@@ -76,7 +76,8 @@ namespace indie {
                 /* Get Collider With Box */
 
                 void handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb);
-                int checkIsCollide(bool ignoreLayer, indie::maths::Vector3D vect);
+                int checkIsCollide(indie::maths::Vector3D vect);
+                bool checkBombPlace(indie::maths::Vector3D vect);
 
             protected:
             private:
