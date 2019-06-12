@@ -31,6 +31,7 @@
     </entity>
     <entity name="player">
         <component type="Transform">
+            <argument name="position" value="0,0,0"/>
             <argument name="scale" value="8,8,8"/>
         </component>
         <component type="BoxCollider">

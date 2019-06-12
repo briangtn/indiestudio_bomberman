@@ -122,6 +122,9 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 return;
             }
 
+            //TODO get bombs and check if the player is in it if so disable bombs layer for collisions
+            bool disableBombLayer = false;
+
             auto pos = tr->getPosition();
             auto speed = pc->getMovementSpeed();
             auto &xAxis = pc->getXMovementAxis();
@@ -184,10 +187,19 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
 
             //Cancel movement and rotation if invalid
             auto playerCollider = entity->getComponent<components::BoxCollider>();
-            if (playerCollider.isValid() && playerCollider->hasCollisions()) {
-                tr->setPosition(pos);
-                tr->setRotation(rot);
-                return;
+            if (playerCollider.isValid()) {
+                auto collisions = playerCollider->getCollisions();
+                bool hasCollisions = false;
+                for (auto &collision : collisions) {
+                    auto collider = collision->getComponent<components::BoxCollider>();
+                    hasCollisions = hasCollisions || (collider->getLayer() & ~BOMB_LAYER) || ((collider->getLayer() & BOMB_LAYER) && !disableBombLayer);
+                    if (hasCollisions)
+                        break;
+                }
+                if (hasCollisions) {
+                    tr->setPosition(pos);
+                    tr->setRotation(rot);
+                }
             }
         }
     );
