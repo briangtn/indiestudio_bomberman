@@ -34,3 +34,13 @@ void indie::components::MoveToTarget::setFollowTarget(bool followTarget)
 {
     _followTarget = followTarget;
 }
+
+float indie::components::MoveToTarget::getSpeed() const
+{
+    return _speed;
+}
+
+void indie::components::MoveToTarget::setSpeed(float speed)
+{
+    _speed = speed;
+}

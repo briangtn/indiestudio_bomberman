@@ -5,6 +5,7 @@
     <system type="IrrklangAudio">
     </system>
     <system type="Movement">
+        <argument name="mapSize" value="15,15"/>
     </system>
     <system type="Taunt">
     </system>

@@ -8,10 +8,9 @@
 /* Created the 24/05/2019 at 13:53 by jfrabel */
 
 #include <cmath>
-#include <components/BoxCollider.hpp>
-#include <maths/Geometry3D.hpp>
-#include <systems/IrrlichtManagerSystem.hpp>
-
+#include "components/BoxCollider.hpp"
+#include "maths/Geometry3D.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/MovementSystem.hpp"
 #include "components/Transform.hpp"
@@ -23,7 +22,7 @@
 #include "maths/Matrices.hpp"
 #include "components/Animator.hpp"
 
-indie::systems::MovementSystem::MovementSystem()
+indie::systems::MovementSystem::MovementSystem(): _mapSize(), _viewGridCache(), _pathsCache(), _timeBeforeCacheComputation(recomputeCacheDeltaTime)
 {
 
 }
@@ -48,6 +47,7 @@ void indie::systems::MovementSystem::onUpdate(const std::chrono::nanoseconds &el
     updateRotator(elapsedTime);
     updateHoverer(elapsedTime);
     updatePlayerMovement(elapsedTime);
+    updateMoveToTargetMovement(elapsedTime);
 }
 
 void indie::systems::MovementSystem::onStop()
@@ -191,4 +191,82 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
             }
         }
     );
+}
+
+void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chrono::nanoseconds &elapsedTime)
+{
+    float elapsedTimeAsSeconds = elapsedTime.count() / 1000000000.0f;
+    _timeBeforeCacheComputation -= elapsedTimeAsSeconds;
+    if (_timeBeforeCacheComputation <= 0.0f) {
+        recomputeCaches();
+        _timeBeforeCacheComputation += recomputeCacheDeltaTime;
+    }
+    for (auto &tuple : _pathsCache) {
+        auto &mtt = std::get<0>(tuple);
+        auto &tr = std::get<1>(tuple);
+        auto &path = std::get<2>(tuple);
+        if (!path.empty() && mtt.isValid() && tr.isValid()) {
+            auto &nextNode = path.top();
+
+            float speed = mtt->getSpeed();
+            maths::Vector3D movementVector = (nextNode.toWorldPos() - tr->getPosition()).normalized();
+
+            tr->setPosition(tr->getPosition() + movementVector * speed * elapsedTimeAsSeconds);
+
+            if ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
+                path.pop();
+            }
+        }
+    }
+}
+
+void indie::systems::MovementSystem::recomputeCaches()
+{
+    std::cout << "recomputing view grid cache of size " << _mapSize.x << " by " << _mapSize.y << std::endl;
+    ai::AIView::recomputeViewGrid(static_cast<int>(_mapSize.x), static_cast<int>(_mapSize.y));
+    _viewGridCache = ai::AIView::getViewGrid();
+    _pathsCache.clear();
+    ECSWrapper ecs;
+    ecs.entityManager.applyToEach<components::MoveToTarget, components::Transform>(
+        [&](jf::entities::EntityHandler entity, auto mtt, auto tr) {
+            int playerX = std::round(tr->getPosition().x / 10.0f);
+            int playerZ = -std::round(tr->getPosition().z / 10.0f);
+            int targetX = std::round(mtt->getTarget().x / 10.0f);
+            int targetZ = -std::round(mtt->getTarget().z / 10.0f);
+            auto collider = entity->getComponent<components::BoxCollider>();
+            bool canGoThroughCrate = !collider.isValid() || !(collider->getLayer() & BREAKABLE_BLOCK_LAYER);
+            std::cout << "Searching path from {" << playerX << ", " << playerZ << "} to {" << targetX << ", " << targetZ << "}. Can go through crates? " << std::boolalpha << canGoThroughCrate << std::endl;
+            auto path = ai::AStar::findPath(_viewGridCache, {playerX, playerZ}, {targetX, targetZ}, canGoThroughCrate);
+
+            auto path2 = path;
+            for (auto &entity : ecs.entityManager.getEntitiesByName("path")) {
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+            }
+            while (!path2.empty()) {
+                auto node = path2.top();
+                path2.pop();
+                std::cout << "path : " << node.pos.x << " " << node.pos.y;
+                auto pathEntity = ecs.entityManager.createEntity("path");
+                pathEntity->assignComponent<components::Transform, maths::Vector3D>({node.pos.x * 10.0f, 0, -node.pos.y * 10.0f});
+                pathEntity->assignComponent<components::Mesh>("../test_assets/cube.obj");
+                auto mat = pathEntity->assignComponent<components::Material, std::string>("../test_assets/cube_texture.png");
+                mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+                mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
+            }
+
+            std::cout << "Path lenght: " << path.size() << std::endl;
+            _pathsCache.push_front(std::make_tuple(mtt, tr, path));
+            std::cout << "Added cache for entity: " << entity->getName() << std::endl;
+        }
+    );
+}
+
+const indie::maths::Vector2D &indie::systems::MovementSystem::getMapSize() const
+{
+    return _mapSize;
+}
+
+void indie::systems::MovementSystem::setMapSize(const indie::maths::Vector2D &mapSize)
+{
+    _mapSize = mapSize;
 }

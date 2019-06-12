@@ -98,6 +98,7 @@ indie::Parser::Parser()
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
+        {(L"MoveToTarget"), &createMoveToTarget},
         {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
         {(L"Transform"), &createTransform}
@@ -382,26 +383,22 @@ void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const st
 void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
-
-    for (; xmlReader->read(); line++) {
-        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            throw exceptions::ParserInvalidFileException(
-                    "Node 'system' of type 'Movement' does not required subnodes, at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createMovement");
-        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
-                ecs.systemManager.addSystem<systems::MovementSystem>();
-                ecs.systemManager.startSystem<systems::MovementSystem>();
-                break;
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createMovement");
-            }
-        } else {
-            continue;
-        }
+    std::map<std::string, std::string> args = {
+        {"mapSize", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMovement", "system");
+    if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
+        ecs.systemManager.addSystem<systems::MovementSystem>();
+        ecs.systemManager.startSystem<systems::MovementSystem>();
+    } else {
+        throw exceptions::ParserInvalidFileException(
+                "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
+                + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                "indie::Parser::createMovement");
+    }
+    auto &system = ecs.systemManager.getSystem<systems::MovementSystem>();
+    if (!args["mapSize"].empty()) {
+        system.setMapSize(getVector2D(args["mapSize"], fileName, line));
     }
 }
 
@@ -610,6 +607,30 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
     }
     ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Mesh>(
         args["fileName"]);
+}
+
+void indie::Parser::createMoveToTarget(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+        {"target",       ""},
+        {"followTarget", ""},
+        {"speed",        ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMoveToTarget");
+    jf::components::ComponentHandler<components::MoveToTarget> component;
+    component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::MoveToTarget>();
+
+    if (!args["target"].empty()) {
+        component->setTarget(getVector3D(args["target"], fileName, line));
+    }
+    if (!args["followTarget"].empty()) {
+        component->setFollowTarget(getBool(args["followTarget"], fileName, line));
+    }
+    if (!args["speed"].empty()) {
+        component->setSpeed(std::atof(args["speed"].c_str()));
+    }
 }
 
 void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
