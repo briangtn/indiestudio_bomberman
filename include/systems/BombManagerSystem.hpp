@@ -51,8 +51,7 @@ namespace indie {
 
                 /* Funciton For Create A Bomb */
 
-                void createBomb(jf::components::ComponentHandler<components::Bomb> bomb,
-                jf::components::ComponentHandler<components::Transform> tr);
+                void createBomb(jf::entities::EntityHandler playerEntity);
 
                 /* Display Particle And Play Sound For Each Bomb */
 

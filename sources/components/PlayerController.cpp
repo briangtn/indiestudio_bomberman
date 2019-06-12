@@ -42,7 +42,8 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
       _bombForce(1),
-      _maxBomb(3)
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -81,7 +82,8 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementButton(settings.bombButton),
       _bombPlacementAnimation("place bomb"),
       _bombForce(1),
-      _maxBomb(3)
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -121,7 +123,8 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
       _bombForce(1),
-      _maxBomb(3)
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -161,7 +164,8 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
       _bombForce(1),
-      _maxBomb(3)
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -478,4 +482,14 @@ int indie::components::PlayerController::getMaxBomb() const
 void indie::components::PlayerController::setMaxBomb(int maxBomb)
 {
     _maxBomb = maxBomb;
+}
+
+indie::components::PlayerType indie::components::PlayerController::getPlayerType() const
+{
+    return _playerType;
+}
+
+void indie::components::PlayerController::setPlayerType(indie::components::PlayerType playerType)
+{
+    _playerType = playerType;
 }

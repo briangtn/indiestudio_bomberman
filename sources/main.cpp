@@ -91,24 +91,9 @@ int runBomberman()
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [ecs](void *null, auto b) {
         if (b.wasPressed) {
-            /* Player */
-
             auto player = ecs.entityManager.getEntityByName("player");
-            auto playerPos = player->getComponent<indie::components::Transform>();
-            auto playerController = player->getComponent<indie::components::PlayerController>();
 
-            /* Bomb */
-
-            auto &bombManage = ecs.systemManager.getSystem<indie::systems::BombManagerSystem>();
-
-            /* Check Number Bomb Place */
-            if (bombManage.getNumberBombPlace(indie::components::PlayerType::P1) < playerController->getMaxBomb() && bombManage.checkBombPlace(playerPos->getPosition()) == true) {
-                auto entityBomb = ecs.entityManager.createEntity("bomb");
-                auto bomb = entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType, indie::components::PlayerType>(playerController->getBombForce(), 50, indie::components::NORMAL, indie::components::PlayerType::P1);
-                entityBomb->assignComponent<indie::components::Transform, indie::maths::Vector3D>({playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z - 10});
-                bombManage.addBombPlace(bomb->getPlayerType());
-                ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entityBomb->getComponent<indie::components::Bomb>(), entityBomb->getComponent<indie::components::Transform>());
-            }
+            ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(player);
         }
     });
 

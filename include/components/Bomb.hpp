@@ -31,10 +31,10 @@ namespace indie {
             /* enum for each type of player */
 
             enum PlayerType {
-                P1,
-                P2,
-                P3,
-                P4
+                P1 = 1,
+                P2 = 2,
+                P3 = 3,
+                P4 = 4
             };
 
         class Bomb : public jf::components::Component {
