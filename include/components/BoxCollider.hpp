@@ -15,10 +15,26 @@
 
 namespace indie {
 
-    enum BombermanLayers {
-        UNBREAKABLE_BLOCK_LAYER  = 0b001,
-        BREAKABLE_BLOCK_LAYER    = 0b010,
-        BOMB_LAYER               = 0b100,
+    enum BombermanLayers : uint64_t {
+        P1_UNBREAKABLE_BLOCK_LAYER  = 0b000000000001,
+        P1_BREAKABLE_BLOCK_LAYER    = 0b000000000010,
+        P1_BOMB_LAYER               = 0b000000000100,
+        P2_UNBREAKABLE_BLOCK_LAYER  = 0b000000001000,
+        P2_BREAKABLE_BLOCK_LAYER    = 0b000000010000,
+        P2_BOMB_LAYER               = 0b000000100000,
+        P3_UNBREAKABLE_BLOCK_LAYER  = 0b000001000000,
+        P3_BREAKABLE_BLOCK_LAYER    = 0b000010000000,
+        P3_BOMB_LAYER               = 0b000100000000,
+        P4_UNBREAKABLE_BLOCK_LAYER  = 0b001000000000,
+        P4_BREAKABLE_BLOCK_LAYER    = 0b010000000000,
+        P4_BOMB_LAYER               = 0b100000000000,
+        UNBREAKABLE_BLOCK_LAYER     = P1_UNBREAKABLE_BLOCK_LAYER | P2_UNBREAKABLE_BLOCK_LAYER | P3_UNBREAKABLE_BLOCK_LAYER | P4_UNBREAKABLE_BLOCK_LAYER,
+        BREAKABLE_BLOCK_LAYER       = P1_BREAKABLE_BLOCK_LAYER | P2_BREAKABLE_BLOCK_LAYER | P3_BREAKABLE_BLOCK_LAYER | P4_BREAKABLE_BLOCK_LAYER,
+        BOMB_LAYER                  = P1_BOMB_LAYER | P2_BOMB_LAYER | P3_BOMB_LAYER | P4_BOMB_LAYER,
+        P1_LAYER                    = P1_UNBREAKABLE_BLOCK_LAYER | P1_BREAKABLE_BLOCK_LAYER | P1_BOMB_LAYER,
+        P2_LAYER                    = P2_UNBREAKABLE_BLOCK_LAYER | P2_BREAKABLE_BLOCK_LAYER | P2_BOMB_LAYER,
+        P3_LAYER                    = P3_UNBREAKABLE_BLOCK_LAYER | P3_BREAKABLE_BLOCK_LAYER | P3_BOMB_LAYER,
+        P4_LAYER                    = P4_UNBREAKABLE_BLOCK_LAYER | P4_BREAKABLE_BLOCK_LAYER | P4_BOMB_LAYER,
     };
 
     namespace components {
@@ -39,8 +55,8 @@ namespace indie {
             uint64_t getLayer() const;
             void setLayer(uint64_t layer);
 
-            bool hasCollisions();
-            std::vector<jf::entities::EntityHandler> getCollisions();
+            bool hasCollisions(bool ignoreLayer = false);
+            std::vector<jf::entities::EntityHandler> getCollisions(bool ignoreLayer = false);
 
         private:
             maths::Vector3D _size;

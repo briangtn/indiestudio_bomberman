@@ -41,7 +41,9 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -78,7 +80,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -116,7 +120,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -154,7 +160,9 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(3.0f),
+      _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -453,6 +461,26 @@ void indie::components::PlayerController::setBombPlacementDuration(float bombPla
     _bombPlacementDuration = bombPlacementDuration;
 }
 
+int indie::components::PlayerController::getBombForce() const
+{
+    return _bombForce;
+}
+
+void indie::components::PlayerController::setBombForce(int bombForce)
+{
+    _bombForce = bombForce;
+}
+
+int indie::components::PlayerController::getMaxBomb() const
+{
+    return _maxBomb;
+}
+
+void indie::components::PlayerController::setMaxBomb(int maxBomb)
+{
+    _maxBomb = maxBomb;
+}
+
 indie::components::PlayerController &indie::components::PlayerController::operator>>(std::ostream &file)
 {
     file << R"(        <component type="PlayerController">)" << std::endl;
@@ -509,6 +537,8 @@ indie::components::PlayerController &indie::components::PlayerController::operat
         file << R"(            <argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
     }
     file << R"(            <argument name="bombDuration" value=")" << _bombPlacementDuration << R"("/>)" << std::endl;
+    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>")" << std::endl;
+    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>")" << std::endl;
     file << "        </component>" << std::endl;
     return *this;
 }
