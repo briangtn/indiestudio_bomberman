@@ -64,6 +64,8 @@ namespace indie {
                                  const std::string &fileName, unsigned int &line);
         static void createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
+        static void createAIController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
         static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
