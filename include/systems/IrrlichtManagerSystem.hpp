@@ -23,6 +23,7 @@
 #include "components/Material.hpp"
 #include "components/Animator.hpp"
 #include "components/PointLight.hpp"
+#include "components/MoveToTarget.hpp"
 
 namespace indie {
 
@@ -111,6 +112,7 @@ namespace indie {
             static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
+            static void drawMoveToTargetGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::MoveToTarget> mtt);
 
         private:
             void openWindow();

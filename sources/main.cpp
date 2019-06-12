@@ -74,14 +74,6 @@ int runBomberman()
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
-        //TODO REMOVE
-        auto player = ecs.entityManager.getEntityByName("player");
-        auto follower = ecs.entityManager.getEntityByName("follower");
-        if (player.isValid() && follower.isValid()) {
-            follower->getComponent<indie::components::MoveToTarget>()->setTarget(player->getComponent<indie::components::Transform>()->getPosition());
-        }
-        //END
-
         ecs.systemManager.tick();
         ecs.entityManager.applySafeDelete();
         indie::scenes::SceneManager::triggerSafeFunctions();
