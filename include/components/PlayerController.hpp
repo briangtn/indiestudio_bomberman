@@ -33,6 +33,8 @@ namespace indie {
             PlayerController(jf::entities::Entity &entity, const std::string &xAxis, const std::string &yAxis, const std::string &zAxis, bool lockX, bool lockY, bool lockZ);
             ~PlayerController() override;
 
+            PlayerController &operator>>(std::ostream &file);
+
         public:
             const std::string &getXMovementAxis() const;
             void setXMovementAxis(const std::string &xMovementAxis);
