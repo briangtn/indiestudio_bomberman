@@ -68,6 +68,7 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
         case indie::components::AIController::SEARCH : searchLogic();
     }
     if (component->getIsTaunting())
+        return;
         //TODO DON T MOVE TO JULIAN MOVER
 }
 
