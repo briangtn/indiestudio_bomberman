@@ -67,6 +67,11 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["lightning_bomb_texture"] = _texturePacks[texturePackName] + "lightning_bomb_texture.png";
 }
 
+const std::string &indie::AssetsManager::getAsset(const std::string &asset)
+{
+    return indie::AssetsManager::getInstance().getAssets()[asset];
+}
+
 std::map<std::string, std::string> indie::AssetsManager::getAssets() const
 {
     return _currentAssets;

@@ -31,7 +31,9 @@ namespace indie {
     public:
         int addTexturePack(const std::string &texturePackName, const std::string &path);
         int loadTexturePack(const std::string &texturePackName);
+
         std::map<std::string, std::string> getAssets() const;
+        static const std::string &getAsset(const std::string &asset);
 
     private:
         std::map<std::string, std::string> _texturePacks;
