@@ -10,6 +10,13 @@
                 <argument name="transition" value="transitionName"/>
             </animation>
         </component>
+        <component type="BonusEffector">
+            <argument name="bonusType" value="BONUS_T_BOMB_UP"/>
+        </component>
+        <component type="BonusSpawner">
+            <argument name="spawnerType" value="BONUS_SPAWNER_T_RANDOM"/>
+            <argument name="bonusType" value="BONUS_T_BOMB"/>
+        </component>
         <component type="BoxCollider">
             <argument name="size" value="1,1,1"/>
             <argument name="offset" value="0,0,0"/>

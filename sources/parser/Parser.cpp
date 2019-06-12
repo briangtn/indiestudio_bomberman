@@ -78,6 +78,14 @@ const std::map<std::string, irr::video::E_MATERIAL_FLAG> indie::Parser::_materia
         {"EMF_POLYGON_OFFSET", irr::video::EMF_POLYGON_OFFSET}
 };
 
+const std::map<std::string, indie::components::BonusType> indie::Parser::_bonusTypes = {
+        {"BONUS_T_BOMB_UP", indie::components::BONUS_T_BOMB_UP},
+        {"BONUS_T_SPEED_UP", indie::components::BONUS_T_SPEED_UP},
+        {"BONUS_T_FIRE_UP", indie::components::BONUS_T_FIRE_UP},
+        {"BONUS_T_WALL_PASS", indie::components::BONUS_T_WALL_PASS},
+        {"BONUS_T_NB", indie::components::BONUS_T_NB}
+};
+
 indie::Parser::Parser()
     : _device(irr::createDevice(irr::video::EDT_NULL))
     , _xmlReader(nullptr)
@@ -91,6 +99,8 @@ indie::Parser::Parser()
     })
     , _components({
         {(L"Animator"), &createAnimator},
+        {(L"BonusEffector"), &createBonusEffector},
+        {(L"BonusSpawner"), &createBonusSpawner},
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
         {(L"Hoverer"), &createHoverer},
@@ -457,8 +467,8 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
                 for (auto &it : args) {
                     if (it.second.empty() && it.first != "transition") {
                         throw exceptions::ParserInvalidFileException(
-                                "Missing mandatory argument '" + it.first + "' at line " + std::to_string(line) + " in file "
-                                + fileName + ".", "indie::Parser::createMaterial");
+                                "Missing mandatory argument '" + it.first + "' for component 'Animator' at line "
+                                + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createMaterial");
                     }
                 }
                 bool loop = getBool(args["loop"], fileName, line);
@@ -491,6 +501,42 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
             continue;
         }
     }
+}
+
+void indie::Parser::createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"bonusType", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonusEffector");
+    if (args["bonusType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bonusType' for component 'BonusEffector' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusEffector");
+    }
+    entity->assignComponent<components::BonusEffector>(getBonusType(args["bonusType"]));
+}
+
+void indie::Parser::createBonusSpawner(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"spawnerType", ""},
+            {"bonusType",   ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonusSpawner");
+    if (args["spawnerType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'spawnerType' for component 'BonusSpawner' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusSpawner");
+    }
+    if (args["bonusType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bonusType' for component 'BonusSpawner' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusSpawner");
+    }
+    entity->assignComponent<components::BonusSpawner>(getSpawnerType(args["spawnerType"]), getBonusType(args["bonusType"]));
 }
 
 void indie::Parser::createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -569,7 +615,8 @@ void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io:
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMaterial");
+                "Missing mandatory argument 'fileName' for component 'Material' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createMaterial");
     }
     jf::components::ComponentHandler<components::Material> component;
     if (args["type"].empty()) {
@@ -601,7 +648,8 @@ void indie::Parser::createMesh(jf::entities::EntityHandler &entity, irr::io::IXM
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMesh");
+                "Missing mandatory argument 'fileName' for component 'Transform' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createMesh");
     }
     entity->assignComponent<components::Mesh>(
         args["fileName"]);
@@ -627,7 +675,8 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createParticle");
     if (args["name"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createParticle");
+                "Missing mandatory argument 'name' for component 'Particle' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createParticle");
     }
     auto component = entity->assignComponent<components::Particle>(
         args["name"]);
@@ -851,9 +900,15 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
                   "Systems have to be added in file systems.xml.", "indie::Parser::createSound");
     }
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
-    if (args["fileName"].empty() || args["type"].empty()) {
+    if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createSound");
+                "Missing mandatory argument 'fileName' for component 'Sound' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createSound");
+    }
+    if (args["type"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'type' for component 'Sound' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createSound");
     }
     jf::components::ComponentHandler<components::SoundComponent> component;
     if (args["position"].empty()) {
@@ -1052,5 +1107,21 @@ bool indie::Parser::getBool(const std::string &value, const std::string &fileNam
                 "Invalid value for attribute 'shouldBeKeeped', expected 'true' or 'false', but got '"
                 + value + "' at line " + std::to_string(line) + " in file " + fileName + ".",
                 "indie::Parser::getBool");
+    }
+}
+
+indie::components::BonusType indie::Parser::getBonusType(const std::string &type)
+{
+    return _bonusTypes.at(type);
+}
+
+indie::components::BonusSpawner::BonusSpawnerType indie::Parser::getSpawnerType(const std::string &type)
+{
+    if (type == "BONUS_SPAWNER_T_RANDOM") {
+        return components::BonusSpawner::BONUS_SPAWNER_T_RANDOM;
+    } else if (type == "BONUS_SPAWNER_T_SPECIFIC") {
+        return components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC;
+    } else {
+        throw exceptions::ParserInvalidFileException("Invalid BonusSpawerType", "indie::Parser::getSpawnerType");
     }
 }

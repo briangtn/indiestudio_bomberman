@@ -18,6 +18,8 @@
 #include "scenes/IScene.hpp"
 #include "components/SoundComponent.hpp"
 #include "scenes/Scene.hpp"
+#include "components/BonusEffector.hpp"
+#include "components/BonusSpawner.hpp"
 
 #define SYSTEMS_FILE_PATH   "../resources/systems.xml"
 #define SCENES_FOLDER_PATH  "../resources/scenes"
@@ -58,6 +60,10 @@ namespace indie {
     private: /* COMPONENTS */
         static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
+        static void createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line);
+        static void createBonusSpawner(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
         static void createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -91,6 +97,8 @@ namespace indie {
         static const irr::video::SColor getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line);
         static bool getBool(const std::string &value, const std::string &fileName, unsigned int &line);
+        static components::BonusType getBonusType(const std::string &type);
+        static components::BonusSpawnerType getSpawnerType(const std::string &type);
 
     private:
         irr::IrrlichtDevice *_device;
@@ -102,6 +110,7 @@ namespace indie {
         std::map<const irr::core::stringw, std::function<void(jf::entities::EntityHandler &, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
         static const std::map<std::string, irr::video::E_MATERIAL_TYPE> _materialTypes;
         static const std::map<std::string, irr::video::E_MATERIAL_FLAG> _materialFlags;
+        static const std::map<std::string, components::BonusType> _bonusTypes;
     };
 
 }
