@@ -508,11 +508,11 @@ void indie::systems::IrrlichtManagerSystem::drawMoveToTargetGizmos(
     ECSWrapper ecs;
     auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
 
-    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 0, 0));
+    driver->draw3DLine(irrPos, irrTarget, (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
     constexpr float boxSize = 1;
     driver->draw3DBox(
         irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
-        irr::video::SColor(255, 255, 0, 0));
+        (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
 }
 
 void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)

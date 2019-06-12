@@ -205,7 +205,7 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
         auto &mtt = std::get<0>(tuple);
         auto &tr = std::get<1>(tuple);
         auto &path = std::get<2>(tuple);
-        if (!path.empty() && mtt.isValid() && tr.isValid()) {
+        if (!path.empty() && mtt.isValid() && tr.isValid() && mtt->isFollowTarget()) {
             auto &nextNode = path.top();
 
             float speed = mtt->getSpeed();
