@@ -25,7 +25,7 @@ file(
 		${PROJECT_SOURCE_DIR}/include/*.hpp
 )
 
-find_package(Boost 1.65 REQUIRED COMPONENTS
+find_package(Boost 1.63 REQUIRED COMPONENTS
 		date_time filesystem iostreams)
 
 add_executable(bomberman ${SOURCES_CPP} ${SOURCES_HPP})

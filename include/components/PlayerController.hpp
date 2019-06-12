@@ -11,6 +11,7 @@
 #define INDIESTUDIO_PLAYERCONTROLLER_HPP
 
 #include "Component.hpp"
+#include "Bomb.hpp"
 
 namespace indie {
 
@@ -113,6 +114,9 @@ namespace indie {
             float getBombPlacementDuration() const;
             void setBombPlacementDuration(float bombPlacementDuration);
 
+            PlayerType getPlayerType() const;
+            void setPlayerType(PlayerType playerType);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;
@@ -156,6 +160,9 @@ namespace indie {
 
             int _bombForce;
             int _maxBomb;
+
+            PlayerType _playerType;
+
         public:
             int getBombForce() const;
             void setBombForce(int bombForce);

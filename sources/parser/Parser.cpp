@@ -683,7 +683,8 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
             {"bombTime",         ""},
             {"bombButton",       ""},
             {"bombAnimation",    ""},
-            {"bombDuration",     ""}
+            {"bombDuration",     ""},
+            {"playerType",       ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
     auto component = entity->assignComponent<components::PlayerController>();
@@ -773,6 +774,9 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
     }
     if (!args["bombDuration"].empty()) {
         component->setBombPlacementDuration(std::stof(args["bombDuration"]));
+    }
+    if (!args["playerType"].empty()) {
+        component->setPlayerType(static_cast<components::PlayerType>(std::stoi(args["playerType"])));
     }
 }
 
