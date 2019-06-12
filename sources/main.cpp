@@ -20,6 +20,9 @@
 #include "input/InputManager.hpp"
 #include "events/IrrlichtKeyJustChangedEvent.hpp"
 #include "parser/Parser.hpp"
+#include "systems/BombManagerSystem.hpp"
+#include "systems/DestroyOnTimeSystem.hpp"
+#include "components/Bomb.hpp"
 
 int runBomberman()
 {
@@ -27,8 +30,12 @@ int runBomberman()
 //    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
 //    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
-    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
-    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+
+    /* LAST CHANGE */
+   // ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
+    //ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
+    //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
 //    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
 //    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
@@ -58,6 +65,16 @@ int runBomberman()
 
 //    indie::scenes::SceneManager::addScenes(scenes);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
+    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
+    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
+            
+    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
+    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
+
+    //std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
+    //scenes.emplace_back("test", new indie::scenes::StaticTestScene());
+    //indie::scenes::SceneManager::addScenes(scenes);
+    //indie::scenes::SceneManager::changeScene("test");
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
@@ -70,6 +87,34 @@ int runBomberman()
 			ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
 		}
 	});
+    /* press for bomb */
+
+    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [ecs](void *null, auto b) {
+        if (b.wasPressed) {
+            /* Player */
+
+            auto player = ecs.entityManager.getEntityByName("player");
+            auto playerPos = player->getComponent<indie::components::Transform>();
+            auto playerController = player->getComponent<indie::components::PlayerController>();
+
+            /* Bomb */
+
+            auto &bombManage = ecs.systemManager.getSystem<indie::systems::BombManagerSystem>();
+
+            /* Check Number Bomb Place */
+            if (bombManage.getNumberBombPlacer(indie::components::PlayerType::P1) < playerController->getMaxBomb() && bombManage.checkBombPlace(playerPos->getPosition()) == true) {
+                auto entityBomb = ecs.entityManager.createEntity("bomb");
+                auto bomb = entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType, indie::components::PlayerType>(5, 50, indie::components::NORMAL, indie::components::PlayerType::P1);
+                entityBomb->assignComponent<indie::components::Transform, indie::maths::Vector3D>({playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z - 10});
+                bombManage.addBombPlace(bomb->getPlayerType());
+                ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entityBomb->getComponent<indie::components::Bomb>(), entityBomb->getComponent<indie::components::Transform>());
+            }
+        }
+    });
+
+
+
+    /* press for bomb */
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

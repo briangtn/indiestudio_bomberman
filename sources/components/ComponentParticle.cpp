@@ -91,9 +91,7 @@ void indie::components::Particle::initParticle()
     } else {
         createBoxEmitter();
     }
-    if (!isAffectorInit()) {
-        throw indie::exceptions::IrrlichtParticleException("Affector not init.", "indie::components::Particle::initParticle");
-    } else {
+    if (isAffectorInit()) {
         createFadeOutAffector();
     }
     _particle->setName(_name.c_str());
