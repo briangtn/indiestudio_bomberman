@@ -33,6 +33,7 @@ namespace indie {
                 bool isEnd;
                 bool walkable;
                 Node *parent;
+                unsigned int walkCost;
 
                 bool operator<(const Node &rhs) const;
                 bool operator>(const Node &rhs) const;

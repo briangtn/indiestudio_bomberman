@@ -76,7 +76,8 @@ indie::ai::AStar::NodeGrid indie::ai::AStar::computeNodeGrid(const indie::ai::AI
                 false,
                 false,
                 !((viewGrid[i][j] & 1) && ((viewGrid[i][j] != AIView::AI_CELL_TYPE_BREAKABLE_WALL) || !ignoreBreakableWalls)),
-                nullptr
+                nullptr,
+                viewGrid[i][j] == AIView::AI_CELL_TYPE_BREAKABLE_WALL ? 2u : 1u
             });
         }
     }
@@ -168,7 +169,7 @@ std::list<std::reference_wrapper<indie::ai::AStar::Node>> indie::ai::AStar::getN
 
 int indie::ai::AStar::getDistance(const indie::ai::AStar::Node &nodeA, const indie::ai::AStar::Node &nodeB)
 {
-    return 10 * std::abs(nodeA.pos.x - nodeB.pos.x) + 10 * std::abs(nodeA.pos.x - nodeB.pos.x);
+    return nodeA.walkCost * nodeB.walkCost * std::abs(nodeA.pos.x - nodeB.pos.x) + nodeA.walkCost * nodeB.walkCost * std::abs(nodeA.pos.y - nodeB.pos.y);
 }
 
 std::stack<indie::ai::AStar::Node> indie::ai::AStar::traceBackPath(indie::ai::AStar::Node &endNode)

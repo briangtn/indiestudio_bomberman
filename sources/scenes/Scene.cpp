@@ -108,7 +108,7 @@ void indie::scenes::Scene::onStart()
                     }
                 }
             }
-            auto path = indie::ai::AStar::findPath(viewGrid, {playerX, playerZ}, {5, 8});
+            auto path = indie::ai::AStar::findPath(viewGrid, {playerX, playerZ}, {1, 13}, true);
             for (auto &entity : ecs.entityManager.getEntitiesByName("path")) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
             }
