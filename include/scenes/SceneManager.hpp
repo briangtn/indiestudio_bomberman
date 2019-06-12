@@ -26,6 +26,8 @@ namespace indie {
         public:
             static void addScenes(const std::vector<std::pair<std::string, IScene *>> &scenes);
             static void changeScene(const std::string &sceneName);
+            static void safeChangeScene(const std::string &sceneName);
+            static void triggerSafeFunctions();
 
         private:
             SceneManager();
@@ -36,6 +38,7 @@ namespace indie {
             static SceneManager &getInstance();
 
         private:
+            std::string _nextScene;
             std::string _currentScene;
             std::map<std::string, std::unique_ptr<IScene>> _sceneMap;
         };

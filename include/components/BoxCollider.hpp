@@ -15,6 +15,12 @@
 
 namespace indie {
 
+    enum BombermanLayers {
+        UNBREAKABLE_BLOCK_LAYER  = 0b001,
+        BREAKABLE_BLOCK_LAYER    = 0b010,
+        BOMB_LAYER               = 0b100,
+    };
+
     namespace components {
 
         class BoxCollider : public jf::components::Component {

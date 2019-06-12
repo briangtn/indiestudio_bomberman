@@ -24,7 +24,8 @@ indie::components::SoundComponent::SoundComponent(jf::entities::Entity &entity, 
     , _sourceFile(sourceFile)
     , _soundType(soundType)
     , _spatialization(false)
-    , _shouldBePlayed(false)
+    , _isLooped(false)
+    , _isPaused(true)
     , _position(0, 0, 0)
 {
     EMIT_CREATE(SoundComponent);
@@ -37,7 +38,8 @@ indie::components::SoundComponent::SoundComponent(jf::entities::Entity &entity, 
         , _sourceFile(sourceFile)
         , _soundType(soundType)
         , _spatialization(true)
-        , _shouldBePlayed(false)
+        , _isLooped(false)
+        , _isPaused(true)
         , _position(position)
 {
     EMIT_CREATE(SoundComponent);
@@ -87,16 +89,33 @@ bool indie::components::SoundComponent::getSpatialization() const
     return _spatialization;
 }
 
+bool indie::components::SoundComponent::getIsLooped() const
+{
+    if (_sound) {
+        return _sound->isLooped();
+    }
+    return _isLooped;
+}
+
+void indie::components::SoundComponent::setIsLooped(bool isLooped)
+{
+    _isLooped = isLooped;
+    if (_sound) {
+        _sound->setIsLooped(isLooped);
+    }
+}
+
 bool indie::components::SoundComponent::getIsPaused() const
 {
     if (_sound) {
         return _sound->getIsPaused();
     }
-    return false;
+    return _isPaused;
 }
 
 void indie::components::SoundComponent::setIsPaused(bool isPaused)
 {
+    _isPaused = isPaused;
     if (_sound) {
         _sound->setIsPaused(isPaused);
     }
@@ -114,31 +133,6 @@ void indie::components::SoundComponent::setVolume(float volume)
 {
     if (_sound) {
         _sound->setVolume(volume);
-    }
-}
-
-bool indie::components::SoundComponent::getShouldBePlayed() const
-{
-    return _shouldBePlayed;
-}
-
-void indie::components::SoundComponent::setShouldBePlayed(bool shouldBePlayed)
-{
-    _shouldBePlayed = shouldBePlayed;
-}
-
-bool indie::components::SoundComponent::getIsLooped() const
-{
-    if (_sound) {
-        return _sound->isLooped();
-    }
-    return false;
-}
-
-void indie::components::SoundComponent::setIsLooped(bool loop)
-{
-    if (_sound) {
-        _sound->setIsLooped(loop);
     }
 }
 

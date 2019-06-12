@@ -12,7 +12,7 @@
 #include "ECSWrapper.hpp"
 
 indie::scenes::SceneManager::SceneManager()
-    : _currentScene(""), _sceneMap()
+    : _nextScene(""), _currentScene(""), _sceneMap()
 {
 
 }
@@ -58,6 +58,7 @@ void indie::scenes::SceneManager::changeScene(const std::string &sceneName)
     ECSWrapper ecs;
     ecs.entityManager.deleteAllEntities();
     instance._currentScene = sceneName;
+    instance._nextScene = "";
     newScene.onStart();
 }
 
@@ -65,4 +66,18 @@ indie::scenes::SceneManager &indie::scenes::SceneManager::getInstance()
 {
     static SceneManager instance;
     return instance;
+}
+
+void indie::scenes::SceneManager::safeChangeScene(const std::string &sceneName)
+{
+    SceneManager &instance = getInstance();
+    instance._nextScene = sceneName;
+}
+
+void indie::scenes::SceneManager::triggerSafeFunctions()
+{
+    SceneManager &instance = getInstance();
+    if (!instance._nextScene.empty()) {
+        changeScene(instance._nextScene);
+    }
 }
