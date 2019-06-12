@@ -98,7 +98,7 @@ namespace indie {
                                                  unsigned int &line);
         static bool getBool(const std::string &value, const std::string &fileName, unsigned int &line);
         static components::BonusType getBonusType(const std::string &type);
-        static components::BonusSpawnerType getSpawnerType(const std::string &type);
+        static components::BonusSpawner::BonusSpawnerType getSpawnerType(const std::string &type);
 
     private:
         irr::IrrlichtDevice *_device;
