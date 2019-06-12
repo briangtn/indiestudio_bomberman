@@ -32,25 +32,8 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({50, 130, -105});
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
-<<<<<<< sources/scenes/StaticTestScene.cpp
-    indie::AssetsManager::getInstance().addTexturePack("Minecraft", "../test_assets/lol");
-    //auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    //cameraControler->setAlwaysLookForward(false);
-    //cameraControler->setXRotationAxis("xRotAxis");
-    //cameraControler->setYRotationAxis("yRotAxis");
-    //cameraControler->setRotationSpeed(100);
 
-    auto plEntity = ecs.entityManager.createEntity("pointLight");
-    auto plTr = plEntity->assignComponent<indie::components::Transform>();
-    plTr->setPosition({-1, 1, -1});
-    plEntity->assignComponent<indie::components::PointLight>();
-=======
-    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    cameraControler->setAlwaysLookForward(false);
-    cameraControler->setXRotationAxis("xRotAxis");
-    cameraControler->setYRotationAxis("yRotAxis");
-    cameraControler->setRotationSpeed(100);
->>>>>>> sources/scenes/StaticTestScene.cpp
+    indie::AssetsManager::getInstance().addTexturePack("Minecraft", "../test_assets/lol");
 
     auto cubeEntity = ecs.entityManager.createEntity("item");
     auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
