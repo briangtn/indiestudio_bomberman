@@ -78,13 +78,6 @@ int runBomberman()
         ecs.entityManager.applySafeDelete();
         indie::scenes::SceneManager::triggerSafeFunctions();
         auto errors = ecs.systemManager.getErrors();
-
-        auto player = ecs.entityManager.getEntityByName("player");
-        auto follower = ecs.entityManager.getEntityByName("follower");
-        if (player.isValid() && follower.isValid()) {
-            follower->getComponent<indie::components::MoveToTarget>()->setTarget(player->getComponent<indie::components::Transform>()->getPosition());
-        }
-
         if (!errors.empty()) {
             for (auto &err : errors) {
                 std::cerr << "[ERROR] " << err.error << std::endl;

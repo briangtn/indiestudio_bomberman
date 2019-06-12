@@ -24,7 +24,7 @@
             <argument name="flags" value="!EMF_BILINEAR_FILTER;!EMF_LIGHTING"/>
         </component>
         <component type="MoveToTarget">
-            <argument name="target" value="0,0,0"/>
+            <argument name="target" value="50,0,-80"/>
             <argument name="followTarget" value="true"/>
             <argument name="speed" value="25"/>
         </component>
