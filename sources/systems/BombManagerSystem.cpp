@@ -181,7 +181,7 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
     }
     if (soundPath == "")
         return; // TODO THROW EXCEPTION
-    auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(, components::SoundComponent::SoundType::EFFECT);
+    auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(soundPath, components::SoundComponent::SoundType::EFFECT);
     soundBomb->setIsPaused(false);
 }
 
@@ -197,6 +197,7 @@ unsigned int indie::systems::BombManagerSystem::getNumberBombPlace(const indie::
     for (auto &it : _numberBombPlace)
         if (it.first == playerType)
             return it.second;
+    return 0;
 }
 
 void indie::systems::BombManagerSystem::addBombPlace(indie::components::PlayerType playerType)
@@ -329,14 +330,14 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (collider->getLayer() & BOMB_LAYER || collider->getLayer() & UNBREAKABLE_BLOCK_LAYER)
+            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER)))
                 return 1;
-            else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER) {
+            else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 return 2;
             }
-            else if (collider->getLayer() & PLAYER_LAYER) {
+            else if ((collider->getLayer() & PLAYER_LAYER)) {
                 std::cout << "PLAYER DEAD !!" << std::endl; // TODO KILL PLAYER
                 return 0;
             }
@@ -382,8 +383,7 @@ bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D ve
         if (obb.collides(hitBoxOBB)) {
             if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
                 return false;
-            else
-                return true;
         }
     }
+    return true;
 }

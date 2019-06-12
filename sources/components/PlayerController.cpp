@@ -41,7 +41,7 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
-      _bombForce(3.0f),
+      _bombForce(1),
       _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
@@ -80,7 +80,7 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
       _bombPlacementAnimation("place bomb"),
-      _bombForce(3.0f),
+      _bombForce(1),
       _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
@@ -120,7 +120,7 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
-      _bombForce(3.0f),
+      _bombForce(1),
       _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);
@@ -160,7 +160,7 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
-      _bombForce(3.0f),
+      _bombForce(1),
       _maxBomb(3)
 {
     EMIT_CREATE(PlayerController);

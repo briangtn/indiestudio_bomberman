@@ -102,9 +102,9 @@ int runBomberman()
             auto &bombManage = ecs.systemManager.getSystem<indie::systems::BombManagerSystem>();
 
             /* Check Number Bomb Place */
-            if (bombManage.getNumberBombPlacer(indie::components::PlayerType::P1) < playerController->getMaxBomb() && bombManage.checkBombPlace(playerPos->getPosition()) == true) {
+            if (bombManage.getNumberBombPlace(indie::components::PlayerType::P1) < playerController->getMaxBomb() && bombManage.checkBombPlace(playerPos->getPosition()) == true) {
                 auto entityBomb = ecs.entityManager.createEntity("bomb");
-                auto bomb = entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType, indie::components::PlayerType>(5, 50, indie::components::NORMAL, indie::components::PlayerType::P1);
+                auto bomb = entityBomb->assignComponent<indie::components::Bomb, int, float, indie::components::BombType, indie::components::PlayerType>(playerController->getBombForce(), 50, indie::components::NORMAL, indie::components::PlayerType::P1);
                 entityBomb->assignComponent<indie::components::Transform, indie::maths::Vector3D>({playerPos->getPosition().x, playerPos->getPosition().y, playerPos->getPosition().z - 10});
                 bombManage.addBombPlace(bomb->getPlayerType());
                 ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entityBomb->getComponent<indie::components::Bomb>(), entityBomb->getComponent<indie::components::Transform>());
