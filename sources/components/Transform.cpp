@@ -85,8 +85,8 @@ void indie::components::Transform::lookAt(const indie::maths::Vector3D &point)
         cross = maths::Vector3D(0, 1, 0);
     }
     auto angle = RAD2DEG(acosf(maths::Vector3D::Dot(forward, target)));
-    auto rotation = maths::Matrix4::AxisAngle(cross, angle);
-    _rotation = maths::Matrix4::ToEulerAngles(rotation);
+    auto rotation = maths::Matrix3::AxisAngle(cross, angle);
+    _rotation = maths::Matrix3::ToEulerAngles(rotation);
 }
 
 void indie::components::Transform::lookAt(jf::components::ComponentHandler<indie::components::Transform> point)

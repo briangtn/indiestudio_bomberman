@@ -104,17 +104,16 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
 {
     ECSWrapper ecs;
     float elapsedTimeAsSecond = elapsedTime.count() / 1000000000.0f;
-    maths::Matrix4 rotation = maths::Matrix4::Rotation(0, 0, 0);
     auto cameras = ecs.entityManager.getEntitiesWith<components::Camera, components::Transform>();
+    maths::Vector3D rot;
     if (!cameras.empty()) {
-        auto rot = cameras[0]->getComponent<components::Transform>()->getRotation();
-        rotation = maths::Matrix4::Rotation(rot.x, rot.y, rot.z);
+        rot = cameras[0]->getComponent<components::Transform>()->getRotation();
     }
 
     auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
 
     ecs.entityManager.applyToEach<components::Transform, components::PlayerController>(
-        [elapsedTimeAsSecond, rotation, entitiesWithCollider](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
+        [elapsedTimeAsSecond, rot, entitiesWithCollider](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
 
             bool canMove = !pc->isTaunting() && !pc->isPlacingBomb();
 
@@ -136,8 +135,10 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
             if (!zAxis.empty())
                 movementVector.z = indie::InputManager::GetAxis(zAxis);
             maths::Vector3D movement = movementVector * speed * elapsedTimeAsSecond;
-            if (pc->isMovementRelativeToCamera())
+            if (pc->isMovementRelativeToCamera()) {
+                maths::Matrix4 rotation = maths::Matrix4::Rotation(pc->isLockRotationX() ? 0 : rot.x, pc->isLockRotationY() ? 0 : rot.y, pc->isLockRotationZ() ? 0 : rot.z);
                 movement = maths::Matrix4::MultiplyVector(movement, rotation);
+            }
             if (pc->isLockMovementX())
                 movement.x = 0;
             if (pc->isLockMovementY())
