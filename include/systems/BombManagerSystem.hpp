@@ -14,6 +14,7 @@
 #include "components/ComponentParticle.hpp"
 #include "components/Transform.hpp"
 #include "maths/Vectors.hpp"
+#include "maths/Geometry3D.hpp"
 #include "components/Mesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Material.hpp"
@@ -22,6 +23,8 @@
 #include "components/SoundComponent.hpp"
 #include "components/DestroyOnTime.hpp"
 #include "components/PlayerController.hpp"
+#include "systems/BonusSystem.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
 #include <unistd.h>
 
 namespace indie {
@@ -53,7 +56,7 @@ namespace indie {
 
                 /* Display Particle And Play Sound For Each Bomb */
 
-                void displayParticle(indie::components::BombType typeBomb, const int &strength, jf::components::ComponentHandler<indie::components::Bomb> bomb);
+                void displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect);
                 void playSoundExplosion(indie::components::BombType typeBomb, bool &pass);
 
                 /* Set & Get bombPlace */
@@ -69,6 +72,11 @@ namespace indie {
                 /* Shake Bomb Function */
 
                 void shakeBomb(jf::components::ComponentHandler<indie::components::Bomb> bomb);
+
+                /* Get Collider With Box */
+
+                void handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb);
+                int checkIsCollide(bool ignoreLayer, indie::maths::Vector3D vect);
 
             protected:
             private:

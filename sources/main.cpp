@@ -112,6 +112,8 @@ int runBomberman()
         }
     });
 
+
+
     /* press for bomb */
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||

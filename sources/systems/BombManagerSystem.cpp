@@ -40,7 +40,8 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplose() <= 0) {
             if (pass == true) {
-                this->displayParticle(bomb->getBombType(), bomb->getStrength(), bomb);
+                this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
+                this->handleCollide(bomb);                
                 this->playSoundExplosion(bomb->getBombType(), pass);
                 this->removeBombPlace(bomb->getPlayerType());
             }
@@ -75,49 +76,49 @@ jf::components::ComponentHandler<components::Transform> tr)
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
+    std::cout << "bombe position = " << " x = " << bombTr->getPosition().x << " y = " << bombTr->getPosition().y << " z = " << bombTr->getPosition().z << std::endl;
     auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(bomb->getStrength(), bomb->getTimeBeforeExplose(), bomb->getBombType(), bomb->getPlayerType());
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
     auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
+    bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
-void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, const int &strength, jf::components::ComponentHandler<indie::components::Bomb> bomb)
+void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)
 {
     ECSWrapper ecs;
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
     componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
-    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
     if (typeBomb == 0) {
         std::cout << "Normal Particle" << std::endl;
     }
     else if (typeBomb == 1) {
-        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
         normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0,255,255,0)));
-        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
-        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_02.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
     else if (typeBomb == 2) {
-        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-0.5, -0.3, -0.5, 0.5, 0.3, 0.5));
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
         normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 0, 168, 255)));
-        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
-        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/circle_05.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
     else if (typeBomb == 3) {
-        auto bombPos = ecs.entityManager.getEntityByName("bomb")->getComponent<indie::components::Transform>();
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
@@ -127,19 +128,19 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/spark_01.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z));
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
     else if (typeBomb == 4) {
-        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-15, -13, -15, 15, 13, 15));
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
         normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 232, 65, 24)));
-        normalParticle->setMinMaxAge(std::make_pair(1, 1));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
-        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(0.7f, 1.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
         normalParticle->setTexture(0, "../Assets/Particle/PNG/symbol_01.png");
         normalParticle->initParticle();
-        normalParticle->setPosition(irr::core::vector3df(bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z + 10));
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
     else {
         std::cout << "throw error : unknown type bomb" << std::endl;
@@ -218,4 +219,128 @@ void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandl
         bombTr->setScale({7, 7, 7});
     else if (time <= 15)
         bombTr->setScale({8, 8, 8});
+}
+
+void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb)
+{
+    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
+    indie::maths::Vector3D initialVect = {bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z};
+    indie::maths::Vector3D vect = initialVect;
+
+
+    /* check in right side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.x  = vect.x - 10;
+        if (checkIsCollide(false, vect) == 1)
+            break;
+        else if (checkIsCollide(false, vect) == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    } 
+
+    vect = initialVect;
+
+    /* check in left side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.x = vect.x + 10;
+        if (checkIsCollide(false, vect) == 1)
+            break;
+        else if (checkIsCollide(false, vect) == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+
+    vect = initialVect;
+
+    /* check in up side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.z = vect.z - 10;
+        if (checkIsCollide(false, vect) == 1)
+            break;
+        else if (checkIsCollide(false, vect) == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+
+    vect = initialVect;
+
+    /* check in down side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.z = vect.z + 10;
+        if (checkIsCollide(false, vect) == 1)
+            break;
+        else if (checkIsCollide(false, vect) == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+}
+
+int indie::systems::BombManagerSystem::checkIsCollide(bool ignoreLayer, indie::maths::Vector3D vect)
+{
+    ECSWrapper ecs;
+
+    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
+
+    indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
+    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D rotationHitBox = {0, 0, 0};
+
+    indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
+
+    for (auto &entity : entitiesWithCollider) {
+
+        auto collider = entity->getComponent<components::BoxCollider>();
+
+        if (!ignoreLayer && !(collider->getLayer()))
+            continue;
+        
+        auto tr = entity->getComponent<components::Transform>();
+
+        indie::maths::Vector3D position;
+        indie::maths::Vector3D scale = {1, 1, 1};
+        indie::maths::Vector3D rotation;
+
+        if (tr.isValid()) {
+            position = tr->getPosition();
+            scale = tr->getScale();
+            rotation = tr->getRotation();
+        }
+
+        indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
+
+        if (obb.collides(hitBoxOBB)) {
+            if (collider->getLayer() & BOMB_LAYER || collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) {
+                std::cout << "1111111111111111111" << std::endl;
+                return 1;
+            }
+            else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER) {
+                std::cout << "2222222222222222222222" << std::endl;
+                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+                return 2;
+            }
+            else if (collider->getLayer() & PLAYER_LAYER) {
+                std::cout << "PLAYER DEAD" << std::endl;
+                return 0;
+            }
+            else {
+                std::cout << "BOOOST SHOOOT" << std::endl;
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+                return 0;
+            }
+        }
+    }
+    return 0;
 }
