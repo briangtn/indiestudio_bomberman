@@ -25,6 +25,7 @@
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 #include "components/Hoverer.hpp"
+#include "components/AIController.hpp"
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
 
@@ -101,7 +102,8 @@ indie::Parser::Parser()
         {(L"MoveToTarget"), &createMoveToTarget},
         {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
-        {(L"Transform"), &createTransform}
+        {(L"Transform"), &createTransform},
+        {(L"AIController"), &createAIController}
     })
 {
     if (!_device)
@@ -556,6 +558,17 @@ void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLRe
     if (!args["advancement"].empty()) {
         component->setAdvancement(getVector3D(args["advancement"], fileName, line));
     }
+}
+
+void indie::Parser::createAIController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args {
+        {"", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAIController");
+    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::AIController>();
 }
 
 void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,

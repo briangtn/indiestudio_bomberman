@@ -89,5 +89,7 @@
             <argument name="rotation" value="0,0,0"/>
             <argument name="scale" value="0,0,0"/>
         </component>
+        <component type="AIController">
+        </component>
     </entity>
 </scene>
