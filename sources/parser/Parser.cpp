@@ -516,7 +516,7 @@ void indie::Parser::createButton(jf::entities::EntityHandler &entity, irr::io::I
             {"id", ""},
             {"textureFileName", ""}
     };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createButton");
     if (args["text"].empty()) {
         throw exceptions::ParserInvalidFileException(
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createButton");
