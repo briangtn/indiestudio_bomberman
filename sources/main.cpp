@@ -42,7 +42,8 @@ int runBomberman()
 
 
     indie::InputManager::RegisterKey("taunt", 0, 1);
-    indie::InputManager::RegisterKey("bomb", 0, 2);
+//    indie::InputManager::RegisterKey("bomb", 0, 2);
+    indie::InputManager::RegisterKey("bomb", irr::KEY_KEY_B);
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 

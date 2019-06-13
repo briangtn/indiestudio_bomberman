@@ -266,6 +266,11 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     indie::maths::Vector3D vect = initialVect;
 
 
+    /* check pos bomb side */
+
+    auto col = checkIsCollide(initialVect);
+    std::cout << "detect = " << col << std::endl;
+
     /* check in right side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
         vect.x  = vect.x - 10;
@@ -360,7 +365,11 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))) {
+            std::cout << "COLLIDE" << std::endl;
+            if ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))
+                return 1;
+            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))) {
+                collider->getEntity()->getComponent<indie::components::Bomb>()->setTimeBeforeExplose(0);
                 return 1;
             } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
@@ -410,6 +419,8 @@ bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D ve
 
         if (obb.collides(hitBoxOBB)) {
             if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
+                return false;
+            else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER))
                 return false;
         }
     }
