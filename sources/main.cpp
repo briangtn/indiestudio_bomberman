@@ -27,27 +27,9 @@
 int runBomberman()
 {
     ECSWrapper ecs;
-//    ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
-//    ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
 
-    /* LAST CHANGE */
-   // ecs.systemManager.addSystem<indie::systems::IrrlichtManagerSystem>();
-    //ecs.systemManager.startSystem<indie::systems::IrrlichtManagerSystem>();
-    //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
-    //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
-
-//    ecs.systemManager.addSystem<indie::systems::IrrklangAudioSystem>();
-//    ecs.systemManager.startSystem<indie::systems::IrrklangAudioSystem>();
-
-//    ecs.systemManager.addSystem<indie::systems::MovementSystem>();
-//    ecs.systemManager.startSystem<indie::systems::MovementSystem>();
-
-//    ecs.systemManager.addSystem<indie::systems::TauntSystem>();
-//    ecs.systemManager.startSystem<indie::systems::TauntSystem>();
-
-    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
-    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
+    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
@@ -59,47 +41,23 @@ int runBomberman()
     indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
 
     indie::InputManager::RegisterKey("taunt", 0, 1);
+    indie::InputManager::RegisterKey("bomb", 0, 2);
 
-//    std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
-//    scenes.emplace_back("test", new indie::scenes::StaticTestScene());
-
-//    indie::scenes::SceneManager::addScenes(scenes);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
+
+    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
+    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
+
     ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
     ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
             
     ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
 
-    //std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
-    //scenes.emplace_back("test", new indie::scenes::StaticTestScene());
-    //indie::scenes::SceneManager::addScenes(scenes);
-    //indie::scenes::SceneManager::changeScene("test");
-
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
             indie::scenes::SceneManager::changeScene("test");
     });
-
-	ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_T>>(nullptr, [](void *null, auto e) {
-		if (e.wasPressed) {
-			ECSWrapper ecs;
-			ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
-		}
-	});
-    /* press for bomb */
-
-    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [ecs](void *null, auto b) {
-        if (b.wasPressed) {
-            auto player = ecs.entityManager.getEntityByName("player");
-
-            ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(player);
-        }
-    });
-
-
-
-    /* press for bomb */
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

@@ -7,6 +7,7 @@
 
 #include "systems/BombManagerSystem.hpp"
 #include "components/AIController.hpp"
+#include "input/InputManager.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -35,6 +36,29 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     std::vector<jf::internal::ID> toDelete;
     static bool pass = true;
     float elapsedTimeAsSeconds = elapsedTime.count() / 1000000000.0f;
+
+    ecs.entityManager.applyToEach<components::PlayerController>(
+        [&, elapsedTimeAsSeconds](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::PlayerController> pc) {
+
+            if (pc->isPlacingBomb()) {
+                pc->setBombPlacementTime(pc->getBombPlacementTime() - elapsedTimeAsSeconds);
+                if (pc->getBombPlacementTime() <= 0.0f) {
+                    pc->setBombPlacementTime(0.0f);
+                    pc->setIsPlacingBomb(false);
+                }
+            }
+
+            if (indie::InputManager::IsKeyPressed(pc->getBombPlacementButton()) && !pc->isPlacingBomb()) {
+                pc->setIsPlacingBomb(true);
+                createBomb(entity);
+                pc->setBombPlacementTime(pc->getBombPlacementDuration());
+                auto animator = entity->getComponent<components::Animator>();
+                if (animator.isValid()) {
+                    animator->setCurrentAnimation(pc->getBombPlacementAnimation());
+                }
+            }
+        }
+    );
 
     ecs.entityManager.applyToEach<components::Bomb>(
     [&elapsedTimeAsSeconds, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
