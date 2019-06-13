@@ -49,6 +49,9 @@ namespace indie {
 
             ~Bomb();
 
+
+            Bomb &operator>>(std::ostream &file);
+
             /* Set & Get Strength */
 
             int getStrength() const;
@@ -90,7 +93,7 @@ namespace indie {
             float _timeBeforeExplode;
             int _bombID;
             BombType _bombType;
-            PlayerType _Player;
+            PlayerType _player;
             std::string _meshPath;
             std::string _texturePath;
             static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;

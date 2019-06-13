@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <scene>
-    <entity name="testEntity" shouldBeKeeped="false">
+    <entity name="testEntity">
         <component type="Animator">
-            <animation name="animation">
+            <animation name="animationName">
                 <argument name="start" value="0"/>
                 <argument name="end" value="1"/>
                 <argument name="speed" value="1"/>
@@ -15,8 +15,8 @@
             <argument name="timeBeforeExplode" value="10.5"/>
             <argument name="bombType" value="1"/>
             <argument name="player" value="1"/>
-            <argument name="texturePath" value="path/to/texture"/>
-            <argument name="textureMesh" value="path/to/mesh"/>
+            <argument name="texturePath" value="../test_assets/cube_texture.png"/>
+            <argument name="textureMesh" value="../test_assets/cube.obj"/>
             <argument name="position" value="0,0,0"/>
         </component>
         <component type="BonusEffector">
@@ -24,7 +24,7 @@
         </component>
         <component type="BonusSpawner">
             <argument name="spawnerType" value="BONUS_SPAWNER_T_RANDOM"/>
-            <argument name="bonusType" value="BONUS_T_BOMB"/>
+            <argument name="bonusType" value="BONUS_T_BOMB_UP"/>
         </component>
         <component type="BoxCollider">
             <argument name="size" value="1,1,1"/>
@@ -34,25 +34,22 @@
         <component type="Camera">
             <argument name="FOV" value="45"/>
         </component>
-        <component type="Destroy">
-            <argument name="time" value="1.5"/>
-        </component>
         <component type="Hoverer">
             <argument name="speed" value="1,1,1"/>
             <argument name="amplitude" value="1,1,1"/>
             <argument name="advancement" value="0,0,0"/>
         </component>
         <component type="Material">
-            <argument name="fileName" value="path/to/texture"/>
+            <argument name="fileName" value="../test_assets/cube_texture.png"/>
             <argument name="type" value="EMT_SOLID"/>
             <argument name="flags" value="EMF_WIREFRAME;!EMF_WIREFRAME"/>
         </component>
         <component type="Mesh">
-            <argument name="fileName" value="path/to/mesh"/>
+            <argument name="fileName" value="../test_assets/cube.obj"/>
         </component>
         <component type="Particle">
             <argument name="name" value="testParticule"/>
-            <argument name="fileName" value="path/to/texture"/>
+            <argument name="fileName" value="../test_assets/cube_texture.png"/>
             <argument name="layer" value="0"/>
             <argument name="emitterSize" value="0,0,0;0,0,0"/>
             <argument name="direction" value="0,0,0"/>
@@ -65,17 +62,16 @@
             <argument name="fadeTime" value="0"/>
         </component>
         <component type="PlayerController">
-            <argument name="xMove" value="xMovementAxis"/>
-            <argument name="yMove" value="yMovementAxis"/>
-            <argument name="zMove" value="zMovementAxis"/>
+            <argument name="xMove" value="xAxis"/>
+            <argument name="yMove" value="yAxis"/>
+            <argument name="zMove" value="zAxis"/>
             <argument name="lockXMove" value="true"/>
             <argument name="lockYMove" value="false"/>
             <argument name="lockZMove" value="true"/>
             <argument name="relativeMove" value="false"/>
             <argument name="moveSpeed" value="1.5"/>
-            <argument name="xRotate" value="xRotationAxis"/>
-            <argument name="yRotate" value="yRotationAxis"/>
-            <argument name="zRotate" value="zRotationAxis"/>
+            <argument name="xRotate" value="xRotAxis"/>
+            <argument name="yRotate" value="yRotAxis"/>
             <argument name="lockXRotate" value="true"/>
             <argument name="lockYRotate" value="false"/>
             <argument name="lockZRotate" value="true"/>
@@ -96,13 +92,14 @@
             <argument name="bombDuration" value="2.0"/>
             <argument name="bombForce" value="1"/>
             <argument name="maxBomb" value="10"/>
+            <argument name="playerType" value="1"/>
         </component>
         <component type="Rotator">
             <argument name="speed" value="1,1,1"/>
         </component>
         <component type="Sound">
-            <argument name="fileName" value="path/to/sound"/>
-            <argument name="type" value="MUSIC"/>
+            <argument name="fileName" value="../Sound/BombSound/ExplosionSoundElectricBomb.ogg"/>
+            <argument name="type" value="EFFECT"/>
             <argument name="position" value="0,0,0"/>
         </component>
         <component type="Transform">

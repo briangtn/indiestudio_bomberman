@@ -361,7 +361,7 @@ void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const 
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrlichtManager", "system");
     ecs.systemManager.addSystem<systems::IrrlichtManagerSystem>();
     ecs.systemManager.startSystem<systems::IrrlichtManagerSystem>();
-    auto system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
+    auto &system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
     if (!args["fullScreen"].empty()) {
         system.setFullScreenEnabled(getBool(args["fullScreen"], fileName, line));
     }

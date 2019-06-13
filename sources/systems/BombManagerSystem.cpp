@@ -90,7 +90,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
     ECSWrapper ecs;
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
-    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
+//    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
     if (typeBomb == 0) {
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
