@@ -12,10 +12,13 @@
 indie::components::AIController::AIController(jf::entities::Entity &entity)
     : Component(entity), 
       _target(0, 0, 0),
+      _previousPos({0, 0}),
       _isTaunting(false),
       _needToTaunt(false),
-      _isPlacingBombs(false),
-      _state(UNKNOWN)
+      _isPlacingBomb(false),
+      _needToUseBomb(false),
+      _state(UNKNOWN),
+      _lastState(UNKNOWN)
 {
     ECSWrapper ecs;
 
@@ -45,7 +48,7 @@ void indie::components::AIController::setIsTaunting(bool assign)
 
 void indie::components::AIController::setIsPlacingBombs(bool assign)
 {
-    _isPlacingBombs = assign;
+    _isPlacingBomb = assign;
 }
 
 void indie::components::AIController::setState(indie::components::AIController::state assign)
@@ -56,6 +59,36 @@ void indie::components::AIController::setState(indie::components::AIController::
 void indie::components::AIController::setNeedToTaunt(bool assign)
 {
     _needToTaunt = assign;
+}
+
+void indie::components::AIController::setNeedToUseBomb(bool assign)
+{
+    _needToUseBomb = assign;
+}
+
+void indie::components::AIController::setLastState(indie::components::AIController::state assign)
+{
+    _lastState = assign;
+}
+
+void indie::components::AIController::setPreviousPos(std::pair<int, int> assign)
+{
+    _previousPos = assign;
+}
+
+std::pair<int, int> indie::components::AIController::getPreviousPos() const
+{
+    return _previousPos;
+}
+
+indie::components::AIController::state indie::components::AIController::getLastState() const
+{
+    return _lastState;
+}
+
+bool indie::components::AIController::getNeedToUseBomb() const
+{
+    return _needToUseBomb;
 }
 
 bool indie::components::AIController::getNeedToTaunt() const
@@ -73,9 +106,9 @@ bool indie::components::AIController::getIsTaunting() const
     return _isTaunting;
 }
 
-bool indie::components::AIController::getIsPlacingBombs() const
+bool indie::components::AIController::getIsPlacingBomb() const
 {
-    return _isPlacingBombs;
+    return _isPlacingBomb;
 }
 
 indie::components::AIController::state indie::components::AIController::getState() const
