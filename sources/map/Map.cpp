@@ -96,7 +96,7 @@ void indie::Map::drawFloor(unsigned int width, unsigned int height)
     auto groundEntity = ecs.entityManager.createEntity("ground");
     auto tr = groundEntity->assignComponent<indie::components::Transform>();
     tr->setPosition({(width * 10.0f - 10.0f) / 2.0f, -5.0f, -(height * 10.0f - 10.0f) / 2.0f});
-    tr->setScale({width * 20.0f + 20.0f, 0.1f, height * 20.0f + 20.0f});
+    tr->setScale({width * 30.0f + 20.0f, 0.1f, height * 30.0f + 20.0f});
     groundEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/ground.obj");
     auto mat = groundEntity->assignComponent<indie::components::Material, std::string>("../test_assets/grass_texture.png");
     mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);

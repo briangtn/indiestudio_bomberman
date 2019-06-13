@@ -208,8 +208,8 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnCamera()
 {
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("camera");
-    entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D>({70, 150, -120}, {70, 0, 0});
+    entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D>({70, 150, -140}, {70, 0, 0});
     entity->assignComponent<components::Camera>();
-    entity->assignComponent<components::DynamicCamera>();
+    //entity->assignComponent<components::DynamicCamera>();
     return entity;
 }
