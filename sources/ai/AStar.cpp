@@ -62,6 +62,11 @@ indie::maths::Vector3D indie::ai::AStar::Node::toWorldPos() const
     return indie::maths::Vector3D(pos.x * 10.0f, 0, -pos.y * 10.0f);
 }
 
+bool indie::ai::AStar::Node::hasCrate() const
+{
+    return walkCost == 2u;
+}
+
 indie::ai::AStar::NodeGrid indie::ai::AStar::computeNodeGrid(const indie::ai::AIView::AICellViewGrid &viewGrid, bool ignoreBreakableWalls)
 {
     NodeGrid grid;

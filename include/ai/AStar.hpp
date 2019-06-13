@@ -43,6 +43,7 @@ namespace indie {
                 bool operator!=(const Node &rhs) const;
 
                 maths::Vector3D toWorldPos() const;
+                bool hasCrate() const;
             };
 
         struct NodeCompare : public std::unary_function<Node, bool> {
