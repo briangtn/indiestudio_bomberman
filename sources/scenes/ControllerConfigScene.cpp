@@ -318,3 +318,13 @@ void indie::scenes::ControllerConfigScene::setInfoText(const std::string &text)
 
     ecs.entityManager.getEntityByName("infoText")->getComponent<components::Text>()->setText(text);
 }
+
+indie::scenes::SaveState indie::scenes::ControllerConfigScene::save(bool override, bool saveShouldBeKeeped)
+{
+    return SUCCESS;
+}
+
+indie::scenes::SaveState indie::scenes::ControllerConfigScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
+{
+    return SUCCESS;
+}

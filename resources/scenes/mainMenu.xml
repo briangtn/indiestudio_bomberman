@@ -8,14 +8,6 @@
         <component type="Camera">
         </component>
     </entity>
-    <entity name="monImage">
-        <component type="Transform">
-            <argument name="position" value="0,0,0"/>
-        </component>
-        <component type="Image">
-            <argument name="fileName" value="../inputexist.png"/>
-        </component>
-    </entity>
     <entity name="backgroundImage">
         <component type="Transform">
             <argument name="position" value="0,0,0"/>

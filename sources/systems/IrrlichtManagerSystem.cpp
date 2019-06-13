@@ -632,8 +632,10 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
         image->setImageNode(env->addImage(textureNode, irrPos, false));
         image->getImageNode()->setUseAlphaChannel(image->isUseAlpha());
     }
-    image->getImageNode()->setID(image->getId());
-    image->getImageNode()->setVisible(image->isVisible());
+    if (image->getImageNode() != nullptr) {
+        image->getImageNode()->setID(image->getId());
+        image->getImageNode()->setVisible(image->isVisible());
+    }
 }
 
 

@@ -48,6 +48,10 @@ namespace indie {
             void onStart() override;
             void onStop() override;
 
+            SaveState save(bool override, bool saveShouldBeKeeped) override;
+
+            SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped) override;
+
             void createConfigBlock(int id);
         };
     }

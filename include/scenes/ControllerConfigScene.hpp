@@ -36,6 +36,9 @@ namespace indie {
             static std::vector<irr::u16> keysPressed;
             static std::vector<irr::u16> joysticksActivated;
 
+            SaveState save(bool override, bool saveShouldBeKeeped) override;
+            SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped);
+
         public:
             void onStart() override;
             void onStop() override;

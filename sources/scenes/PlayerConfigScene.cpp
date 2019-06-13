@@ -329,3 +329,14 @@ void indie::scenes::PlayerConfigScene::UpdateConfigController()
     ControllerConfigScene::id = -1;
     ControllerConfigScene::controller = Controller("");
 }
+
+indie::scenes::SaveState indie::scenes::PlayerConfigScene::save(bool override, bool saveShouldBeKeeped)
+{
+    return SUCCESS;
+}
+
+indie::scenes::SaveState
+indie::scenes::PlayerConfigScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
+{
+    return SUCCESS;
+}
