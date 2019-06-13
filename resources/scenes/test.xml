@@ -12,27 +12,6 @@
             <argument name="blockBorders" value="2"/>
         </component>
     </entity>
-    <entity name="follower">
-        <component type="Transform">
-            <argument name="scale" value="5,5,5"/>
-        </component>
-        <component type="BoxCollider">
-            <argument name="size" value="0.5,0.5,0.5"/>
-            <argument name="layer" value="0x10"/>
-        </component>
-        <component type="Mesh">
-            <argument name="fileName" value="../test_assets/cube.obj"/>
-        </component>
-        <component type="Material">
-            <argument name="fileName" value="../test_assets/cube_texture.png"/>
-            <argument name="flags" value="!EMF_BILINEAR_FILTER;!EMF_LIGHTING"/>
-        </component>
-        <component type="MoveToTarget">
-            <argument name="target" value="50,0,-80"/>
-            <argument name="followTarget" value="true"/>
-            <argument name="speed" value="25"/>
-        </component>
-    </entity>
     <entity name="player">
         <component type="Transform">
             <argument name="position" value="140,-5,-140"/>
@@ -102,7 +81,7 @@
             <argument name="zMove" value="zAxis"/>
             <argument name="tauntButton" value="taunt"/>
             <argument name="bombButton" value="bomb"/>
-            <argument name="moveSpeed" value="50"/>
+            <argument name="moveSpeed" value="30"/>
         </component>
     </entity>
     <entity name="player2">
@@ -174,7 +153,7 @@
         <component type="MoveToTarget">
             <argument name="target" value="0, 0, 0"/>
             <argument name="followTarget" value="true"/>
-            <argument name="speed" value="50"/>
+            <argument name="speed" value="30"/>
         </component>
     </entity>
 </scene>
