@@ -10,6 +10,7 @@
 
 #include "Component.hpp"
 #include "maths/Vectors.hpp"
+#include "ai/AStar.hpp"
 #include "Bomb.hpp"
 
 namespace indie {
@@ -70,6 +71,7 @@ namespace indie {
                 bool _needToUseBomb;
                 state _state;
                 state _lastState;
+                std::stack<ai::AStar::Node> _fullNodePath;
 
                 int _bombForce;
                 int _maxBomb;

@@ -28,9 +28,14 @@ namespace indie {
                 void onStop() override;
                 void onTearDown() override;
 
+                int getTimePassed() const;
+                void setTimePassed(int assign);
+
                 static std::vector<int> getPlayerPos(ai::AIView::AICellViewGrid grid);
                 static void chooseState(jf::components::ComponentHandler<indie::components::AIController> &component,
-                jf::entities::EntityHandler &entity);
+                jf::entities::EntityHandler &entity,
+                std::vector<jf::entities::EntityHandler> &bonuses,
+                std::vector<jf::entities::EntityHandler> &players);
                 static void AILogic(jf::entities::EntityHandler entity,
                     jf::components::ComponentHandler<indie::components::AIController> component);
                 static void randomHandling(indie::components::AIController::state &state,
@@ -39,8 +44,13 @@ namespace indie {
                 
                 static void focusLogic();
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
-                static void powerupLogic();
+                static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                        jf::entities::EntityHandler &bonuses);
                 static void searchLogic();
+
+                static void findNewTarget();
+                static bool hasMoved(jf::entities::EntityHandler entity, 
+                    jf::components::ComponentHandler<indie::components::AIController> component);
 
             private:
                 int _timePassed;
