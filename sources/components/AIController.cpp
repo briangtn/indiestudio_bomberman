@@ -18,7 +18,8 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
       _isPlacingBomb(false),
       _needToUseBomb(false),
       _state(UNKNOWN),
-      _lastState(UNKNOWN)
+      _lastState(UNKNOWN),
+      _fullNodePath()
 {
     ECSWrapper ecs;
 

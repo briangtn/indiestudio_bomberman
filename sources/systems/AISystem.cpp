@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include "components/MoveToTarget.hpp"
 
 indie::systems::AISystem::AISystem() : _timePassed(0)
 {
@@ -47,29 +48,67 @@ void indie::systems::AISystem::onTearDown()
 void indie::systems::AISystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
 {
     _timePassed += elapsedTime.count();
-    if (_timePassed < 500000000)
-        return;
-    _timePassed = 0;
 
     ECSWrapper ecs;
     ecs.entityManager.applyToEach<components::AIController>(&AILogic);
 }
 
+int indie::systems::AISystem::getTimePassed() const
+{
+    return _timePassed;
+}
+
+void indie::systems::AISystem::setTimePassed(int assign)
+{
+    _timePassed = assign;
+}
+
+bool indie::systems::AISystem::hasMoved(jf::entities::EntityHandler entity, 
+    jf::components::ComponentHandler<indie::components::AIController> component)
+{
+    if (static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10 != component->getPreviousPos().first || 
+    static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) / 10 != component->getPreviousPos().second )
+        return (true);
+    return (false);
+}
+
 void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     jf::components::ComponentHandler<indie::components::AIController> component)
 {
-    chooseState(component, entity);
-    //TO DO MOVE JULIAN OK IF COMponent->getisTaunting() == false
+    ECSWrapper ecs;
+    if (ecs.systemManager.getSystem<indie::systems::AISystem>().getTimePassed() < 500000000 || !hasMoved(entity, component))
+        return;
+    component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
+                            ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
+    ecs.systemManager.getSystem<indie::systems::AISystem>().setTimePassed(0);
+
+    maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
+    jf::components::ComponentHandler<indie::components::MoveToTarget> moveComp = entity->getComponent<indie::components::MoveToTarget>();
+
+    auto bonuses = ecs.entityManager.getEntitiesWith<indie::components::BonusEffector>();
+    std::sort(bonuses.begin(), bonuses.end(), [&playerPos](jf::entities::EntityHandler bonusA, jf::entities::EntityHandler bonusB){
+        return (bonusA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
+(bonusB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
+    });
+    auto players = ecs.entityManager.getEntitiesWith<indie::components::AIController, indie::components::PlayerController>();
+    std::sort(players.begin(), players.end(), [&playerPos](jf::entities::EntityHandler playerA, jf::entities::EntityHandler playerB){
+        return (playerA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
+(playerB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
+    });
+
+    component->setLastState(component->getState());
+    chooseState(component, entity, bonuses, players);
+    if (component->getIsTaunting() == false && component->getIsPlacingBomb() == false)
+        moveComp->setFollowTarget(true);
 
     switch (component->getState()) {
         case indie::components::AIController::FOCUS : focusLogic();
         case indie::components::AIController::TAUNT : tauntLogic(component);
-        case indie::components::AIController::POWERUP : powerupLogic();
+        case indie::components::AIController::POWERUP : powerupLogic(component, bonuses.front());
         case indie::components::AIController::SEARCH : searchLogic();
     }
-    if (component->getIsTaunting())
-        return;
-        //TODO DON T MOVE TO JULIAN MOVER
+    if (component->getIsTaunting() || component->getIsPlacingBomb())
+        moveComp->setFollowTarget(false);
 }
 
 void indie::systems::AISystem::focusLogic()
@@ -82,9 +121,16 @@ void indie::systems::AISystem::tauntLogic(jf::components::ComponentHandler<indie
     component->setNeedToTaunt(true);
 }
 
-void indie::systems::AISystem::powerupLogic()
+void indie::systems::AISystem::findNewTarget()
 {
 
+}
+
+void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                            jf::entities::EntityHandler &bonuses)
+{
+    if (component->getState() != component->getLastState())
+        findNewTarget();
 }
 
 void indie::systems::AISystem::searchLogic()
@@ -93,23 +139,15 @@ void indie::systems::AISystem::searchLogic()
 }
 
 void indie::systems::AISystem::chooseState(jf::components::ComponentHandler<indie::components::AIController> &component,
-jf::entities::EntityHandler &entity)
+jf::entities::EntityHandler &entity,
+std::vector<jf::entities::EntityHandler> &bonuses,
+std::vector<jf::entities::EntityHandler> &players)
 {
     ECSWrapper ecs;
     indie::components::AIController::state state = indie::components::AIController::UNKNOWN;
     ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
 
-    auto bonuses = ecs.entityManager.getEntitiesWith<indie::components::BonusEffector>();
-    std::sort(bonuses.begin(), bonuses.end(), [&playerPos](jf::entities::EntityHandler bonusA, jf::entities::EntityHandler bonusB){
-        return (bonusA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
-(bonusB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
-    });
-    auto players = ecs.entityManager.getEntitiesWith<indie::components::AIController, indie::components::PlayerController>();
-    std::sort(players.begin(), players.end(), [&playerPos](jf::entities::EntityHandler playerA, jf::entities::EntityHandler playerB){
-        return (playerA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
-(playerB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
-    });
     //get bomb pos;
 
     //bomb first; with SURVIVE STATE;
