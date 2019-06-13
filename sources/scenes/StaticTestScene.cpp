@@ -11,6 +11,8 @@
 #include "components/GUI/Button.hpp"
 #include "components/GUI/Font.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
+#include "components/BoxCollider.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
 #include "scenes/StaticTestScene.hpp"
 #include "components/Material.hpp"
 #include "components/Camera.hpp"
@@ -40,22 +42,10 @@ void indie::scenes::StaticTestScene::onStart()
     cameraControler->setYRotationAxis("yRotAxis");
     cameraControler->setRotationSpeed(100);
 
-    auto cubeEntity = ecs.entityManager.createEntity("item");
-    auto tr2 = cubeEntity->assignComponent<indie::components::Transform>();
-    cubeEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D>({0.5f, 0.5f, 0.5f});
-    tr2->setPosition({10, 1, 0});
-    tr2->setScale({8, 8, 8});
-    cubeEntity->assignComponent<indie::components::Rotator, indie::maths::Vector3D>({0, 90, 0});
-    cubeEntity->assignComponent<indie::components::Hoverer, indie::maths::Vector3D, indie::maths::Vector3D>({0, 1, 0}, {0, 1, 0});
-    cubeEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/cube.obj");
-    auto mat = cubeEntity->assignComponent<indie::components::Material, std::string>("../test_assets/cube_texture.png");
-    mat->setMaterialFlag(irr::video::EMF_BILINEAR_FILTER, false);
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
     playerTr->setScale({8, 8, 8});
-    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, UNBREAKABLE_BLOCK_LAYER | BREAKABLE_BLOCK_LAYER | BOMB_LAYER);
+    playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P1_LAYER);
     auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
     auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -69,7 +59,6 @@ void indie::scenes::StaticTestScene::onStart()
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
     });
     auto playerControler = playerEntity->assignComponent<indie::components::PlayerController, indie::components::PlayerController::PlayerControllerSettings>({"xAxis", "zAxis", "taunt", "bomb"});
-    playerControler->setMovementSpeed(50.0f);
     auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
@@ -109,6 +98,14 @@ void indie::scenes::StaticTestScene::onStart()
         ECSWrapper ecs;
         if (e.wasPressed) {
             ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
+        }
+    });
+    _listeners.emplace_back(id);
+
+    id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB}));
         }
     });
     _listeners.emplace_back(id);

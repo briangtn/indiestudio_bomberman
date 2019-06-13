@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include "systems/TauntSystem.hpp"
+#include "systems/TauntSystem.hpp"
+#include "systems/BonusSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/PlayerConfigScene.hpp"
@@ -20,6 +22,9 @@
 #include "input/InputManager.hpp"
 #include "events/IrrlichtKeyJustChangedEvent.hpp"
 #include "parser/Parser.hpp"
+#include "systems/BombManagerSystem.hpp"
+#include "systems/DestroyOnTimeSystem.hpp"
+#include "components/Bomb.hpp"
 
 int runBomberman()
 {
@@ -30,6 +35,9 @@ int runBomberman()
     indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
+
+    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
+    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
@@ -43,6 +51,11 @@ int runBomberman()
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
+    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
+    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
+    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
 
     indie::scenes::SceneManager::changeScene("mainMenu");
 
@@ -58,11 +71,25 @@ int runBomberman()
 		}
 	});
     listeners.push_back(id);
+    /* press for bomb */
+
+    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [ecs](void *null, auto b) {
+        if (b.wasPressed) {
+            auto player = ecs.entityManager.getEntityByName("player");
+
+            ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(player);
+        }
+    });
+
+
+
+    /* press for bomb */
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isWindowOpen()) {
         ecs.systemManager.tick();
+        ecs.entityManager.applySafeDelete();
         indie::scenes::SceneManager::triggerSafeFunctions();
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {

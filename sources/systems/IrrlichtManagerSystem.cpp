@@ -24,6 +24,7 @@
 #include "components/GUI/Font.hpp"
 #include "components/GUI/Image.hpp"
 #include "components/Transform.hpp"
+#include "components/SoundComponent.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"

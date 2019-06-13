@@ -7,6 +7,7 @@
 
 /* Created the 13/05/2019 at 19:00 by jbulteau */
 
+#include <iomanip>
 #include "components/SoundComponent.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -181,4 +182,16 @@ void indie::components::SoundComponent::setVelocity(const indie::maths::Vector3D
     if (_sound && _spatialization) {
         _sound->setVelocity(irrklang::vec3df(velocity.x, velocity.y, velocity.z));
     }
+}
+
+indie::components::SoundComponent &indie::components::SoundComponent::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Sound">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _sourceFile << R"("/>)" << std::endl;
+    file << R"(            <argument name="type" value=")" << ((_soundType == MUSIC) ? "MUSIC" : "EFFECT") << R"("/>)" << std::endl;
+    if (_spatialization) {
+        file << R"(            <argument name="position" value=")" << _position << R"("/>)" << std::endl;
+    }
+    file << "        </component>" << std::endl;
+    return *this;
 }
