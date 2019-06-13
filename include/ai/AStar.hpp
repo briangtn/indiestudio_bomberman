@@ -66,6 +66,8 @@ namespace indie {
             static int getDistance(const Node &nodeA, const Node &nodeB);
             static std::stack<Node> traceBackPath(Node &endNode);
         };
+
+        AStar::Node::position get2DPositionFromWorldPos(const maths::Vector3D &worldPos);
     }
 }
 
