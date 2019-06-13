@@ -225,6 +225,7 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
         return; // TODO THROW EXCEPTION
     auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(soundPath, components::SoundComponent::SoundType::EFFECT);
     soundBomb->setIsPaused(false);
+    componentMusic->assignComponent<components::DestroyOnTime>();
 }
 
 void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberBombPlace,const indie::components::PlayerType &newPlayerType)

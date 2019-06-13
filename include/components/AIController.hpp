@@ -84,6 +84,8 @@ namespace indie {
                 PlayerType _playerType;
 
                 float _movementSpeed;
+
+                jf::internal::ID _endAnimationListenerEventId;
         };
     }
 }
