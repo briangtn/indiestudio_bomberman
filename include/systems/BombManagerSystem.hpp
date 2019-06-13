@@ -80,6 +80,9 @@ namespace indie {
 
             protected:
             private:
+
+            /* Map For Stock The Number Of Bomb Place By A PLayer */
+
             std::map<components::PlayerType, unsigned int> _numberBombPlace;
         };
     }

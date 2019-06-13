@@ -8,6 +8,7 @@
 #include "systems/BombManagerSystem.hpp"
 #include "components/AIController.hpp"
 #include "input/InputManager.hpp"
+#include "exceptions/BombException.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -192,9 +193,8 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
-    else {
-        std::cout << "throw error : unknown type bomb" << std::endl;
-    }
+    else
+        throw indie::exceptions::BombException("Unknown Type Bomb.", "indie::systems::BombManagerSystem::DisplayParticle");
 }
 
 void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::BombType typeBomb, bool &pass)
@@ -217,12 +217,10 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
     else if (typeBomb == 4) {
         soundPath = "../Sound/BombSound/ExplosionSoundLoveBomb.ogg";
     }
-    else {
-        //TODO CREATE EXCEPTION
-        std::cout << "throw error : unknown type bomb" << std::endl;
-    }
+    else
+        throw indie::exceptions::BombException("Unknow Type Bomb.", "indie::systems::BombManagerSystem::playSoundExplosion");
     if (soundPath == "")
-        return; // TODO THROW EXCEPTION
+        throw indie::exceptions::BombException("Unknow sound Path.", "indie::systems::BombManagerSystem::playSoundExplosion");
     auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(soundPath, components::SoundComponent::SoundType::EFFECT);
     soundBomb->setIsPaused(false);
     componentMusic->assignComponent<components::DestroyOnTime>();
@@ -266,6 +264,10 @@ void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentH
     indie::maths::Vector3D initialVect = {bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z};
     indie::maths::Vector3D vect = initialVect;
 
+
+    /* check pos bomb side */
+
+    checkIsCollide(initialVect);
 
     /* check in right side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
@@ -342,6 +344,8 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
 
     indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
 
+    int ret = 0;
+
     for (auto &entity : entitiesWithCollider) {
 
         auto collider = entity->getComponent<components::BoxCollider>();
@@ -361,22 +365,23 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))) {
-                return 1;
+            if ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))
+                ret = ret != 1 ? 1 : ret;
+            else if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))) {
+                collider->getEntity()->getComponent<indie::components::Bomb>()->setTimeBeforeExplose(0);
+                ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({position, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
-                return 2;
+                ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & PLAYER_LAYER)) {
                 std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
-                return 0;
             } else {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
-                return 0;
             }
         }
     }
-    return 0;
+    return ret;
 }
 
 bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D vect)
@@ -411,6 +416,8 @@ bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D ve
 
         if (obb.collides(hitBoxOBB)) {
             if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
+                return false;
+            else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER))
                 return false;
         }
     }
