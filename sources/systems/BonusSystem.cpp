@@ -158,10 +158,10 @@ bool indie::systems::BonusSystem::SpeedUpAffector(
 {
     auto pc = affectTo->getComponent<components::PlayerController>();
     auto aic = affectTo->getComponent<components::AIController>();
-    if (pc.isValid()) {
+    if (pc.isValid() && pc->getMovementSpeed() < _maxSpeed) {
         pc->setMovementSpeed(pc->getMovementSpeed() + _speedAdded);
         return true;
-    } else if (aic.isValid()) {
+    } else if (aic.isValid() && aic->getMovementSpeed() < _maxSpeed) {
         aic->setMovementSpeed(aic->getMovementSpeed() + _speedAdded);
         return true;
     }
