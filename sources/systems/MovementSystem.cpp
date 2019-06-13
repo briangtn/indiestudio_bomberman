@@ -126,13 +126,13 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
             }
 
             auto playerCollider = entity->getComponent<components::BoxCollider>();
-            bool disableBombLayer = false;
+            jf::internal::ID disabledBomb;
             if (playerCollider.isValid()) {
                 auto collisions = playerCollider->getCollisions();
                 for (auto &collision : collisions) {
                     auto collider = collision->getComponent<components::BoxCollider>();
                     if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) {
-                        disableBombLayer = true;
+                        disabledBomb = collision->getID();
                         break;
                     }
                 }
@@ -203,8 +203,7 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
                 auto collisions = playerCollider->getCollisions();
                 bool hasCollisions = false;
                 for (auto &collision : collisions) {
-                    auto collider = collision->getComponent<components::BoxCollider>();
-                    hasCollisions = hasCollisions || (collider->getLayer() & ~BOMB_LAYER) || ((collider->getLayer() & BOMB_LAYER) && !disableBombLayer);
+                    hasCollisions = hasCollisions || collision->getID() != disabledBomb;
                     if (hasCollisions)
                         break;
                 }
