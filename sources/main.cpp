@@ -14,6 +14,7 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/PlayerConfigScene.hpp"
 #include "scenes/ControllerConfigScene.hpp"
+#include "scenes/NewGameScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -24,6 +25,7 @@
 #include "systems/BombManagerSystem.hpp"
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
+#include "systems/LiveSystem.hpp"
 
 int runBomberman()
 {
@@ -52,6 +54,7 @@ int runBomberman()
 
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
+    indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
 
     ecs.systemManager.addSystem<indie::systems::BonusSystem>();
     ecs.systemManager.startSystem<indie::systems::BonusSystem>();
@@ -61,6 +64,9 @@ int runBomberman()
 
     ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
+
+    ecs.systemManager.addSystem<indie::systems::LiveSystem>();
+    ecs.systemManager.startSystem<indie::systems::LiveSystem>();
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
@@ -74,6 +80,13 @@ int runBomberman()
     auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
             indie::scenes::SceneManager::changeScene("mainMenu");
+    });
+
+    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
+        ECSWrapper ecs;
+        if (e.wasPressed) {
+            indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+        }
     });
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||

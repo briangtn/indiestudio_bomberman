@@ -10,6 +10,7 @@
 #ifndef INDIESTUDIO_MOVEMENTSYSTEM_HPP
 #define INDIESTUDIO_MOVEMENTSYSTEM_HPP
 
+#include "components/Transform.hpp"
 #include "System.hpp"
 #include "ai/AiView.hpp"
 #include "components/MoveToTarget.hpp"

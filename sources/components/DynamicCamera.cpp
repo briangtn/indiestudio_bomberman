@@ -11,7 +11,7 @@
 #include "components/DynamicCamera.hpp"
 
 indie::components::DynamicCamera::DynamicCamera(jf::entities::Entity &entity)
-    : Component(entity), _movementSpeed(25.0f), _blockBorders(2)
+    : Component(entity), _movementSpeed(30.0f), _blockBorders(2)
 {
     EMIT_CREATE(DynamicCamera);
 }

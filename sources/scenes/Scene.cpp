@@ -105,14 +105,6 @@ void indie::scenes::Scene::onStart()
         auto mapHeight = 15;
         indie::Map::generateMap(mapWidth, mapHeight, 421, false);
 
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
-            }
-        });
-        _listeners.emplace_back(id);
-
         id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(nullptr, [mapWidth, mapHeight](void *n, auto e) {
             ECSWrapper ecs;
             if (e.wasPressed) {
@@ -162,7 +154,10 @@ void indie::scenes::Scene::onStart()
 
 void indie::scenes::Scene::onStop()
 {
-    save(false, false);
+
+    if (_fileName != "mainMenu.xml") {
+        save(false, false);
+    }
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);

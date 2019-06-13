@@ -90,7 +90,7 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        indie::scenes::SceneManager::safeChangeScene("test");
+        indie::scenes::SceneManager::safeChangeScene("newGameScene");
     });
 
     for (unsigned int i = 1; i <= 4; i++)
