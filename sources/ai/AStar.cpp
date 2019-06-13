@@ -190,5 +190,5 @@ std::stack<indie::ai::AStar::Node> indie::ai::AStar::traceBackPath(indie::ai::AS
 
 indie::ai::AStar::Node::position indie::ai::get2DPositionFromWorldPos(const indie::maths::Vector3D &worldPos)
 {
-    return {static_cast<int>(std::round(worldPos.x / 10.0f)), static_cast<int>(std::round(worldPos.z / 10.0f))};
+    return {static_cast<int>(std::round(worldPos.x / 10.0f)), -static_cast<int>(std::round(worldPos.z / 10.0f))};
 }
