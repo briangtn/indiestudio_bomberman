@@ -40,7 +40,10 @@ namespace indie {
                 void setNeedToUseBomb(bool assign);
                 void setLastState(state assign);
                 void setPreviousPos(std::pair<int, int>assign);
+                void setFullNodePath(std::stack<ai::AStar::Node> fullPath);
+                void setHasTarget(bool assign);
 
+                std::stack<ai::AStar::Node> getFullNodePath() const;
                 std::pair<int, int> getPreviousPos() const;
                 bool getIsTaunting() const;
                 bool getIsPlacingBomb() const;
@@ -49,6 +52,7 @@ namespace indie {
                 state getLastState() const;
                 bool getNeedToTaunt() const;
                 bool getNeedToUseBomb() const;
+                bool getHasTarget() const;
 
                 int getBombForce() const;
                 void setBombForce(int bombForce);
@@ -69,6 +73,7 @@ namespace indie {
                 bool _needToTaunt;
                 bool _isPlacingBomb;
                 bool _needToUseBomb;
+                bool _hasTarget;
                 state _state;
                 state _lastState;
                 std::stack<ai::AStar::Node> _fullNodePath;

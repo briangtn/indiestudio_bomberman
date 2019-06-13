@@ -45,10 +45,11 @@ namespace indie {
                 static void focusLogic();
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
-                                        jf::entities::EntityHandler &bonuses);
+                                        jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity);
                 static void searchLogic();
 
-                static void findNewTarget();
+                static void askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                          jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler entity);
                 static bool hasMoved(jf::entities::EntityHandler entity, 
                     jf::components::ComponentHandler<indie::components::AIController> component);
 
