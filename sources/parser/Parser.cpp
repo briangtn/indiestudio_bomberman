@@ -1010,11 +1010,14 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                             callingMethod);
                 }
                 std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
-                value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
                 if (value.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
                             callingMethod);
+                }
+                std::string trimmed = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"trimmed")).c_str()).c_str();
+                if (trimmed.empty() || getBool(trimmed, fileName, line)) {
+                    value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
                 }
                 if (!args.at(name).empty()) {
                     throw exceptions::ParserInvalidFileException(
