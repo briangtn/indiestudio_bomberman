@@ -7,6 +7,7 @@
 
 /* Created the 21/05/2019 at 21:06 by brian */
 
+#include <iostream>
 #include "exceptions/InputManagerException.hpp"
 
 indie::InputManagerException::InputManagerException(const std::string &what)
@@ -57,7 +58,6 @@ std::string indie::InvalidAxisType::getAxisTypeName()
 indie::KeyNotFoundException::KeyNotFoundException(const std::string &inputName)
     : InputManagerException("Key not found."), _inputName(inputName)
 {
-
 }
 
 std::string indie::KeyNotFoundException::getName() const
@@ -68,7 +68,6 @@ std::string indie::KeyNotFoundException::getName() const
 indie::KeyAlreadyExistException::KeyAlreadyExistException(const std::string &inputName)
     : InputManagerException("Key already exist."), _inputName(inputName)
 {
-
 }
 
 std::string indie::KeyAlreadyExistException::getName() const

@@ -14,6 +14,7 @@
 #include <vector>
 #include "IScene.hpp"
 #include "ID.hpp"
+#include "input/Controller.hpp"
 #include "EntityHandler.hpp"
 
 namespace indie {

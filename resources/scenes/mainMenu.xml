@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<scene>
+    <entity name="camera">
+        <component type="Transform">
+            <argument name="position" value="0, 0, 0"/>
+            <argument name="rotation" value="0,0,0"/>
+        </component>
+        <component type="Camera">
+        </component>
+    </entity>
+    <entity name="backgroundImage">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="../background.png"/>
+        </component>
+    </entity>
+
+    <entity name="mainText">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="scale" value="1280,720,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="THE BOMBERMAN"/>
+            <argument name="color" value="255, 255, 0, 0"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
+        </component>
+    </entity>
+    <entity name="startButton">
+        <component type="Transform">
+            <argument name="position" value="365,270,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="500,80,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="Start game"/>
+            <argument name="textureFileName" value="../button.png"/>
+            <argument name="id" value="1"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
+        </component>
+    </entity>
+    <entity name="closeButton">
+        <component type="Transform">
+            <argument name="position" value="365,370,0"/> <!-- (720 / 2) + 10 -->
+            <argument name="scale" value="500,80,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="Close window"/>
+            <argument name="textureFileName" value="../button.png"/>
+            <argument name="id" value="2"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="../bigfont.png"/>
+        </component>
+    </entity>
+</scene>

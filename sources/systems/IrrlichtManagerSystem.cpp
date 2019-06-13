@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
+#include <algorithm>
 #include "maths/Vectors.hpp"
 #include "maths/Matrices.hpp"
 #include "maths/Geometry3D.hpp"
@@ -18,6 +19,10 @@
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "events/IrrlichtMouseInputEvent.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
+#include "components/GUI/Button.hpp"
+#include "components/GUI/Text.hpp"
+#include "components/GUI/Font.hpp"
+#include "components/GUI/Image.hpp"
 #include "components/Transform.hpp"
 #include "components/SoundComponent.hpp"
 #include "Entity.hpp"
@@ -43,7 +48,7 @@ indie::systems::IrrlichtManagerSystem::IrrlichtManagerSystem()
       _fullscreenEnabled(false),
       _vsyncEnabled(false),
       _windowCaption("Irrlicht window"),
-      _windowDimension(800, 600),
+      _windowDimension(1280, 720),
       _needToReload(false)
 {
 }
@@ -96,6 +101,24 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
     }
+
+    //ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
+    auto imagesEntities = ecs.entityManager.getEntitiesWith<components::Transform, components::Image>();
+    std::sort(imagesEntities.begin(), imagesEntities.end(), [](jf::entities::EntityHandler a, jf::entities::EntityHandler b){
+        auto aTr = a->getComponent<components::Transform>();
+        auto bTr = b->getComponent<components::Transform>();
+
+        return (aTr->getPosition().z < bTr->getPosition().z);
+    });
+    std::for_each(imagesEntities.begin(), imagesEntities.end(), [](jf::entities::EntityHandler entity){
+        auto tr = entity->getComponent<components::Transform>();
+        auto image = entity->getComponent<components::Image>();
+
+        drawImage(entity, tr, image);
+    });
+
+    ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
+    ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
     _sceneManager->drawAll();
     _guiEnvironment->drawAll();
@@ -165,6 +188,11 @@ irr::scene::ISceneManager *indie::systems::IrrlichtManagerSystem::getSceneManage
 irr::video::IVideoDriver *indie::systems::IrrlichtManagerSystem::getVideoDriver()
 {
     return _driver;
+}
+
+irr::gui::IGUIEnvironment *indie::systems::IrrlichtManagerSystem::getGUIEnvironment()
+{
+    return _guiEnvironment;
 }
 
 irr::IrrlichtDevice* indie::systems::IrrlichtManagerSystem::getDevice()
@@ -505,6 +533,112 @@ bool indie::systems::IrrlichtManagerSystem::getDrawGizmos()
     return _drawGizmos;
 }
 
+void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandler entity,
+                                                       jf::components::ComponentHandler<components::Transform> tr,
+                                                       jf::components::ComponentHandler<components::Button> button)
+{
+    ECSWrapper ecs;
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+    auto pos = tr->getPosition();
+    auto scale = tr->getScale();
+    auto font = entity->getComponent<components::Font>();
+    irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
+    irr::gui::IGUIButton *buttonNode = nullptr;
+    std::wstring wideString = std::wstring(button->getText().begin(), button->getText().end());
+    const wchar_t *text = wideString.c_str();
+
+    if (!button->isInit()) {
+        buttonNode = env->addButton(rect, nullptr, button->getId(), text);
+        button->setButtonNode(buttonNode);
+    }
+    if (button->isTextureNeedInit())
+        button->setTextureNode(driver->getTexture(button->getTexturePath().c_str()));
+    buttonNode = button->getButtonNode();
+    buttonNode->setText(text);
+    buttonNode->setRelativePosition(rect);
+    buttonNode->setID(button->getId());
+    buttonNode->setVisible(button->isVisible());
+    if (button->getTextureNode() != nullptr)
+        buttonNode->setImage(button->getTextureNode());
+    if (font.isValid()) {
+        if (!font->isInit()) {
+            font->setFontNode(env->getFont(font->getPath().c_str()));
+        }
+        buttonNode->setOverrideFont(font->getFontNode());
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler entity,
+                                                     jf::components::ComponentHandler<indie::components::Transform> tr,
+                                                     jf::components::ComponentHandler<indie::components::Text> text)
+{
+    ECSWrapper ecs;
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto pos = tr->getPosition();
+    auto scale = tr->getScale();
+    auto font = entity->getComponent<components::Font>();
+    irr::core::rect<irr::s32> rect = irr::core::rect<irr::s32>(pos.x, pos.y, pos.x + scale.x, pos.y + scale.y);
+    irr::gui::IGUIStaticText *textNode = nullptr;
+    std::wstring wideString = std::wstring(text->getText().begin(), text->getText().end());
+    const wchar_t *textStr = wideString.c_str();
+
+    if (!text->isInit()) {
+        textNode = env->addStaticText(textStr, rect, false, true, nullptr, text->getId());
+        text->setTextNode(textNode);
+    }
+    textNode = text->getTextNode();
+    textNode->setText(textStr);
+    textNode->setRelativePosition(rect);
+    textNode->setID(text->getId());
+    textNode->setTextAlignment(static_cast<irr::gui::EGUI_ALIGNMENT>(text->getHorizontalAlignement()), static_cast<irr::gui::EGUI_ALIGNMENT>(text->getVerticalAlignement()));
+    textNode->setOverrideColor(text->getColor());
+    textNode->setBackgroundColor(text->getBackgroundColor());
+    textNode->setDrawBackground(true);
+    textNode->setVisible(text->isVisible());
+    if (font.isValid()) {
+        if (!font->isInit()) {
+            font->setFontNode(env->getFont(font->getPath().c_str()));
+        }
+        textNode->setOverrideFont(font->getFontNode());
+    }
+}
+
+void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandler entity,
+                                                      jf::components::ComponentHandler<indie::components::Transform> tr,
+                                                      jf::components::ComponentHandler<indie::components::Image> image)
+{
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+    auto env = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getGUIEnvironment();
+    auto pos = tr->getPosition();
+    irr::core::position2d<irr::s32> irrPos = irr::core::position2d<irr::s32>(pos.x, pos.y);
+    irr::video::ITexture *textureNode = nullptr;
+
+    if (image->isWaitReload()) {
+        image->setTextureNode(nullptr);
+        if (image->isImageInit()) {
+            image->getImageNode()->remove();
+            image->setImageNode(nullptr);
+        }
+    }
+    if (!image->isTextureInit()) {
+        textureNode = driver->getTexture(image->getPath().c_str());
+        driver->makeColorKeyTexture(textureNode, irr::core::position2d<irr::s32>(0, 0));
+        image->setTextureNode(textureNode);
+    }
+    if (image->isTextureInit() && !image->isImageInit()) {
+        textureNode = image->getTextureNode();
+        image->setImageNode(env->addImage(textureNode, irrPos, false));
+        image->getImageNode()->setUseAlphaChannel(image->isUseAlpha());
+    }
+    if (image->getImageNode() != nullptr) {
+        image->getImageNode()->setID(image->getId());
+        image->getImageNode()->setVisible(image->isVisible());
+    }
+}
+
+
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {
     switch (event.EventType) {
@@ -536,6 +670,28 @@ void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendGUIEvent(
 {
     ECSWrapper ecs;
     ecs.eventManager.emit(events::IrrlichtGUIEvent({event.GUIEvent}));
+    if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnClicked() != nullptr)
+                    button->getOnClicked()(button.get());
+            }
+        });
+    } else if (event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnHovered() != nullptr)
+                    button->getOnHovered()(button.get(), true);
+            }
+        });
+    } else if (event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
+        ecs.entityManager.applyToEach<components::Button>([event](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Button> button){
+            if (button->getId() == event.GUIEvent.Caller->getID()) {
+                if (button->getOnHovered() != nullptr)
+                    button->getOnHovered()(button.get(), false);
+            }
+        });
+    }
 }
 
 void indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::sendMouseInputEvent(const irr::SEvent &event)

@@ -108,5 +108,24 @@
             <argument name="rotation" value="0,0,0"/>
             <argument name="scale" value="0,0,0"/>
         </component>
+        <component type="Button">
+            <argument name="text" value="I'm a button"/>
+            <argument name="id" value="1"/>
+            <argument name="textureFileName" value="path/to/background"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="I'm a text"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+            <argument name="verticalAlignement" value="BOTTOM"/>
+            <argument name="color" value="255,255,0,0"/>
+            <argument name="backgroundColor" value="255,0,255,0"/>
+            <argument name="id" value="2"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="path/to/font"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="path/to/image"/>
+        </component>
     </entity>
 </scene>

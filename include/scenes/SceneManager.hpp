@@ -25,6 +25,7 @@ namespace indie {
 
         public:
             static void addScenes(const std::vector<std::pair<std::string, IScene *>> &scenes);
+            static void addSingleScene(const std::string &name, IScene *scene);
             static void changeScene(const std::string &sceneName);
             static void safeChangeScene(const std::string &sceneName);
             static void triggerSafeFunctions();
