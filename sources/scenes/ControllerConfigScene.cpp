@@ -299,6 +299,7 @@ void indie::scenes::ControllerConfigScene::bomb()
 void indie::scenes::ControllerConfigScene::end()
 {
     step = END;
+    removeListeners();
     SceneManager::safeChangeScene("playerConfig");
 }
 
