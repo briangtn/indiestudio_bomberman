@@ -84,8 +84,10 @@ irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::str
 
 void indie::systems::IrrklangAudioSystem::removeSound(jf::components::ComponentHandler<components::SoundComponent> component)
 {
-    if (component->getSound() != nullptr)
+    if (component->getSound() != nullptr) {
+        component->getSound()->stop();
         component->getSound()->drop();
+    }
     component->setSound(nullptr);
 }
 
