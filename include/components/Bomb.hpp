@@ -57,7 +57,7 @@ namespace indie {
             /* Set & Get TimeBeforeExplose */
 
             float getTimeBeforeExplose() const;
-            void setTimeBeforeExplose(const int &newTimeBeforeExplose);
+            void setTimeBeforeExplose(const float &newTimeBeforeExplose);
 
             /* Set & Get BombType */
 

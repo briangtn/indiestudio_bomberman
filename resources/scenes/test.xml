@@ -113,7 +113,7 @@
         <component type="BoxCollider">
             <argument name="size" value="0.25,0.5,0.25"/>
             <argument name="offset" value="0,5,0"/>
-            <argument name="layer" value="0x7"/>
+            <argument name="layer" value="0x1007"/>
         </component>
         <component type="Mesh">
             <argument name="fileName" value="../test_assets/Players/player.b3d"/>

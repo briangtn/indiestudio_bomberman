@@ -33,9 +33,10 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     ECSWrapper ecs;
     std::vector<jf::internal::ID> toDelete;
     static bool pass = true;
+    float elapsedTimeAsSeconds = elapsedTime.count() / 1000000000.0f;
 
     ecs.entityManager.applyToEach<components::Bomb>(
-    [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
+    [&elapsedTimeAsSeconds, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplose() <= 0) {
             if (pass == true) {
@@ -47,7 +48,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
             this->shakeBomb(bomb);
-            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
+            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTimeAsSeconds);
         }
         });
     pass = true;
@@ -76,8 +77,7 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
-    std::cout << "bombe position = " << " x = " << bombTr->getPosition().x << " y = " << bombTr->getPosition().y << " z = " << bombTr->getPosition().z << std::endl;
-    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(playerController->getBombForce(), 50, indie::components::NORMAL, playerController->getPlayerType());
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(playerController->getBombForce(), 3, indie::components::NORMAL, playerController->getPlayerType());
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
     auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
     bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
@@ -216,19 +216,7 @@ void indie::systems::BombManagerSystem::removeBombPlace(indie::components::Playe
 
 void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandler<indie::components::Bomb> bomb)
 {
-    ECSWrapper ecs;
-    int time = 0;
 
-    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
-    time = bomb->getTimeBeforeExplose();
-    if (time % 5 == 0 && time > 15)
-        bombTr->setScale({7, 7, 7});
-    else if (time > 15)
-        bombTr->setScale({8, 8, 8});
-    if (time <= 15 && time % 2 == 0)
-        bombTr->setScale({7, 7, 7});
-    else if (time <= 15)
-        bombTr->setScale({8, 8, 8});
 }
 
 void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb)
@@ -308,7 +296,7 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
     auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
 
     indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
-    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D scaleHitBox = {2, 2, 2};
     indie::maths::Vector3D rotationHitBox = {0, 0, 0};
 
     indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
@@ -336,14 +324,12 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
                 return 1;
             } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
-                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
+                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({position, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 return 2;
-            }
-            else if ((collider->getLayer() & PLAYER_LAYER)) {
+            } else if ((collider->getLayer() & PLAYER_LAYER)) {
                 std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
                 return 0;
-            }
-            else {
+            } else {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 return 0;
             }
