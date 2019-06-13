@@ -29,6 +29,7 @@
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
 #include "components/DynamicCamera.hpp"
+#include "components/PlayerAlive.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -98,6 +99,7 @@ indie::Parser::Parser()
         {(L"DynamicCamera"), &createDynamicCamera},
         {(L"Hoverer"), &createHoverer},
         {(L"Particle"), &createParticle},
+        {(L"PlayerAlive"), &createPlayerAlive},
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
@@ -726,6 +728,19 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
     }
     if (!args["fadeTime"].empty()) {
         component->setFadeTime(std::stoi(args["fadeTime"]));
+    }
+}
+
+void indie::Parser::createPlayerAlive(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+        {"lives", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPlayerController");
+    auto component = entity->assignComponent<components::PlayerAlive>();
+    if (!args["lives"].empty()) {
+        component->setLives(std::atoi(args["lives"].c_str()));
     }
 }
 

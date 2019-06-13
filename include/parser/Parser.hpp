@@ -77,6 +77,8 @@ namespace indie {
                                        const std::string &fileName, unsigned int &line);
         static void createParticle(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
+        static void createPlayerAlive(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
         static void createPlayerController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                            const std::string &fileName, unsigned int &line);
         static void createRotator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
