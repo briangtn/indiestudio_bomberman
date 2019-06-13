@@ -21,6 +21,8 @@ namespace indie {
             explicit Image(jf::entities::Entity &entity, const std::string &path, int id = -1);
             ~Image();
 
+            Image &operator>>(std::ostream &file);
+
             const std::string &getPath() const;
             void setPath(const std::string &path);
 

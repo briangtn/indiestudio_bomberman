@@ -644,22 +644,6 @@ void indie::Parser::createButton(jf::entities::EntityHandler &entity, irr::io::I
         component->setTexturePath(args["textureFileName"]);
 }
 
-void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                               const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-
-    std::map<std::string, std::string> args = {
-            {"fileName", ""},
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
-    if (args["fileName"].empty()) {
-        throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
-    }
-    auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
-}
-
 void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
@@ -687,6 +671,22 @@ void indie::Parser::createDestroy(jf::entities::EntityHandler &entity, irr::io::
     } else {
         entity->assignComponent<components::DestroyOnTime>(std::stof(args["time"]));
     }
+}
+
+void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
+    }
+    auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
 }
 
 void indie::Parser::createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -1077,8 +1077,6 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
 void indie::Parser::createText(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
-
     std::map<std::string, std::string> args = {
             {"text", ""},
             {"horizontalAlignement", ""},
