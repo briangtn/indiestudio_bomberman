@@ -21,22 +21,29 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
       _state(UNKNOWN),
       _lastState(UNKNOWN),
       _fullNodePath(),
-      _movementSpeed(30)
+      _movementSpeed(30),
+      _bombForce(2),
+      _maxBomb(3),
+      _playerType(P1)
 {
     ECSWrapper ecs;
 
-    ecs.eventManager.addListener<void, events::IrrlichtAnimationEndEvent>(nullptr, [&](void *a, events::IrrlichtAnimationEndEvent e) {
-        if (getEntity()->getID() == e.entityId) {
+    _endAnimationListenerEventId = ecs.eventManager.addListener<AIController, events::IrrlichtAnimationEndEvent>(this, [](AIController *a, events::IrrlichtAnimationEndEvent e) {
+        if (a->getEntity()->getID() == e.entityId) {
             if (e.animationName == "taunt")
-                setIsTaunting(false);
+                a->setIsTaunting(false);
             else if (e.animationName == "place bomb")
-                setIsPlacingBombs(false);
+                a->setIsPlacingBombs(false);
         }      
     });
+    EMIT_CREATE(AIController);
 }
 
 indie::components::AIController::~AIController()
 {
+    EMIT_DELETE(AIController);
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_endAnimationListenerEventId);
 }
 
 void indie::components::AIController::setTargetVector(indie::maths::Vector3D assign)
