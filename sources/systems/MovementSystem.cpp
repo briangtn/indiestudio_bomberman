@@ -23,6 +23,8 @@
 #include "components/Animator.hpp"
 #include "components/AIController.hpp"
 #include "components/DynamicCamera.hpp"
+#include <cfloat>
+#include <limits>
 
 indie::systems::MovementSystem::MovementSystem(): _mapSize(), _viewGridCache(), _pathsCache(), _timeBeforeCacheComputation(recomputeCacheDeltaTime)
 {
@@ -256,8 +258,8 @@ void indie::systems::MovementSystem::updateDynamicCameras(const std::chrono::nan
         trs.push_front(player->getComponent<components::Transform>());
     for (auto &bot : bots)
         trs.push_front(bot->getComponent<components::Transform>());
-    maths::Vector3D minTr(MAXFLOAT, MAXFLOAT, MAXFLOAT);
-    maths::Vector3D maxTr(-MAXFLOAT, -MAXFLOAT, -MAXFLOAT);
+    maths::Vector3D minTr(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
+    maths::Vector3D maxTr(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     for (auto &tr : trs) {
         auto trPos = tr->getPosition();
         if (trPos.x < minTr.x)
