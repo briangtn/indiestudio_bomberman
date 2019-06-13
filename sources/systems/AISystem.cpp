@@ -76,8 +76,9 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     jf::components::ComponentHandler<indie::components::AIController> component)
 {
     ECSWrapper ecs;
-    if (ecs.systemManager.getSystem<indie::systems::AISystem>().getTimePassed() < 500000000 || !hasMoved(entity, component))
+    if (ecs.systemManager.getSystem<indie::systems::AISystem>().getTimePassed() < 500000000 && !hasMoved(entity, component))
         return;
+    std::cout << "welcome\n";
     component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
                             ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
     ecs.systemManager.getSystem<indie::systems::AISystem>().setTimePassed(0);
@@ -104,7 +105,7 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     switch (component->getState()) {
         case indie::components::AIController::FOCUS : focusLogic();
         case indie::components::AIController::TAUNT : tauntLogic(component);
-        case indie::components::AIController::POWERUP : powerupLogic(component, bonuses.front());
+        case indie::components::AIController::POWERUP : powerupLogic(component, bonuses[0], entity);
         case indie::components::AIController::SEARCH : searchLogic();
     }
     if (component->getIsTaunting() || component->getIsPlacingBomb())
@@ -113,29 +114,37 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
 
 void indie::systems::AISystem::focusLogic()
 {
-
+    std::cout << "hello3\n";
 }
 
 void indie::systems::AISystem::tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component)
 {
+    std::cout << "hello2\n";
     component->setNeedToTaunt(true);
 }
 
-void indie::systems::AISystem::findNewTarget()
+void indie::systems::AISystem::askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component, 
+                                             jf::entities::EntityHandler &target, jf::entities::EntityHandler entity)
 {
-
+    jf::components::ComponentHandler<indie::components::MoveToTarget> moveComp = entity->getComponent<indie::components::MoveToTarget>();
+    moveComp->setSpeed(component->getMovementSpeed());
+    moveComp->setTarget(target->getComponent<indie::components::Transform>()->getPosition());
+    component->setHasTarget(true);
 }
 
 void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
-                                            jf::entities::EntityHandler &bonuses)
+                                            jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity)
 {
-    if (component->getState() != component->getLastState())
-        findNewTarget();
+    std::cout << "hello\n";
+    component->setFullNodePath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
+ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition())));
+    if (component->getState() != component->getLastState() || !component->getHasTarget())
+        askNewTarget(component, bonuses, entity);
 }
 
 void indie::systems::AISystem::searchLogic()
 {
-
+    std::cout << "hello\n";
 }
 
 void indie::systems::AISystem::chooseState(jf::components::ComponentHandler<indie::components::AIController> &component,
@@ -155,7 +164,7 @@ std::vector<jf::entities::EntityHandler> &players)
     if (!bombs.empty() && indanger())
         state = indie::components::AIController::SURVIVE;
     */
-    if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
+    /*if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::POWERUP;
     else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::FOCUS;
@@ -167,8 +176,10 @@ std::vector<jf::entities::EntityHandler> &players)
         state = indie::components::AIController::SEARCH;
 
     if (component->getState() != indie::components::AIController::POWERUP);
-        randomHandling(state, bonuses, players);
-    component->setState(state);
+        randomHandling(state, bonuses, players);*/
+    //component->setState(state);
+    if (!bonuses.empty())
+        component->setState(indie::components::AIController::POWERUP);
 }
 
 void indie::systems::AISystem::randomHandling(indie::components::AIController::state &state, 

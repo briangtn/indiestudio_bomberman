@@ -35,7 +35,7 @@
     </entity>
     <entity name="player">
         <component type="Transform">
-            <argument name="position" value="0,-5,0"/>
+            <argument name="position" value="140,-5,-140"/>
             <argument name="scale" value="8,8,8"/>
         </component>
         <component type="BoxCollider">
@@ -107,7 +107,7 @@
     </entity>
     <entity name="player2">
         <component type="Transform">
-            <argument name="position" value="140,-5,-140"/>
+            <argument name="position" value="0, -5, 0"/>
             <argument name="scale" value="8,8,8"/>
         </component>
         <component type="BoxCollider">
@@ -169,12 +169,12 @@
                 <argument name="loop" value="true"/>
             </animation>
         </component>
-        <component type="PlayerController">
-            <argument name="xMove" value="xAxis"/>
-            <argument name="zMove" value="zAxis"/>
-            <argument name="tauntButton" value="taunt"/>
-            <argument name="bombButton" value="bomb"/>
-            <argument name="moveSpeed" value="50"/>
+        <component type="AIController">
+        </component>
+        <component type="MoveToTarget">
+            <argument name="target" value="0, 0, 0"/>
+            <argument name="followTarget" value="true"/>
+            <argument name="speed" value="50"/>
         </component>
     </entity>
 </scene>

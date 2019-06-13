@@ -17,6 +17,7 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
       _needToTaunt(false),
       _isPlacingBomb(false),
       _needToUseBomb(false),
+      _hasTarget(false),
       _state(UNKNOWN),
       _lastState(UNKNOWN),
       _fullNodePath()
@@ -75,6 +76,26 @@ void indie::components::AIController::setLastState(indie::components::AIControll
 void indie::components::AIController::setPreviousPos(std::pair<int, int> assign)
 {
     _previousPos = assign;
+}
+
+void indie::components::AIController::setFullNodePath(std::stack<ai::AStar::Node> assign)
+{
+    _fullNodePath = assign;
+}
+
+void indie::components::AIController::setHasTarget(bool assign)
+{
+    _hasTarget = assign;
+}
+
+bool indie::components::AIController::getHasTarget() const
+{
+    return _hasTarget;
+}
+
+std::stack<indie::ai::AStar::Node> indie::components::AIController::getFullNodePath() const
+{
+    return _fullNodePath;
 }
 
 std::pair<int, int> indie::components::AIController::getPreviousPos() const

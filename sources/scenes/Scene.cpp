@@ -140,9 +140,9 @@ void indie::scenes::Scene::onStart()
 
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
-        if (e.wasPressed) {
-            ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB}));
-        }
+        //if (e.wasPressed) {
+        //    ecs.eventManager.emit(events::AskingForBonusSpawnEvent({{10, 1, 0}, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB}));
+        //}
     });
 
     _listeners.emplace_back(id);

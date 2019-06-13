@@ -40,6 +40,7 @@ int runBomberman()
     indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
     indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
 
+
     indie::InputManager::RegisterKey("taunt", 0, 1);
     indie::InputManager::RegisterKey("bomb", 0, 2);
 
@@ -53,6 +54,14 @@ int runBomberman()
             
     ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
+
+
+    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
+        if (e.wasPressed) {
+            ECSWrapper ecs;
+            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_SPEED_UP});
+        }
+    });
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
