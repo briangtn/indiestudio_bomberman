@@ -234,6 +234,9 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
             maths::Vector3D movementVector = (nextNode.toWorldPos() - tr->getPosition()).normalized();
 
             tr->setPosition(tr->getPosition() + movementVector * speed * elapsedTimeAsSeconds);
+            maths::Vector3D rot = tr->getRotation();
+            tr->lookAt(tr->getPosition() + movementVector);
+            tr->setRotation({rot.x, tr->getRotation().y, rot.z});
 
             if ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
                 path.pop();
