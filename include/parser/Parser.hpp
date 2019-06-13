@@ -44,11 +44,15 @@ namespace indie {
         void loadScene(const std::string &fileName);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &callingMethod,
-                                const std::string &node="component");
+                                const std::string &node = "component");
 
     private: /* SYSTEMS */
+        static void createBombManager(irr::io::IXMLReader *xmlReader, const std::string &fileName,
+                                      unsigned int &line);
         static void createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName,
                                 unsigned int &line);
+        static void createDestroyManager(irr::io::IXMLReader *xmlReader,
+                                         const std::string &fileName, unsigned int &line);
         static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,

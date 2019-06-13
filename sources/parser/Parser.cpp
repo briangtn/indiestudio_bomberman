@@ -27,6 +27,8 @@
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
 #include "systems/BonusSystem.hpp"
+#include "systems/BombManagerSystem.hpp"
+#include "systems/DestroyOnTimeSystem.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -91,7 +93,9 @@ indie::Parser::Parser()
     , _xmlReader(nullptr)
     , _scenes()
     , _systems({
+        {(L"BombManager"), &createBombManager},
         {(L"Bonus"), &createBonus},
+        {(L"DestroyManager"), &createDestroyManager},
         {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"IrrklangAudio"), &createIrrklangAudio},
         {(L"Movement"), &createMovement},
@@ -312,6 +316,16 @@ void indie::Parser::loadScene(const std::string &fileName)
     _xmlReader = nullptr;
 }
 
+void indie::Parser::createBombManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBombManager", "system");
+    ecs.systemManager.addSystem<systems::BombManagerSystem>();
+    ecs.systemManager.startSystem<systems::BombManagerSystem>();
+}
+
 void indie::Parser::createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
@@ -320,6 +334,16 @@ void indie::Parser::createBonus(irr::io::IXMLReader *xmlReader, const std::strin
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonus", "system");
     ecs.systemManager.addSystem<systems::BonusSystem>();
     ecs.systemManager.startSystem<systems::BonusSystem>();
+}
+
+void indie::Parser::createDestroyManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDestroyManager", "system");
+    ecs.systemManager.addSystem<systems::DestroyOnTimeSystem>();
+    ecs.systemManager.startSystem<systems::DestroyOnTimeSystem>();
 }
 
 void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)

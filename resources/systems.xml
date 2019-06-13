@@ -10,4 +10,8 @@
     </system>
     <system type="Bonus">
     </system>
+    <system type="BombManager">
+    </system>
+    <system type="DestroyManager">
+    </system>
 </ecs>

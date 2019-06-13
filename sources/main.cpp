@@ -65,11 +65,11 @@ int runBomberman()
 
 //    indie::scenes::SceneManager::addScenes(scenes);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
-    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
-    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
-            
-    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
-    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
+//    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
+//    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
+//
+//    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
+//    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
 
     //std::vector<std::pair<std::string, indie::scenes::IScene *>> scenes;
     //scenes.emplace_back("test", new indie::scenes::StaticTestScene());
