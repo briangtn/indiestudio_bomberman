@@ -416,6 +416,7 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
             {"loop",       ""},
             {"transition", ""}
     };
+    bool currentAnimation = false;
     std::string animationName;
     auto component = entity->assignComponent<components::Animator>();
     for (; xmlReader->read(); line++) {
@@ -447,6 +448,34 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
                     it.second = "";
                 }
                 animationName.clear();
+            } else if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string name = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                if (name.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'name' for node 'argument' at line " + std::to_string(line)
+                            + " in file " + fileName + ".", "indie::Parser::createAnimator");
+                } else if (name != "currentAnimation") {
+                    throw exceptions::ParserInvalidFileException(
+                            "Invalid attribute 'name' for node 'argument' at line " + std::to_string(line)
+                            + " in file " + fileName + ".", "indie::Parser::createAnimator");
+                }
+                if (currentAnimation) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Redefinition of 'currentAnimation' at line " + std::to_string(line) + " in file "
+                            + fileName + ".", "indie::Parser::createAnimator");
+                }
+                currentAnimation = true;
+                std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                if (value.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) +
+                            " in file " + fileName + ".", "indie::Parser::createAnimator");
+                }
+                std::string trimmed = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"trimmed")).c_str()).c_str();
+                if (trimmed.empty() || getBool(trimmed, fileName, line)) {
+                    value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
+                }
+                component->setCurrentAnimation(value);
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())

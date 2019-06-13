@@ -129,6 +129,7 @@ void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneN
 indie::components::Animator &indie::components::Animator::operator>>(std::ostream &file)
 {
     file << R"(        <component type="Animator">)" << std::endl;
+    file << R"(            <argument name="currentAnimation" value=")" << _currentAnimation << R"("/>)" << std::endl;
     for (auto &it : _animations) {
         file << it;
     }

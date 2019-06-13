@@ -2,6 +2,7 @@
 <scene>
     <entity name="testEntity">
         <component type="Animator">
+            <argument name="currentAnimation" value="currentAnimation"/>
             <animation name="animationName">
                 <argument name="start" value="0"/>
                 <argument name="end" value="1"/>
