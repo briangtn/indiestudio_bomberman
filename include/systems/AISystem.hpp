@@ -42,8 +42,12 @@ namespace indie {
                 static void randomHandling(indie::components::AIController::state &state,
                     std::vector<jf::entities::EntityHandler> bonuses, 
                     std::vector<jf::entities::EntityHandler> players);
-                static std::pair<bool, std::vector<int>> inDanger(std::vector<jf::entities::EntityHandler> bombs);
-                
+                static std::pair<bool, std::vector<int>> inDanger(std::vector<jf::entities::EntityHandler> bombs,
+                                                                  jf::entities::EntityHandler &entity);
+                static void checkPotentialDangerousBombs(std::vector<jf::entities::EntityHandler> &allCrates,
+                                                        std::vector<jf::entities::EntityHandler> &potentialDangerousBomb,
+                                                        maths::Vector3D playerPos);
+
                 static void focusLogic();
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,

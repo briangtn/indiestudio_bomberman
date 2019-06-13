@@ -160,12 +160,10 @@ std::vector<jf::entities::EntityHandler> &bombs)
     ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
 
-    //bomb first; with SURVIVE STATE;
     /*
-    if (!bombs.empty() && indanger())
+    if (!bombs.empty() && indanger(bombs, entity))
         state = indie::components::AIController::SURVIVE;
-    */
-    /*if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
+    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::POWERUP;
     else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::FOCUS;
@@ -185,9 +183,52 @@ std::vector<jf::entities::EntityHandler> &bombs)
         component->setState(indie::components::AIController::UNKNOWN);
 }
 
-std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger(std::vector<jf::entities::EntityHandler> bombs)
+std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger(std::vector<jf::entities::EntityHandler> bombs,
+                                                                    jf::entities::EntityHandler &entity)
 {
+    ECSWrapper ecs;
+    maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
 
+    auto breakableCrates = ecs.entityManager.getEntitiesByName("breakable wall");
+    auto unbreakableCrates = ecs.entityManager.getEntitiesByName("unbreakable wall");
+    
+    std::vector<jf::entities::EntityHandler> allCrates;
+    allCrates.reserve(breakableCrates.size() + unbreakableCrates.size());
+    allCrates.insert(allCrates.end(), breakableCrates.begin(), breakableCrates.end());
+    allCrates.insert(allCrates.end(), unbreakableCrates.begin(), unbreakableCrates.end());
+    std::sort(allCrates.begin(), allCrates.end(), [&playerPos](jf::entities::EntityHandler crateA, jf::entities::EntityHandler crateB){
+        return (crateA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
+(crateB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
+    });
+
+    std::vector<jf::entities::EntityHandler> potentialDangerousBomb;
+    std::vector<jf::entities::EntityHandler> dangerousBomb;
+
+    for (auto &current : bombs) {
+        maths::Vector3D bombPos = current->getComponent<indie::components::Transform>()->getPosition();
+        if (static_cast<int>(bombPos.x) / 10 == static_cast<int>(playerPos.x) / 10 || static_cast<int>(bombPos.z) / 10 == static_cast<int>(playerPos.z) / 10)
+            potentialDangerousBomb.emplace_back(current);
+    }
+    if (!potentialDangerousBomb.empty())
+        checkPotentialDangerousBombs(allCrates, potentialDangerousBomb, playerPos);
+    return (std::pair<bool, std::vector<int>>(dangerousBomb.empty() ? false : true, 0));
+}
+
+void indie::systems::AISystem::checkPotentialDangerousBombs(
+std::vector<jf::entities::EntityHandler> &allCrates,
+std::vector<jf::entities::EntityHandler> &potentialDangerousBomb,
+maths::Vector3D playerPos)
+{
+    for (auto &current : potentialDangerousBomb) {
+        maths::Vector3D bombPos = current->getComponent<indie::components::Transform>()->getPosition();
+        if (static_cast<int>(bombPos.x) / 10 == static_cast<int>(playerPos.x) / 10) {
+            //hasCrate
+            continue;
+        } else if (static_cast<int>(bombPos.z) / 10 == static_cast<int>(playerPos.z) / 10) {
+            //hasCrate
+            continue;
+        }
+    }
 }
 
 void indie::systems::AISystem::randomHandling(indie::components::AIController::state &state, 
