@@ -16,6 +16,7 @@
 #include <iostream>
 #include <random>
 #include "components/MoveToTarget.hpp"
+#include "components/Bomb.hpp"
 
 indie::systems::AISystem::AISystem() : _timePassed(0)
 {
@@ -78,7 +79,6 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     ECSWrapper ecs;
     if (ecs.systemManager.getSystem<indie::systems::AISystem>().getTimePassed() < 500000000 && !hasMoved(entity, component))
         return;
-    std::cout << "welcome\n";
     component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
                             ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
     ecs.systemManager.getSystem<indie::systems::AISystem>().setTimePassed(0);
@@ -96,9 +96,14 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
         return (playerA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
 (playerB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
     });
+    auto bombs = ecs.entityManager.getEntitiesWith<indie::components::Bomb>();
+    std::sort(bombs.begin(), bombs.end(), [&playerPos](jf::entities::EntityHandler bombA, jf::entities::EntityHandler bombB){
+        return (bombA->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 
+(bombB->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq();
+    });
 
     component->setLastState(component->getState());
-    chooseState(component, entity, bonuses, players);
+    chooseState(component, entity, bonuses, players, bombs);
     if (component->getIsTaunting() == false && component->getIsPlacingBomb() == false)
         moveComp->setFollowTarget(true);
 
@@ -114,12 +119,10 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
 
 void indie::systems::AISystem::focusLogic()
 {
-    std::cout << "hello3\n";
 }
 
 void indie::systems::AISystem::tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component)
 {
-    std::cout << "hello2\n";
     component->setNeedToTaunt(true);
 }
 
@@ -135,7 +138,6 @@ void indie::systems::AISystem::askNewTarget(jf::components::ComponentHandler<ind
 void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                             jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity)
 {
-    std::cout << "hello\n";
     component->setFullNodePath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
 ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition())));
     if (component->getState() != component->getLastState() || !component->getHasTarget())
@@ -144,20 +146,19 @@ ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform
 
 void indie::systems::AISystem::searchLogic()
 {
-    std::cout << "hello\n";
+
 }
 
 void indie::systems::AISystem::chooseState(jf::components::ComponentHandler<indie::components::AIController> &component,
 jf::entities::EntityHandler &entity,
 std::vector<jf::entities::EntityHandler> &bonuses,
-std::vector<jf::entities::EntityHandler> &players)
+std::vector<jf::entities::EntityHandler> &players,
+std::vector<jf::entities::EntityHandler> &bombs)
 {
     ECSWrapper ecs;
     indie::components::AIController::state state = indie::components::AIController::UNKNOWN;
     ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
-
-    //get bomb pos;
 
     //bomb first; with SURVIVE STATE;
     /*
@@ -182,6 +183,11 @@ std::vector<jf::entities::EntityHandler> &players)
         component->setState(indie::components::AIController::POWERUP);
     else
         component->setState(indie::components::AIController::UNKNOWN);
+}
+
+std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger()
+{
+
 }
 
 void indie::systems::AISystem::randomHandling(indie::components::AIController::state &state, 
