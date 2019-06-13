@@ -103,10 +103,12 @@ indie::Parser::Parser()
     })
     , _components({
         {(L"Animator"), &createAnimator},
+        {(L"Bomb"), &createBomb},
         {(L"BonusEffector"), &createBonusEffector},
         {(L"BonusSpawner"), &createBonusSpawner},
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Camera"), &createCamera},
+        {(L"Destroy"), &createDestroy},
         {(L"Hoverer"), &createHoverer},
         {(L"Particle"), &createParticle},
         {(L"PlayerController"), &createPlayerController},
@@ -465,6 +467,55 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
     }
 }
 
+void indie::Parser::createBomb(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"strength", ""},
+            {"timeBeforeExplode", ""},
+            {"bombType", ""},
+            {"player", ""},
+            {"texturePath", ""},
+            {"textureMesh", ""},
+            {"position", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBomb");
+    if (args["strength"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'strength' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["timeBeforeExplode"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'timeBeforeExplode' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["bombType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bombType' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["player"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'player' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    auto component = entity->assignComponent<components::Bomb>(
+            std::stoi(args["strength"]),
+            std::stof(args["timeBeforeExplode"]),
+            static_cast<components::BombType>(std::stoi(args["bombType"])),
+            static_cast<components::PlayerType>(std::stoi(args["player"])));
+    if (!args["texturePath"].empty()) {
+        component->setTexturePath(args["texturePath"]);
+    }
+    if (!args["textureMesh"].empty()) {
+        component->setTextureMesh(args["textureMesh"]);
+    }
+    if (!args["position"].empty()) {
+        component->setInitialPosition(getVector3D(args["position"], fileName, line));
+    }
+}
+
 void indie::Parser::createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line)
 {
@@ -530,13 +581,26 @@ void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::I
     std::map<std::string, std::string> args = {
             {"FOV", ""}
     };
-
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
     if (args["FOV"].empty()) {
         entity->assignComponent<components::Camera>();
     } else {
         entity->assignComponent<components::Camera>(
                 std::stof(args["FOV"]));
+    }
+}
+
+void indie::Parser::createDestroy(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"time", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDestroy");
+    if (args["time"].empty()) {
+        entity->assignComponent<components::DestroyOnTime>();
+    } else {
+        entity->assignComponent<components::DestroyOnTime>(std::stof(args["time"]));
     }
 }
 

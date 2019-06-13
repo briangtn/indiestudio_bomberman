@@ -65,6 +65,8 @@ namespace indie {
     private: /* COMPONENTS */
         static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
+        static void createBomb(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line);
         static void createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line);
         static void createBonusSpawner(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -73,6 +75,8 @@ namespace indie {
                                       const std::string &fileName, unsigned int &line);
         static void createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createDestroy(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
         static void createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
         static void createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,

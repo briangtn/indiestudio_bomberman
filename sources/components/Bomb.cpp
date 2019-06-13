@@ -17,10 +17,10 @@ const std::map<int, std::pair<std::string, std::string>> indie::components::Bomb
 };
 
 indie::components::Bomb::Bomb(jf::entities::Entity &entity, const int &strength,\
-const float &timeBeforeExplose, indie::components::BombType bomb, indie::components::PlayerType player)
+const float &timeBeforeExplode, indie::components::BombType bomb, indie::components::PlayerType player)
     :   Component(entity),
         _strength(strength),
-        _timeBeforeExplose(timeBeforeExplose),
+        _timeBeforeExplode(timeBeforeExplode),
         _bombID(bomb),
         _bombType(bomb),
         _Player(player)
@@ -43,19 +43,19 @@ int indie::components::Bomb::getStrength() const
     return _strength;
 }
 
-void indie::components::Bomb::setStength(const int &newStrength)
+void indie::components::Bomb::setStrength(const int &newStrength)
 {
     _strength = newStrength;
 }
 
-float indie::components::Bomb::getTimeBeforeExplose() const
+float indie::components::Bomb::getTimeBeforeExplode() const
 {
-    return _timeBeforeExplose;
+    return _timeBeforeExplode;
 }
 
-void indie::components::Bomb::setTimeBeforeExplose(const int &newTimeBeforeExplose)
+void indie::components::Bomb::setTimeBeforeExplode(const int &newTimeBeforeExplode)
 {
-    _timeBeforeExplose = newTimeBeforeExplose;
+    _timeBeforeExplode = newTimeBeforeExplode;
 }
 
 indie::components::BombType indie::components::Bomb::getBombType() const

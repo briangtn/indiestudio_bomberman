@@ -10,6 +10,15 @@
                 <argument name="transition" value="transitionName"/>
             </animation>
         </component>
+        <component type="Bomb">
+            <argument name="strength" value="10"/>
+            <argument name="timeBeforeExplode" value="10.5"/>
+            <argument name="bombType" value="1"/>
+            <argument name="player" value="1"/>
+            <argument name="texturePath" value="path/to/texture"/>
+            <argument name="textureMesh" value="path/to/mesh"/>
+            <argument name="position" value="0,0,0"/>
+        </component>
         <component type="BonusEffector">
             <argument name="bonusType" value="BONUS_T_BOMB_UP"/>
         </component>
@@ -24,6 +33,9 @@
         </component>
         <component type="Camera">
             <argument name="FOV" value="45"/>
+        </component>
+        <component type="Destroy">
+            <argument name="time" value="1.5"/>
         </component>
         <component type="Hoverer">
             <argument name="speed" value="1,1,1"/>

@@ -37,7 +37,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     ecs.entityManager.applyToEach<components::Bomb>(
     [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
-        if (bomb->getTimeBeforeExplose() <= 0) {
+        if (bomb->getTimeBeforeExplode() <= 0) {
             if (pass == true) {
                 this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
                 this->handleCollide(bomb);                
@@ -47,7 +47,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
             this->shakeBomb(bomb);
-            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
+            bomb->setTimeBeforeExplode(bomb->getTimeBeforeExplode() - elapsedTime.count() / 1000000000.0f);
         }
         });
     pass = true;
@@ -220,7 +220,7 @@ void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandl
     int time = 0;
 
     auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
-    time = bomb->getTimeBeforeExplose();
+    time = bomb->getTimeBeforeExplode();
     if (time % 5 == 0 && time > 15)
         bombTr->setScale({7, 7, 7});
     else if (time > 15)

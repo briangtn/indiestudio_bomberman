@@ -43,7 +43,7 @@ namespace indie {
             /* Bombe Constructor */
 
             Bomb(jf::entities::Entity &entity, const int &strength,\
-            const float &timeBeforeExplose, BombType bomb, PlayerType player);
+            const float &timeBeforeExplode, BombType bomb, PlayerType player);
 
             /* Bombe Destructor */
 
@@ -52,12 +52,12 @@ namespace indie {
             /* Set & Get Strength */
 
             int getStrength() const;
-            void setStength(const int &newStrength);
+            void setStrength(const int &newStrength);
 
             /* Set & Get TimeBeforeExplose */
 
-            float getTimeBeforeExplose() const;
-            void setTimeBeforeExplose(const int &newTimeBeforeExplose);
+            float getTimeBeforeExplode() const;
+            void setTimeBeforeExplode(const int &newTimeBeforeExplode);
 
             /* Set & Get BombType */
 
@@ -87,7 +87,7 @@ namespace indie {
         protected:
         private:
             int _strength;
-            float _timeBeforeExplose;
+            float _timeBeforeExplode;
             int _bombID;
             BombType _bombType;
             PlayerType _Player;
