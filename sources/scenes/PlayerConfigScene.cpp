@@ -226,6 +226,10 @@ void indie::scenes::PlayerConfigScene::from(indie::scenes::PlayerControllerType 
     if (controllerType == INPUT_EXIST) {
         auto buttonEntity = ecs.entityManager.getEntityByName("detectControllerButton" + idString);
         auto buttonComponent = buttonEntity->getComponent<components::Button>();
+        if (playersSettings[id - 1].eventJoystickId.isValid())
+            ecs.eventManager.removeListener(playersSettings[id - 1].eventJoystickId);
+        if (playersSettings[id - 1].eventKeyboardId.isValid())
+            ecs.eventManager.removeListener(playersSettings[id - 1].eventKeyboardId);
         buttonComponent->setVisible(false);
     } else if (controllerType == INPUT_CONFIG) {
         auto buttonEntity = ecs.entityManager.getEntityByName("configControllerButton" + idString);
