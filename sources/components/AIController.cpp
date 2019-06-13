@@ -20,7 +20,8 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
       _hasTarget(false),
       _state(UNKNOWN),
       _lastState(UNKNOWN),
-      _fullNodePath()
+      _fullNodePath(),
+      _movementSpeed(30)
 {
     ECSWrapper ecs;
 

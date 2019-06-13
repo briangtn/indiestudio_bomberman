@@ -180,6 +180,8 @@ std::vector<jf::entities::EntityHandler> &players)
     //component->setState(state);
     if (!bonuses.empty())
         component->setState(indie::components::AIController::POWERUP);
+    else
+        component->setState(indie::components::AIController::UNKNOWN);
 }
 
 void indie::systems::AISystem::randomHandling(indie::components::AIController::state &state, 
