@@ -10,6 +10,8 @@
 #ifndef INDIESTUDIO_ISCENE_HPP
 #define INDIESTUDIO_ISCENE_HPP
 
+#include <string>
+
 namespace indie {
     namespace scenes {
 

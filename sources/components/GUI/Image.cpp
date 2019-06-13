@@ -12,8 +12,13 @@
 #include "Events.hpp"
 #include "components/GUI/Image.hpp"
 
-indie::components::Image::Image(jf::entities::Entity &entity, const std::string &path)
-        :   Component(entity), _path(path), _textureNode(nullptr), _imageNode(nullptr)
+indie::components::Image::Image(jf::entities::Entity &entity, const std::string &path, int id)
+        :   GUIBase(entity, id),
+            _path(path),
+            _textureNode(nullptr),
+            _imageNode(nullptr),
+            _useAlpha(false),
+            _needReload(false)
 {
     ECSWrapper ecs;
 
@@ -75,4 +80,29 @@ bool indie::components::Image::isTextureInit() const
 bool indie::components::Image::isImageInit() const
 {
     return _imageNode != nullptr;
+}
+
+bool indie::components::Image::isUseAlpha() const
+{
+    return _useAlpha;
+}
+
+void indie::components::Image::setUseAlpha(bool useAlpha)
+{
+    _useAlpha = useAlpha;
+}
+
+void indie::components::Image::reload()
+{
+    _needReload = true;
+}
+
+void indie::components::Image::setNeedReload(bool reload)
+{
+    _needReload = reload;
+}
+
+bool indie::components::Image::isWaitReload() const
+{
+    return _needReload;
 }

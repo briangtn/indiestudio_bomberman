@@ -19,12 +19,16 @@ namespace indie {
             explicit GUIBase(jf::entities::Entity &entity, int id = -1);
             ~GUIBase();
 
-            int getId() const;
+            bool isVisible() const;
+            void setVisible(bool visible);
 
+            int getId() const;
             void setId(int id);
 
         protected:
             int _id;
+            bool _visible;
+
         };
     }
 }

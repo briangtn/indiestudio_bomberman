@@ -12,7 +12,8 @@
 
 indie::components::GUIBase::GUIBase(jf::entities::Entity &entity, int id)
     : Component(entity),
-    _id(id)
+    _id(id),
+    _visible(true)
 {
     EMIT_CREATE(GUIBase);
 }
@@ -30,4 +31,14 @@ int indie::components::GUIBase::getId() const
 void indie::components::GUIBase::setId(int id)
 {
     _id = id;
+}
+
+bool indie::components::GUIBase::isVisible() const
+{
+    return _visible;
+}
+
+void indie::components::GUIBase::setVisible(bool visible)
+{
+    _visible = visible;
 }
