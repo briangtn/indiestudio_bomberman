@@ -11,6 +11,7 @@
 #define INDIESTUDIO_PLAYERCONTROLLER_HPP
 
 #include "Component.hpp"
+#include "Bomb.hpp"
 
 namespace indie {
 
@@ -31,6 +32,8 @@ namespace indie {
             PlayerController(jf::entities::Entity &entity, const std::string &xAxis, const std::string &yAxis, const std::string &zAxis);
             PlayerController(jf::entities::Entity &entity, const std::string &xAxis, const std::string &yAxis, const std::string &zAxis, bool lockX, bool lockY, bool lockZ);
             ~PlayerController() override;
+
+            PlayerController &operator>>(std::ostream &file);
 
         public:
             const std::string &getXMovementAxis() const;
@@ -117,6 +120,9 @@ namespace indie {
             int getMaxBomb() const;
             void setMaxBomb(int maxBomb);
 
+            PlayerType getPlayerType() const;
+            void setPlayerType(PlayerType playerType);
+
         private:
             std::string _xMovementAxis;
             std::string _yMovementAxis;
@@ -160,6 +166,7 @@ namespace indie {
 
             int _bombForce;
             int _maxBomb;
+            PlayerType _playerType;
         };
     }
 }

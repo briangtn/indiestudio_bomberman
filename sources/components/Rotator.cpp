@@ -7,6 +7,7 @@
 
 /* Created the 24/05/2019 at 13:58 by jfrabel */
 
+#include <iomanip>
 #include "Events.hpp"
 #include "components/Rotator.hpp"
 
@@ -71,4 +72,12 @@ void indie::components::Rotator::setSpeedZ(float speedZ)
 float indie::components::Rotator::getSpeedZ() const
 {
     return _speed.z;
+}
+
+indie::components::Rotator &indie::components::Rotator::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Rotator">)" << std::endl;
+    file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

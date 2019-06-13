@@ -24,6 +24,8 @@ namespace indie {
             Rotator(jf::entities::Entity &entity, const indie::maths::Vector3D &speed);
             ~Rotator() override;
 
+            Rotator &operator>>(std::ostream &file);
+
         public:
             void setSpeed(const indie::maths::Vector3D &speed);
             const indie::maths::Vector3D &getSpeed() const;

@@ -23,6 +23,8 @@
 #include "components/Material.hpp"
 #include "components/Animator.hpp"
 #include "components/PointLight.hpp"
+#include "components/Bomb.hpp"
+#include "components/SoundComponent.hpp"
 
 namespace indie {
 

@@ -1,0 +1,391 @@
+/*
+** EPITECH PROJECT, 2019
+** indiestudio
+** File description:
+** BombManagerSystem
+*/
+
+#include "systems/BombManagerSystem.hpp"
+
+indie::systems::BombManagerSystem::BombManagerSystem()
+{
+    for (unsigned int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
+        _numberBombPlace[static_cast<indie::components::PlayerType>(s)] = 0;
+}
+
+indie::systems::BombManagerSystem::~BombManagerSystem()
+{
+
+}
+
+void indie::systems::BombManagerSystem::onAwake()
+{
+
+}
+
+void indie::systems::BombManagerSystem::onStart()
+{
+
+}
+
+void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds &elapsedTime)
+{
+    ECSWrapper ecs;
+    std::vector<jf::internal::ID> toDelete;
+    static bool pass = true;
+
+    ecs.entityManager.applyToEach<components::Bomb>(
+    [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
+        ECSWrapper ecs;
+        if (bomb->getTimeBeforeExplose() <= 0) {
+            if (pass == true) {
+                this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
+                this->handleCollide(bomb);                
+                this->playSoundExplosion(bomb->getBombType(), pass);
+                this->removeBombPlace(bomb->getPlayerType());
+            }
+            toDelete.emplace_back(bomb->getEntity()->getID());
+        } else {
+            this->shakeBomb(bomb);
+            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
+        }
+        });
+    pass = true;
+    for (auto &id : toDelete)
+        ecs.entityManager.deleteEntity(id);
+}
+
+void indie::systems::BombManagerSystem::onTearDown()
+{
+
+}
+
+void indie::systems::BombManagerSystem::onStop()
+{
+    
+}
+
+void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler playerEntity)
+{
+    ECSWrapper ecs;
+
+    auto playerController = playerEntity->getComponent<indie::components::PlayerController>();
+    auto playerPos = playerEntity->getComponent<indie::components::Transform>();
+    if (!(getNumberBombPlace(playerController->getPlayerType()) < playerController->getMaxBomb() && checkBombPlace(playerPos->getPosition()) == true))
+        return;
+    auto bombEntity = ecs.entityManager.createEntity("bomb");
+    auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
+    bombTr->setScale({8, 8, 8});
+    std::cout << "bombe position = " << " x = " << bombTr->getPosition().x << " y = " << bombTr->getPosition().y << " z = " << bombTr->getPosition().z << std::endl;
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(playerController->getBombForce(), 50, indie::components::NORMAL, playerController->getPlayerType());
+    auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
+    auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
+    bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
+    bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    addBombPlace(playerController->getPlayerType());
+}
+
+void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)
+{
+    ECSWrapper ecs;
+
+    auto componentParticle = ecs.entityManager.createEntity("particle");
+    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
+    auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
+    if (typeBomb == 0) {
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 255, 90, 0)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_04.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
+    }
+    else if (typeBomb == 1) {
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0,255,255,0)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_02.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
+    }
+    else if (typeBomb == 2) {
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 0, 168, 255)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/circle_05.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
+    }
+    else if (typeBomb == 3) {
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0,255,255,0)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/spark_01.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
+    }
+    else if (typeBomb == 4) {
+        normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
+        normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
+        normalParticle->setEmitRate(std::make_pair(10, 9));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 232, 65, 24)));
+        normalParticle->setMinMaxAge(std::make_pair(15, 15));
+        normalParticle->setAngle(0);
+        normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
+        normalParticle->setTexture(0, "../Assets/Particle/PNG/symbol_01.png");
+        normalParticle->initParticle();
+        normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
+    }
+    else {
+        std::cout << "throw error : unknown type bomb" << std::endl;
+    }
+}
+
+void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::BombType typeBomb, bool &pass)
+{
+    ECSWrapper ecs;
+
+    pass = false;
+    auto componentMusic = ecs.entityManager.createEntity("sound");
+    std::string soundPath = "";
+    if (typeBomb == 0) {
+        soundPath = "../Sound/BombSound/ExplosionSoundNormalBomb.ogg";
+    } else if (typeBomb == 1) {
+        soundPath = "../Sound/BombSound/ExplosionSoundFireBomb.ogg";
+    } else if (typeBomb == 2) {
+        soundPath = "../Sound/BombSound/ExplosionSoundWaterBomb.ogg";
+    }
+    else if (typeBomb == 3) {
+        soundPath = "../Sound/BombSound/ExplosionSoundElectricBomb.ogg";
+    }
+    else if (typeBomb == 4) {
+        soundPath = "../Sound/BombSound/ExplosionSoundLoveBomb.ogg";
+    }
+    else {
+        //TODO CREATE EXCEPTION
+        std::cout << "throw error : unknown type bomb" << std::endl;
+    }
+    if (soundPath == "")
+        return; // TODO THROW EXCEPTION
+    auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(soundPath, components::SoundComponent::SoundType::EFFECT);
+    soundBomb->setIsPaused(false);
+}
+
+void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberBombPlace,const indie::components::PlayerType &newPlayerType)
+{
+    for (int s = indie::components::PlayerType::P1 ; s <= indie::components::PlayerType::P4 ; ++s)
+        if (s == newPlayerType)
+            _numberBombPlace[static_cast<indie::components::PlayerType>(s)] = newNumberBombPlace;
+}
+
+unsigned int indie::systems::BombManagerSystem::getNumberBombPlace(const indie::components::PlayerType &playerType) const
+{
+    for (auto &it : _numberBombPlace)
+        if (it.first == playerType)
+            return it.second;
+    return 0;
+}
+
+void indie::systems::BombManagerSystem::addBombPlace(indie::components::PlayerType playerType)
+{
+    _numberBombPlace[playerType] += 1;
+}
+
+void indie::systems::BombManagerSystem::removeBombPlace(indie::components::PlayerType playerType)
+{
+    if (_numberBombPlace[playerType] == 0)
+        return;
+   _numberBombPlace[playerType] -= 1;
+}
+
+void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandler<indie::components::Bomb> bomb)
+{
+    ECSWrapper ecs;
+    int time = 0;
+
+    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
+    time = bomb->getTimeBeforeExplose();
+    if (time % 5 == 0 && time > 15)
+        bombTr->setScale({7, 7, 7});
+    else if (time > 15)
+        bombTr->setScale({8, 8, 8});
+    if (time <= 15 && time % 2 == 0)
+        bombTr->setScale({7, 7, 7});
+    else if (time <= 15)
+        bombTr->setScale({8, 8, 8});
+}
+
+void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb)
+{
+    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
+    indie::maths::Vector3D initialVect = {bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z};
+    indie::maths::Vector3D vect = initialVect;
+
+
+    /* check in right side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.x  = vect.x - 10;
+        auto col = checkIsCollide(vect);
+        if (col == 1)
+            break;
+        else if (col == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    } 
+
+    vect = initialVect;
+
+    /* check in left side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.x = vect.x + 10;
+        auto col = checkIsCollide(vect);
+        if (col == 1)
+            break;
+        else if (col == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+
+    vect = initialVect;
+
+    /* check in up side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.z = vect.z - 10;
+        auto col = checkIsCollide(vect);
+        if (col == 1)
+            break;
+        else if (col == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+
+    vect = initialVect;
+
+    /* check in down side */
+    for (int i = 0 ; i < bomb->getStrength() ; ++i) {
+        vect.z = vect.z + 10;
+        auto col = checkIsCollide(vect);
+        if (col == 1)
+            break;
+        else if (col == 2) {
+            this->displayParticle(bomb->getBombType(), vect);
+            break;
+        }
+        else
+            this->displayParticle(bomb->getBombType(), vect);
+    }
+}
+
+int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vect)
+{
+    ECSWrapper ecs;
+
+    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
+
+    indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
+    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D rotationHitBox = {0, 0, 0};
+
+    indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
+
+    for (auto &entity : entitiesWithCollider) {
+
+        auto collider = entity->getComponent<components::BoxCollider>();
+        
+        auto tr = entity->getComponent<components::Transform>();
+
+        indie::maths::Vector3D position;
+        indie::maths::Vector3D scale = {1, 1, 1};
+        indie::maths::Vector3D rotation;
+
+        if (tr.isValid()) {
+            position = tr->getPosition();
+            scale = tr->getScale();
+            rotation = tr->getRotation();
+        }
+
+        indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
+
+        if (obb.collides(hitBoxOBB)) {
+            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))) {
+                return 1;
+            } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
+                return 2;
+            }
+            else if ((collider->getLayer() & PLAYER_LAYER)) {
+                std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
+                return 0;
+            }
+            else {
+                ecs.entityManager.safeDeleteEntity(entity->getID());
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D vect)
+{
+    ECSWrapper ecs;
+
+    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
+
+    indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
+    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D rotationHitBox = {0, 0, 0};
+
+    indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
+
+    for (auto &entity : entitiesWithCollider) {
+
+        auto collider = entity->getComponent<components::BoxCollider>();
+        
+        auto tr = entity->getComponent<components::Transform>();
+
+        indie::maths::Vector3D position;
+        indie::maths::Vector3D scale = {1, 1, 1};
+        indie::maths::Vector3D rotation;
+
+        if (tr.isValid()) {
+            position = tr->getPosition();
+            scale = tr->getScale();
+            rotation = tr->getRotation();
+        }
+
+        indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
+
+        if (obb.collides(hitBoxOBB)) {
+            if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
+                return false;
+        }
+    }
+    return true;
+}
