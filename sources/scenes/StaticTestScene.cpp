@@ -7,8 +7,12 @@
 
 /* Created the 22/05/2019 at 18:36 by jfrabel */
 
-#include <components/BoxCollider.hpp>
-#include <events/AskingForBonusSpawnEvent.hpp>
+#include "components/BoxCollider.hpp"
+#include "components/GUI/Button.hpp"
+#include "components/GUI/Font.hpp"
+#include "events/IrrlichtGUIEvent.hpp"
+#include "components/BoxCollider.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
 #include "scenes/StaticTestScene.hpp"
 #include "components/Material.hpp"
 #include "components/Camera.hpp"
@@ -129,6 +133,17 @@ void indie::scenes::StaticTestScene::onStart()
     sys->setMinMaxAge(std::make_pair(800, 2000));
     sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(1, 1), irr::core::dimension2d<irr::f32>(2, 2)));
     sys->setInitialDirection(irr::core::vector3df(0.0f, 0.06f, 0.0f));
+
+    auto textEntity = ecs.entityManager.createEntity("testText");
+    textEntity->assignComponent<components::Transform>();
+    auto textComp = textEntity->assignComponent<components::Text, std::string>("Salut toi");
+    auto fontComp = textEntity->assignComponent<components::Font, std::string>("../bigfont.png");
+    textEntity->getComponent<components::Transform>()->setScale(maths::Vector3D(300, 100, 0));
+    textEntity->getComponent<components::Transform>()->setPosition(maths::Vector3D(400, 400, 0));
+    textComp->setHorizontalAlignement(components::Text::CENTER);
+    textComp->setBackgroundColor(irr::video::SColor(255, 255, 0, 0));
+    textComp->setColor(irr::video::SColor(255, 0, 0, 255));
+
 }
 
 void indie::scenes::StaticTestScene::onStop()

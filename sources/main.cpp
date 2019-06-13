@@ -12,7 +12,8 @@
 #include "systems/BonusSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
-#include "scenes/StaticTestScene.hpp"
+#include "scenes/PlayerConfigScene.hpp"
+#include "scenes/ControllerConfigScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -27,8 +28,11 @@
 int runBomberman()
 {
     ECSWrapper ecs;
+    std::vector<jf::internal::ID> listeners;
+
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
 
+    indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
@@ -46,15 +50,17 @@ int runBomberman()
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
+    indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
+    indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
+
     ecs.systemManager.addSystem<indie::systems::BonusSystem>();
     ecs.systemManager.startSystem<indie::systems::BonusSystem>();
 
     ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
     ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
-            
+
     ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
-
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
@@ -63,9 +69,11 @@ int runBomberman()
         }
     });
 
-    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
+    indie::scenes::SceneManager::changeScene("mainMenu");
+
+    auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed)
-            indie::scenes::SceneManager::changeScene("test");
+            indie::scenes::SceneManager::changeScene("mainMenu");
     });
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
@@ -81,6 +89,9 @@ int runBomberman()
             }
             return 84;
         }
+    }
+    for (auto &elem : listeners) {
+        ecs.eventManager.removeListener(elem);
     }
     return 0;
 }
