@@ -27,7 +27,9 @@ namespace indie {
 
             /* Particle Destructor */
 
-            ~Particle();            
+            ~Particle();
+
+            Particle &operator>>(std::ostream &file);
 
             /* Init Function */
 
@@ -121,7 +123,7 @@ namespace indie {
 
             /* BoxEmitter Info */
 
-            irr::core::aabbox3d<irr::f32> _emiterSize;
+            irr::core::aabbox3d<irr::f32> _emitterSize;
             irr::core::vector3df _initialDirection;
             std::pair<int, int> _emitRate;
             std::pair<irr::video::SColor, irr::video::SColor> _darkBrightColor;
@@ -153,6 +155,15 @@ namespace indie {
 
             jf::internal::ID _irrlichtClosingWindowEventID;
         };
+
+        std::ostream &operator<<(std::ostream &file, const irr::core::aabbox3d<irr::f32> &box);
+        std::ostream &operator<<(std::ostream &file, const irr::core::vector3d<float> &vector);
+        std::ostream &operator<<(std::ostream &file, const std::pair<int, int> &pair);
+        std::ostream &operator<<(std::ostream &file, const std::pair<irr::video::SColor, irr::video::SColor> &pair);
+        std::ostream &operator<<(std::ostream &file, const irr::video::SColor &color);
+        std::ostream &operator<<(std::ostream &file, const std::pair<irr::core::dimension2df, irr::core::dimension2df> &pair);
+        std::ostream &operator<<(std::ostream &file, const irr::core::dimension2df &vector);
+
     }
 }
 

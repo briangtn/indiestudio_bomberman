@@ -26,6 +26,8 @@
 #include "components/GUI/Button.hpp"
 #include "components/GUI/Text.hpp"
 #include "components/GUI/Image.hpp"
+#include "components/Bomb.hpp"
+#include "components/SoundComponent.hpp"
 
 namespace indie {
 

@@ -39,6 +39,8 @@ namespace indie {
             Animator(jf::entities::Entity &entity, const std::map<std::string, Animation> &animations);
             ~Animator() override;
 
+            Animator &operator>>(std::ostream &file);
+
             void addAnimation(const std::string &name, const Animation &anim);
             void addAnimations(const std::map<std::string, Animation> &animations);
             void removeAnimation(const std::string &name);
@@ -60,6 +62,9 @@ namespace indie {
             bool _animationJustChanged;
             std::map<std::string, Animation> _animations;
         };
+
+        std::ostream &operator<<(std::ostream &file, const std::pair<std::string, Animator::Animation> &pair);
+
     }
 }
 

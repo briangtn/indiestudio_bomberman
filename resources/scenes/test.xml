@@ -47,7 +47,7 @@
         <component type="BoxCollider">
             <argument name="size" value="0.25,0.5,0.25"/>
             <argument name="offset" value="0,0.5,0"/>
-            <argument name="layer" value="0x7"/>
+            <argument name="layer" value="0x1007"/>
         </component>
         <component type="Mesh">
             <argument name="fileName" value="../test_assets/White/white.b3d"/>
@@ -65,40 +65,40 @@
             </animation>
             <animation name="idle">
                 <argument name="start" value="2"/>
-                <argument name="end" value="60"/>
-                <argument name="speed" value="20"/>
+                <argument name="end" value="3c"/>
+                <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
             <animation name="walk">
-                <argument name="start" value="62"/>
-                <argument name="end" value="121"/>
-                <argument name="speed" value="60"/>
+                <argument name="start" value="3e"/>
+                <argument name="end" value="79"/>
+                <argument name="speed" value="3c"/>
                 <argument name="loop" value="true"/>
             </animation>
             <animation name="taunt">
-                <argument name="start" value="123"/>
-                <argument name="end" value="145"/>
-                <argument name="speed" value="40"/>
+                <argument name="start" value="7b"/>
+                <argument name="end" value="91"/>
+                <argument name="speed" value="28"/>
                 <argument name="loop" value="false"/>
                 <argument name="transition" value="idle"/>
             </animation>
             <animation name="place bomb">
-                <argument name="start" value="184"/>
-                <argument name="end" value="243"/>
-                <argument name="speed" value="100"/>
+                <argument name="start" value="b8"/>
+                <argument name="end" value="f3"/>
+                <argument name="speed" value="64"/>
                 <argument name="loop" value="false"/>
                 <argument name="transition" value="idle"/>
             </animation>
             <animation name="die">
-                <argument name="start" value="245"/>
-                <argument name="end" value="304"/>
-                <argument name="speed" value="100"/>
+                <argument name="start" value="f5"/>
+                <argument name="end" value="130"/>
+                <argument name="speed" value="64"/>
                 <argument name="loop" value="false"/>
                 <argument name="transition" value="dead"/>
             </animation>
             <animation name="dead">
-                <argument name="start" value="305"/>
-                <argument name="end" value="305"/>
+                <argument name="start" value="131"/>
+                <argument name="end" value="131"/>
                 <argument name="speed" value="0"/>
                 <argument name="loop" value="true"/>
             </animation>
@@ -120,10 +120,10 @@
             <argument name="fileName" value="../test_assets/particle_default.png"/>
             <argument name="layer" value="0"/>
             <argument name="angle" value="0"/>
-            <argument name="brightColor" value="0,255,0,0;0,0,0,255"/>
+            <argument name="brightColor" value="0,ff,0,0;0,0,0,ff"/>
             <argument name="emitterSize" value="-100,0,-100;100,1,100"/>
             <argument name="emitRate" value="40,80"/>
-            <argument name="fadeColor" value="0,0,255,0"/>
+            <argument name="fadeColor" value="0,0,ff,0"/>
             <argument name="fadeTime" value="1000"/>
             <argument name="age" value="800,2000"/>
             <argument name="size" value="1,1;2,2"/>
@@ -138,7 +138,7 @@
         </component>
         <component type="Text">
             <argument name="text" value="Ola"/>
-            <argument name="backgroundColor" value="255,255,0,0"/>
+            <argument name="backgroundColor" value="ff,ff,0,0"/>
             <argument name="horizontalAlignement" value="CENTER"/>
             <argument name="verticalAlignement" value="BOTTOM"/>
         </component>

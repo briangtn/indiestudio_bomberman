@@ -27,6 +27,8 @@ namespace indie {
             void setSpeed(const indie::maths::Vector3D &speed);
             indie::maths::Vector3D getSpeed() const;
 
+            Hoverer &operator>>(std::ostream &file);
+
             void setAmplitude(const indie::maths::Vector3D &amplitude);
             const indie::maths::Vector3D &getAmplitude() const;
 
