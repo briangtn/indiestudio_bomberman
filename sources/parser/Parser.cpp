@@ -974,15 +974,7 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
             {"playPosition", ""},
             {"velocity",     ""}
     };
-    systems::IrrklangAudioSystem audioSystem;
-    try {
-        audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
-    } catch (jf::SystemNotFoundException &e) {
-        throw exceptions::ParserInvalidFileException(
-                "Component 'Sound' found at line " + std::to_string(line) + " in file " + fileName
-                + " but no system of type 'IrrklangAudio' has been previously instancied. "
-                  "Systems have to be added in file systems.xml.", "indie::Parser::createSound");
-    }
+    auto &audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
     if (args["fileName"].empty() || args["type"].empty()) {
         throw exceptions::ParserInvalidFileException(

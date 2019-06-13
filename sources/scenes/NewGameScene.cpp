@@ -29,6 +29,7 @@
 #include "components/PlayerController.hpp"
 #include "components/Camera.hpp"
 #include "components/DynamicCamera.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
     : _saveOnExit(false), _saveName("")
@@ -50,6 +51,9 @@ void indie::scenes::NewGameScene::onStart()
     auto p4 = spawnYellow();
     assignSpecificComponents(p4, PlayerConfigScene::playersSettings[3].controllerType);
     spawnCamera();
+    auto entity = ecs.entityManager.createEntity("sound");
+    auto component = entity->assignComponent<components::SoundComponent>("../Sound/Musics/battleMode.ogg", components::SoundComponent::MUSIC);
+    component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 }
 
