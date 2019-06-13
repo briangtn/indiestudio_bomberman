@@ -55,7 +55,7 @@ indie::components::Animator::~Animator()
     EMIT_DELETE(Animator);
     auto mesh = getEntity()->getComponent<components::Mesh>();
     if (mesh.isValid() && mesh->getAnimatedMeshNode() != nullptr) {
-        mesh->getAnimatedMeshNode()->setAnimationEndCallback(nullptr);
+        mesh->getAnimatedMeshNode()->setAnimationEndCallback();
     }
 }
 
