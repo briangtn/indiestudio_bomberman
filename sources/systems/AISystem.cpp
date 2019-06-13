@@ -185,7 +185,7 @@ std::vector<jf::entities::EntityHandler> &bombs)
         component->setState(indie::components::AIController::UNKNOWN);
 }
 
-std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger()
+std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger(std::vector<jf::entities::EntityHandler> bombs)
 {
 
 }
