@@ -37,7 +37,7 @@ std::map<std::string, indie::Controller> indie::scenes::PlayerConfigScene::contr
 
 void indie::scenes::PlayerConfigScene::InitControllers()
 {
-    Controller controller = Controller("lol");
+    Controller controller = Controller("");
 
     controller.addAxis<KeyAxis>("xAxis", {irr::KEY_KEY_D, irr::KEY_KEY_Q});
     controller.addAxis<KeyAxis>("zAxis", {irr::KEY_KEY_Z, irr::KEY_KEY_S});
@@ -46,7 +46,7 @@ void indie::scenes::PlayerConfigScene::InitControllers()
 
     controllers.emplace("IndieDefaultKeyboard", controller);
 
-    controller = Controller("slt");
+    controller = Controller("");
     controller.addAxis<JoystickAxis>("xAxis", {0, 0});
     controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
     controller.addKey("taunt", 0, 1);
@@ -54,7 +54,7 @@ void indie::scenes::PlayerConfigScene::InitControllers()
 
     controllers.emplace(".*Xbox One Controller.*", controller);
 
-    controller = Controller("slt");
+    controller = Controller("");
     controller.addAxis<JoystickAxis>("xAxis", {0, 0});
     controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
     controller.addKey("taunt", 0, 0);
@@ -78,14 +78,10 @@ void indie::scenes::PlayerConfigScene::onStart()
     buttonStartTransform->setScale({100, 30, 0});
 
     buttonStartComponent->setOnClicked([](components::Button *btn){
-        bool valid = true;
-
         for (auto setting : playersSettings) {
             if (!setting.isValid)
-                valid = false;
+                return;
         }
-        if (!valid)
-            return;
         int i = 1;
         for (auto setting : playersSettings) {
             std::string iStr = std::to_string(i);
@@ -300,7 +296,6 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
                 ECSWrapper ecs;
                 auto &system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
                 std::string name = std::string(system.getJoystickInfos()[e.data.Joystick].Name.c_str());
-                std::cout << i << std::endl;
 
                 for (auto &controller : controllers) {
                     std::regex reg(controller.first);
