@@ -116,8 +116,6 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
         drawImage(entity, tr, image);
     });
 
-    std::cout << std::endl << std::endl << std::endl << "===============" << std::endl;
-
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 

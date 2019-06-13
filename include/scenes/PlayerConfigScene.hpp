@@ -37,6 +37,7 @@ namespace indie {
             static std::map<std::string, Controller> controllers;
 
             static void InitControllers();
+            static void UpdateConfigController();
         private:
             static void from(PlayerControllerType controllerType, int id);
             static void to(PlayerControllerType controllerType, int id);

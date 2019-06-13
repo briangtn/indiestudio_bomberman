@@ -58,7 +58,7 @@ std::string indie::InvalidAxisType::getAxisTypeName()
 indie::KeyNotFoundException::KeyNotFoundException(const std::string &inputName)
     : InputManagerException("Key not found."), _inputName(inputName)
 {
-
+    std::cout << "Input name: "<< inputName << std::endl;
 }
 
 std::string indie::KeyNotFoundException::getName() const

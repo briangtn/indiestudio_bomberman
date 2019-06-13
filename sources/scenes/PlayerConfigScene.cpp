@@ -17,6 +17,8 @@
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
+#include "scenes/SceneManager.hpp"
+#include "scenes/ControllerConfigScene.hpp"
 
 std::vector<indie::scenes::PlayerSettings> indie::scenes::PlayerConfigScene::playersSettings = {
     {INPUT_EXIST, Controller("")},
@@ -69,6 +71,32 @@ void indie::scenes::PlayerConfigScene::onStart()
     cameraEntity->assignComponent<indie::components::Camera>();
     auto cameraTransform = cameraEntity->assignComponent<indie::components::Transform>();
 
+    auto buttonStartEntity = ecs.entityManager.createEntity("buttonStart");
+    auto buttonStartComponent = buttonStartEntity->assignComponent<indie::components::Button>("Start", 3);
+    auto buttonStartTransform = buttonStartEntity->assignComponent<indie::components::Transform>();
+    buttonStartTransform->setPosition({0, 0, 100});
+    buttonStartTransform->setScale({100, 30, 0});
+
+    buttonStartComponent->setOnClicked([](components::Button *btn){
+        bool valid = true;
+
+        for (auto setting : playersSettings) {
+            if (!setting.isValid)
+                valid = false;
+        }
+        if (!valid)
+            return;
+        int i = 1;
+        for (auto setting : playersSettings) {
+            std::string iStr = std::to_string(i);
+
+            if (setting.controllerType != AI)
+                setting.controller.generateKeysAndAxes("player" + iStr);
+            i++;
+        }
+        indie::scenes::SceneManager::safeChangeScene("test");
+    });
+
     for (unsigned int i = 1; i <= 4; i++)
         createConfigBlock(i);
 
@@ -76,6 +104,7 @@ void indie::scenes::PlayerConfigScene::onStart()
     backgroundEntity->assignComponent<indie::components::Image>("../background.png");
     auto backgroundTransform = backgroundEntity->assignComponent<indie::components::Transform>();
     backgroundTransform->setPosition({0, 0, -1});
+    UpdateConfigController();
 }
 
 void indie::scenes::PlayerConfigScene::onStop()
@@ -184,7 +213,8 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     });
 
     configControllerButtonComponent->setOnClicked([id](components::Button *btn) {
-
+        ControllerConfigScene::id = id;
+        SceneManager::safeChangeScene("controllerConfig");
     });
 }
 
@@ -281,4 +311,17 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
         }
     });
     playersSettings[id - 1].eventJoystickId = eventId;
+}
+
+void indie::scenes::PlayerConfigScene::UpdateConfigController()
+{
+    int id = ControllerConfigScene::id;
+
+    if (id <= 0)
+        return;
+    playersSettings[id - 1].controller = ControllerConfigScene::controller;
+    setValid(true, id);
+
+    ControllerConfigScene::id = -1;
+    ControllerConfigScene::controller = Controller("");
 }

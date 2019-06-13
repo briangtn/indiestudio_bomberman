@@ -8,10 +8,11 @@
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
 #include <iostream>
-#include <systems/TauntSystem.hpp>
+#include "systems/TauntSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/PlayerConfigScene.hpp"
+#include "scenes/ControllerConfigScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -39,9 +40,9 @@ int runBomberman()
     indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
     indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
 
-
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
+    indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
 
     indie::scenes::SceneManager::changeScene("mainMenu");
 
