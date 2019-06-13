@@ -16,6 +16,7 @@
 #include "ECSWrapper.hpp"
 #include "systems/BonusSystem.hpp"
 #include "events/AskingForBonusSpawnEvent.hpp"
+#include "components/AIController.hpp"
 
 const std::map<indie::components::BonusType, indie::systems::BonusSystem::BonusFunction> indie::systems::BonusSystem::_bonusAffectorMap = {
     {components::BONUS_T_BOMB_UP, BonusSystem::BombUpAffector},
@@ -124,8 +125,12 @@ bool indie::systems::BonusSystem::BombUpAffector(
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
     auto pc = affectTo->getComponent<components::PlayerController>();
+    auto aic = affectTo->getComponent<components::AIController>();
     if (pc.isValid()) {
         pc->setMaxBomb(pc->getMaxBomb() + _maxBombAdded);
+        return true;
+    } else if (aic.isValid()) {
+        aic->setMaxBomb(aic->getMaxBomb() + _maxBombAdded);
         return true;
     }
     return false;
@@ -136,8 +141,12 @@ bool indie::systems::BonusSystem::FireUpAffector(
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
     auto pc = affectTo->getComponent<components::PlayerController>();
+    auto aic = affectTo->getComponent<components::AIController>();
     if (pc.isValid()) {
         pc->setBombForce(pc->getBombForce() + _bombTileAdded);
+        return true;
+    } else if (aic.isValid()) {
+        aic->setBombForce(aic->getBombForce() + _bombTileAdded);
         return true;
     }
     return false;
@@ -148,8 +157,12 @@ bool indie::systems::BonusSystem::SpeedUpAffector(
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
     auto pc = affectTo->getComponent<components::PlayerController>();
+    auto aic = affectTo->getComponent<components::AIController>();
     if (pc.isValid()) {
         pc->setMovementSpeed(pc->getMovementSpeed() + _speedAdded);
+        return true;
+    } else if (aic.isValid()) {
+        aic->setMovementSpeed(aic->getMovementSpeed() + _speedAdded);
         return true;
     }
     return false;
@@ -160,8 +173,12 @@ bool indie::systems::BonusSystem::WallPassAffector(
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
     auto pc = affectTo->getComponent<components::PlayerController>();
+    auto aic = affectTo->getComponent<components::AIController>();
     auto collider = affectTo->getComponent<components::BoxCollider>();
     if (pc.isValid() && collider.isValid()) {
+        collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
+        return true;
+    } else if (aic.isValid() && collider.isValid()) {
         collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
         return true;
     }

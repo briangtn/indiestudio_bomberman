@@ -6,6 +6,7 @@
 */
 
 #include "systems/BombManagerSystem.hpp"
+#include "components/AIController.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -71,18 +72,33 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     ECSWrapper ecs;
 
     auto playerController = playerEntity->getComponent<indie::components::PlayerController>();
+    auto aiController = playerEntity->getComponent<indie::components::AIController>();
     auto playerPos = playerEntity->getComponent<indie::components::Transform>();
-    if (!(getNumberBombPlace(playerController->getPlayerType()) < playerController->getMaxBomb() && checkBombPlace(playerPos->getPosition()) == true))
+    components::PlayerType ptype;
+    int bombForce;
+    int maxBomb;
+    if (playerController.isValid()) {
+        ptype = playerController->getPlayerType();
+        bombForce = playerController->getBombForce();
+        maxBomb = playerController->getMaxBomb();
+    } else if (aiController.isValid()) {
+        ptype = aiController->getPlayerType();
+        bombForce = aiController->getBombForce();
+        maxBomb = aiController->getMaxBomb();
+    } else {
+        return;
+    }
+    if (!(getNumberBombPlace(ptype) < maxBomb && checkBombPlace(playerPos->getPosition()) == true))
         return;
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
-    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(playerController->getBombForce(), 3, indie::components::NORMAL, playerController->getPlayerType());
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(bombForce, 3, indie::components::NORMAL, ptype);
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
     auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
     bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    addBombPlace(playerController->getPlayerType());
+    addBombPlace(ptype);
 }
 
 void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)

@@ -115,3 +115,43 @@ indie::components::AIController::state indie::components::AIController::getState
 {
     return _state;
 }
+
+int indie::components::AIController::getBombForce() const
+{
+    return _bombForce;
+}
+
+void indie::components::AIController::setBombForce(int bombForce)
+{
+    _bombForce = bombForce;
+}
+
+int indie::components::AIController::getMaxBomb() const
+{
+    return _maxBomb;
+}
+
+void indie::components::AIController::setMaxBomb(int maxBomb)
+{
+    _maxBomb = maxBomb;
+}
+
+indie::components::PlayerType indie::components::AIController::getPlayerType() const
+{
+    return _playerType;
+}
+
+void indie::components::AIController::setPlayerType(indie::components::PlayerType playerType)
+{
+    _playerType = playerType;
+}
+
+float indie::components::AIController::getMovementSpeed() const
+{
+    return _movementSpeed;
+}
+
+void indie::components::AIController::setMovementSpeed(float movementSpeed)
+{
+    _movementSpeed = movementSpeed;
+}

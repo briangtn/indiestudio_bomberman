@@ -10,6 +10,7 @@
 
 #include "Component.hpp"
 #include "maths/Vectors.hpp"
+#include "Bomb.hpp"
 
 namespace indie {
 
@@ -48,7 +49,19 @@ namespace indie {
                 bool getNeedToTaunt() const;
                 bool getNeedToUseBomb() const;
 
-            private:
+                int getBombForce() const;
+                void setBombForce(int bombForce);
+
+                int getMaxBomb() const;
+                void setMaxBomb(int maxBomb);
+
+                PlayerType getPlayerType() const;
+                void setPlayerType(PlayerType playerType);
+
+                float getMovementSpeed() const;
+                void setMovementSpeed(float movementSpeed);
+
+        private:
                 indie::maths::Vector3D _target;
                 std::pair<int, int> _previousPos;
                 bool _isTaunting;
@@ -57,6 +70,13 @@ namespace indie {
                 bool _needToUseBomb;
                 state _state;
                 state _lastState;
+
+                int _bombForce;
+                int _maxBomb;
+
+                PlayerType _playerType;
+
+                float _movementSpeed;
         };
     }
 }
