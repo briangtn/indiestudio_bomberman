@@ -258,8 +258,8 @@ void indie::systems::MovementSystem::updateDynamicCameras(const std::chrono::nan
         trs.push_front(player->getComponent<components::Transform>());
     for (auto &bot : bots)
         trs.push_front(bot->getComponent<components::Transform>());
-    maths::Vector3D minTr(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
-    maths::Vector3D maxTr(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    maths::Vector3D minTr(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    maths::Vector3D maxTr(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
     for (auto &tr : trs) {
         auto trPos = tr->getPosition();
         if (trPos.x < minTr.x)
