@@ -40,12 +40,12 @@ namespace indie {
         class Bomb : public jf::components::Component {
         public:
 
-            /* Bombe Constructor */
+            /* Bomb Constructor */
 
             Bomb(jf::entities::Entity &entity, const int &strength,\
             const float &timeBeforeExplose, BombType bomb, PlayerType player);
 
-            /* Bombe Destructor */
+            /* Bomb Destructor */
 
             ~Bomb();
 
