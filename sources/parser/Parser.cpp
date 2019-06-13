@@ -464,9 +464,9 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
                 }
                 bool loop = getBool(args["loop"], fileName, line);
                 component->addAnimation(animationName, {
-                        static_cast<unsigned int>(std::stoul(args["start"])),
-                        static_cast<unsigned int>(std::stoul(args["end"])),
-                        static_cast<unsigned int>(std::stoul(args["speed"])),
+                        static_cast<unsigned int>(std::stoul(args["start"], nullptr, 16)),
+                        static_cast<unsigned int>(std::stoul(args["end"], nullptr, 16)),
+                        static_cast<unsigned int>(std::stoul(args["speed"], nullptr, 16)),
                         loop,
                         args["transition"]
                 });
@@ -761,7 +761,8 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
             {"bombTime",         ""},
             {"bombButton",       ""},
             {"bombAnimation",    ""},
-            {"bombDuration",     ""}
+            {"bombDuration",     ""},
+            {"playerType",       ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
     auto component = entity->assignComponent<components::PlayerController>();
@@ -852,6 +853,9 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
     if (!args["bombDuration"].empty()) {
         component->setBombPlacementDuration(std::stof(args["bombDuration"]));
     }
+    if (!args["playerType"].empty()) {
+        component->setPlayerType(static_cast<components::PlayerType>(std::stoi(args["playerType"])));
+    }
 }
 
 void indie::Parser::createRotator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -923,7 +927,7 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
         component->setVolume(std::stof(args["volume"]));
     }
     if (!args["playPosition"].empty()) {
-        component->setPlayPosition(std::stoul(args["playPosition"]));
+        component->setPlayPosition(std::stoul(args["playPosition"], nullptr, 16));
     }
     if (!args["velocity"].empty()) {
         component->setVelocity(getVector3D(args["velocity"], fileName, line));
@@ -1063,7 +1067,7 @@ const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &value
 const irr::video::SColor indie::Parser::getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line)
 {
-    int a, r, g, b;
+    unsigned int a, r, g, b;
 
     size_t n = std::count(value.begin(), value.end(), ',');
     if (n != 3) {
@@ -1072,14 +1076,14 @@ const irr::video::SColor indie::Parser::getColor(const std::string &value, const
                 + "(expected 'int, int, int, int' but got something else.", "indie::Parser::getColor");
     }
     auto pos = value.find(',');
-    a = std::stoi(value.substr(0, pos));
+    a = std::stoul(value.substr(0, pos), nullptr, 16);
     auto newPos = value.find(',', pos + 1);
-    r = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
+    r = std::stoul(value.substr(pos + 1, newPos - (pos + 1)), nullptr, 16);
     pos = newPos;
     newPos = value.find(',', pos + 1);
-    g = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
+    g = std::stoul(value.substr(pos + 1, newPos - (pos + 1)), nullptr, 16);
     pos = newPos;
-    b = std::stoi(value.substr(pos + 1));
+    b = std::stoul(value.substr(pos + 1), nullptr, 16);
     return irr::video::SColor(a, r, g, b);
 }
 

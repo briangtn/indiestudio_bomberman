@@ -19,6 +19,7 @@
 #include "events/IrrlichtMouseInputEvent.hpp"
 #include "events/IrrlichtGUIEvent.hpp"
 #include "components/Transform.hpp"
+#include "components/SoundComponent.hpp"
 #include "Entity.hpp"
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"

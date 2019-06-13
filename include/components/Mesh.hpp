@@ -20,6 +20,8 @@ namespace indie {
             Mesh(jf::entities::Entity &entity, const std::string filename);
             ~Mesh();
 
+            Mesh &operator>>(std::ostream &file);
+
             void addToScene();
             void changeVisibility(bool shouldBeSeen);
             void changeMesh(const std::string &filename);
@@ -33,6 +35,7 @@ namespace indie {
             bool applyChanges();
 
             irr::scene::IAnimatedMeshSceneNode *getAnimatedMeshNode();
+
         protected:
         private:
             irr::scene::IAnimatedMesh *_mesh;

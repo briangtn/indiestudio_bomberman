@@ -113,10 +113,8 @@ void indie::systems::MovementSystem::updatePlayerMovement(const std::chrono::nan
         rot = cameras[0]->getComponent<components::Transform>()->getRotation();
     }
 
-    auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
-
     ecs.entityManager.applyToEach<components::Transform, components::PlayerController>(
-        [elapsedTimeAsSecond, rot, entitiesWithCollider](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
+        [elapsedTimeAsSecond, rot](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Transform> tr, jf::components::ComponentHandler<components::PlayerController> pc) {
 
             bool canMove = !pc->isTaunting() && !pc->isPlacingBomb();
 
