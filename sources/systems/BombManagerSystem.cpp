@@ -100,13 +100,10 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     auto playerController = playerEntity->getComponent<indie::components::PlayerController>();
     auto aiController = playerEntity->getComponent<indie::components::AIController>();
     auto playerPos = playerEntity->getComponent<indie::components::Transform>();
-    auto componentPlaceBomb = ecs.entityManager.createEntity("soundPlaceBomb");
-    auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/PlaceBombSound.ogg", components::SoundComponent::SoundType::EFFECT);
     components::PlayerType ptype;
     int bombForce;
     int maxBomb;
 
-    placeBombSound->setIsPaused(true);
     if (playerController.isValid()) {
         ptype = playerController->getPlayerType();
         bombForce = playerController->getBombForce();
@@ -121,6 +118,9 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     if (!(getNumberBombPlace(ptype) < maxBomb && checkBombPlace(playerPos->getPosition()) == true))
         return;
     auto bombEntity = ecs.entityManager.createEntity("bomb");
+    auto componentPlaceBomb = ecs.entityManager.createEntity("soundPlaceBomb");
+    auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/PlaceBombSound.ogg", components::SoundComponent::SoundType::EFFECT);
+    componentPlaceBomb->assignComponent<components::DestroyOnTime, float>(1);
     placeBombSound->setIsPaused(false);
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
@@ -130,7 +130,6 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     addBombPlace(ptype);
-    componentPlaceBomb->assignComponent<components::DestroyOnTime, float>(1);
 }
 
 void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)
