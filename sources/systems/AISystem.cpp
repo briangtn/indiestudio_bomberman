@@ -155,17 +155,19 @@ std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell
             if (!(grid[i][a] & ai::AIView::AI_CELL_BLAST)) {
                 if (!(entity->getComponent<indie::components::BoxCollider>()->getLayer() & BREAKABLE_BLOCK_LAYER)) { //j'ai le wall pass
                     potentialSafeCell.emplace_back(i, a);
-                } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) /* && noCrates */) {
+                } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) && ai::hasCrateInPath(ai::AStar::findPath(grid, playerPos, {i, a}))) {
                     potentialSafeCell.emplace_back(i, a);
                 }
             }
         }
     }
-    //sort
     if (potentialSafeCell.empty()) {
         res.first = false;
         return (res);
     }
+    std::sort(potentialSafeCell.begin(), potentialSafeCell.end(), [&playerPos](std::pair<int, int> safeA, std::pair<int, int> safeB){
+        return std::pow(safeA.first - playerPos.x, 2) + std::pow(safeA.second - playerPos.y, 2) < std::pow(safeB.first - playerPos.x, 2) + std::pow(safeB.second - playerPos.y, 2);
+    });
     res.second.first = potentialSafeCell[0].first;
     res.second.second = potentialSafeCell[0].second;
     return (res);
