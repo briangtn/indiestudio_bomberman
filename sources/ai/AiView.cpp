@@ -41,8 +41,8 @@ void indie::ai::AIView::recomputeViewGrid(int width, int height)
     recomputeUnbreakableWalls(width, height);
     recomputeBreakableWalls(width, height);
     recomputePowerUps(width, height);
-    recomputeBombs(width, height);
     recomputePlayers(width, height);
+    recomputeBombs(width, height);
     for (int z = 0; z < height; ++z) {
         for (int x = 0; x < width; ++x) {
             _collisionGrid[z][x] = (_viewGrid[z][x] & 0b1);
@@ -99,7 +99,17 @@ void indie::ai::AIView::recomputeBreakableWalls(int width, int height)
 void indie::ai::AIView::recomputeBombs(int width, int height)
 {
     ECSWrapper ecs;
-    //TODO
+    auto bombs = ecs.entityManager.getEntitiesByName("bomb");
+    for (auto &bomb : bombs) {
+        auto tr = bomb->getComponent<components::Transform>();
+        if (!tr.isValid())
+            continue;
+        int x = static_cast<int>(tr->getPosition().x / 10.0f);
+        int z = -static_cast<int>(tr->getPosition().z / 10.0f);
+        if (x >= 0 && x < width && z >= 0 && z < height) {
+            _viewGrid[z][x] = AI_CELL_TYPE_BOMB;
+        }
+    }
 }
 
 void indie::ai::AIView::recomputePowerUps(int width, int height)

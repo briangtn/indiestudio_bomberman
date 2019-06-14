@@ -34,22 +34,14 @@ int runBomberman()
 
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
 
+    try {
+        ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>();
+    } catch (jf::SystemNotFoundException &e) {
+        throw jf::SystemNotFoundException("A critical system is missing: IrrlichtManagerSystem", "main");
+    }
+
     indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
-
-    indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
-	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
-    indie::InputManager::CreateAxis("zAxis", indie::JoystickAxis({0, 1, true}));
-    indie::InputManager::CreateAxis("zAxis", indie::KeyAxis({irr::KEY_KEY_Z, irr::KEY_KEY_S}));
-    indie::InputManager::CreateAxis("yAxis", indie::ControllerKeyAxis({0, 0b00000000, 0b00000001}));
-    indie::InputManager::CreateAxis("yAxis", indie::KeyAxis({irr::KEY_SPACE, irr::KEY_LSHIFT}));
-    indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
-    indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
-
-
-    indie::InputManager::RegisterKey("taunt", 0, 1);
-//    indie::InputManager::RegisterKey("bomb", 0, 2);
-    indie::InputManager::RegisterKey("bomb", irr::KEY_KEY_B);
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
