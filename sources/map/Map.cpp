@@ -61,8 +61,8 @@ void indie::Map::drawCorner(unsigned int width, unsigned int height)
 {
     ECSWrapper ecs;
     for (int i = 10; i > (static_cast<float>(height) * -10.0f) - 10.0f; i -= 10) {
-        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {-10, 0, static_cast<float>(i)}, 0);
-        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {width * 10.0f, 0, static_cast<float>(i)}, 0);
+        drawElement("unbreakable_wall_model", "unbreakable_wall_texture", {-10, 0, static_cast<float>(i)}, 0);
+        drawElement("unbreakable_wall_model", "unbreakable_wall_texture", {width * 10.0f, 0, static_cast<float>(i)}, 0);
     }
     auto wallLeft = ecs.entityManager.createEntity("wallLeft");
     auto trWL = wallLeft->assignComponent<indie::components::Transform>();
@@ -75,8 +75,8 @@ void indie::Map::drawCorner(unsigned int width, unsigned int height)
     trWR->setScale({10.0f, 10.0f, height * 15.0f});
     wallRight->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, UNBREAKABLE_BLOCK_LAYER);
     for (int j = 0; j < width * 10; j += 10) {
-        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {static_cast<float>(j), 0, 10.0f}, 0);
-        drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {static_cast<float>(j), 0, height * -10.0f}, 0);
+        drawElement("unbreakable_wall_model", "unbreakable_wall_texture", {static_cast<float>(j), 0, 10.0f}, 0);
+        drawElement("unbreakable_wall_model", "unbreakable_wall_texture", {static_cast<float>(j), 0, height * -10.0f}, 0);
     }
     auto wallUp = ecs.entityManager.createEntity("wallUp");
     auto trWU = wallUp->assignComponent<indie::components::Transform>();
@@ -94,7 +94,7 @@ void indie::Map::drawFloor(unsigned int width, unsigned int height)
 {
     for (int y = 0; y > height * -10.0f; y -= 10) {
         for (int x = 0; x < width * 10.0f; x+= 10) {
-            drawElement("../test_assets/cube.obj", "../test_assets/grass_texture.png", {static_cast<float>(x), -10, static_cast<float>(y)}, 0);
+            drawElement("floor_model", "floor_texture", {static_cast<float>(x), -10, static_cast<float>(y)}, 0);
         }
     }
 }
@@ -120,9 +120,9 @@ int indie::Map::generateMap(unsigned int width, unsigned int height, unsigned in
                 n = floor(255 * n);
             if (y % 2 == 0 && x % 2 == 0 && y > 0 && x > 0 && x < width - 1 &&
                 y < height - 1 && !isSpawningArea(drawX, drawY, width, height))
-                drawElement("../test_assets/cube.obj", "../test_assets/unbreakable_texture.png", {drawX, 0, drawY}, UNBREAKABLE_BLOCK_LAYER);
+                drawElement("unbreakable_wall_model", "unbreakable_wall_texture", {drawX, 0, drawY}, UNBREAKABLE_BLOCK_LAYER);
             else if (n > 122 && !isSpawningArea(drawX, drawY, width, height))
-                drawElement("../test_assets/case2.obj", "../test_assets/case_texture.jpg", {drawX, 0, drawY}, BREAKABLE_BLOCK_LAYER);
+                drawElement("breakable_wall_model", "breakable_wall_texture", {drawX, 0, drawY}, BREAKABLE_BLOCK_LAYER);
             drawX += 10;
         }
         drawX = 0;

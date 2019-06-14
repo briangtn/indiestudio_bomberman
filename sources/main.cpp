@@ -26,6 +26,7 @@
 #include "systems/BombManagerSystem.hpp"
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 int runBomberman()
 {
@@ -35,19 +36,10 @@ int runBomberman()
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
     indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
-    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(false);
 
-    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
-    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
-
-    indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
-	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
-    indie::InputManager::CreateAxis("zAxis", indie::JoystickAxis({0, 1, true}));
-    indie::InputManager::CreateAxis("zAxis", indie::KeyAxis({irr::KEY_KEY_Z, irr::KEY_KEY_S}));
-    indie::InputManager::CreateAxis("yAxis", indie::ControllerKeyAxis({0, 0b00000000, 0b00000001}));
-    indie::InputManager::CreateAxis("yAxis", indie::KeyAxis({irr::KEY_SPACE, irr::KEY_LSHIFT}));
-    indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
-    indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
+    auto &assetsManager = indie::AssetsManager::getInstance();
+    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.loadTexturePack("default");
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
@@ -56,9 +48,6 @@ int runBomberman()
     ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
     ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
 
-    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
-    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
-
     indie::scenes::SceneManager::changeScene("mainMenu");
 
     auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
@@ -66,26 +55,6 @@ int runBomberman()
             indie::scenes::SceneManager::changeScene("endScene");
     });
     listeners.push_back(id);
-	id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_T>>(nullptr, [](void *null, auto e) {
-		if (e.wasPressed) {
-			ECSWrapper ecs;
-			ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
-		}
-	});
-    listeners.push_back(id);
-    /* press for bomb */
-
-    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [ecs](void *null, auto b) {
-        if (b.wasPressed) {
-            auto player = ecs.entityManager.getEntityByName("player");
-
-            ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(player);
-        }
-    });
-
-
-
-    /* press for bomb */
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

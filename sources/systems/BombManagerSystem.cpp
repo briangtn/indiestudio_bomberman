@@ -37,7 +37,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     ecs.entityManager.applyToEach<components::Bomb>(
     [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
-        if (bomb->getTimeBeforeExplose() <= 0) {
+        if (bomb->getTimeBeforeExplode() <= 0) {
             if (pass == true) {
                 this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
                 this->handleCollide(bomb);                
@@ -47,7 +47,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
             this->shakeBomb(bomb);
-            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
+            bomb->setTimeBeforeExplode(bomb->getTimeBeforeExplode() - elapsedTime.count() / 1000000000.0f);
         }
         });
     pass = true;
@@ -90,7 +90,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
     ECSWrapper ecs;
 
     auto componentParticle = ecs.entityManager.createEntity("particle");
-    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
+//    componentParticle->assignComponent<components::DestroyOnTime, float>(1);
     auto normalParticle = componentParticle->assignComponent<components::Particle, const std::string>("NormalBombParticle");
     if (typeBomb == 0) {
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
@@ -100,7 +100,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
-        normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_04.png");
+        normalParticle->setTexture(0, "bomb_normal_particle_texture");
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
@@ -112,7 +112,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
-        normalParticle->setTexture(0, "../Assets/Particle/PNG/flame_02.png");
+        normalParticle->setTexture(0, "bomb_fire_particle_texture");
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
@@ -124,7 +124,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
-        normalParticle->setTexture(0, "../Assets/Particle/PNG/circle_05.png");
+        normalParticle->setTexture(0, "bomb_water_particle_texture");
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
@@ -136,7 +136,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
-        normalParticle->setTexture(0, "../Assets/Particle/PNG/spark_01.png");
+        normalParticle->setTexture(0, "bomb_plasma_particle_texure");
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
@@ -148,7 +148,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
-        normalParticle->setTexture(0, "../Assets/Particle/PNG/symbol_01.png");
+        normalParticle->setTexture(0, "bomb_sexy_particle_texure");
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
@@ -165,17 +165,17 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
     auto componentMusic = ecs.entityManager.createEntity("sound");
     std::string soundPath = "";
     if (typeBomb == 0) {
-        soundPath = "../Sound/BombSound/ExplosionSoundNormalBomb.ogg";
+        soundPath = "bomb_normal_sound";
     } else if (typeBomb == 1) {
-        soundPath = "../Sound/BombSound/ExplosionSoundFireBomb.ogg";
+        soundPath = "bomb_fire_sound";
     } else if (typeBomb == 2) {
-        soundPath = "../Sound/BombSound/ExplosionSoundWaterBomb.ogg";
+        soundPath = "bomb_water_sound";
     }
     else if (typeBomb == 3) {
-        soundPath = "../Sound/BombSound/ExplosionSoundElectricBomb.ogg";
+        soundPath = "bomb_plasma_sound";
     }
     else if (typeBomb == 4) {
-        soundPath = "../Sound/BombSound/ExplosionSoundLoveBomb.ogg";
+        soundPath = "bomb_sexy_sound";
     }
     else {
         //TODO CREATE EXCEPTION
@@ -220,7 +220,7 @@ void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandl
     int time = 0;
 
     auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
-    time = bomb->getTimeBeforeExplose();
+    time = bomb->getTimeBeforeExplode();
     if (time % 5 == 0 && time > 15)
         bombTr->setScale({7, 7, 7});
     else if (time > 15)

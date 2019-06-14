@@ -114,6 +114,12 @@ namespace indie {
             float getBombPlacementDuration() const;
             void setBombPlacementDuration(float bombPlacementDuration);
 
+            int getBombForce() const;
+            void setBombForce(int bombForce);
+
+            int getMaxBomb() const;
+            void setMaxBomb(int maxBomb);
+
             PlayerType getPlayerType() const;
             void setPlayerType(PlayerType playerType);
 
@@ -160,14 +166,7 @@ namespace indie {
 
             int _bombForce;
             int _maxBomb;
-
             PlayerType _playerType;
-
-        public:
-            int getBombForce() const;
-            void setBombForce(int bombForce);
-            int getMaxBomb() const;
-            void setMaxBomb(int maxBomb);
         };
     }
 }

@@ -13,7 +13,7 @@
             <argument name="position" value="0,0,0"/>
         </component>
         <component type="Image">
-            <argument name="fileName" value="../background.png"/>
+            <argument name="fileName" value="default_menu_background"/>
         </component>
     </entity>
 
@@ -28,7 +28,7 @@
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
     <entity name="startButton">
@@ -38,11 +38,11 @@
         </component>
         <component type="Button">
             <argument name="text" value="Start game"/>
-            <argument name="textureFileName" value="../button.png"/>
+            <argument name="textureFileName" value="default_button_texture"/>
             <argument name="id" value="1"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
     <entity name="closeButton">
@@ -52,11 +52,11 @@
         </component>
         <component type="Button">
             <argument name="text" value="Close window"/>
-            <argument name="textureFileName" value="../button.png"/>
+            <argument name="textureFileName" value="default_button_texture"/>
             <argument name="id" value="2"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
 </scene>

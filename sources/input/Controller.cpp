@@ -108,6 +108,10 @@ void indie::Controller::generateAxes(const std::string &baseName)
 
 void indie::Controller::generateKey(std::string name, indie::Controller::KeyConfig config)
 {
+    try {
+        InputManager::UnmapKey(name);
+    } catch (KeyNotFoundException e) {
+    }
     switch (config.type) {
         case KEY:
             InputManager::RegisterKey(name, config.keyCode);
@@ -122,6 +126,7 @@ void indie::Controller::generateKey(std::string name, indie::Controller::KeyConf
 
 void indie::Controller::generateAxis(std::string name, indie::Controller::AxisConfig config)
 {
+    InputManager::DeleteAxis<KeyAxis, JoystickAxis, ControllerKeyAxis>(name, true);
     switch (config.type) {
         case KEY:
             InputManager::CreateAxis<KeyAxis>(name, config.keyAxis);

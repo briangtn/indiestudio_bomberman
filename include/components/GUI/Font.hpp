@@ -21,6 +21,8 @@ namespace indie {
             explicit Font(jf::entities::Entity &entity, const std::string &path);
             ~Font();
 
+            Font &operator>>(std::ostream &file);
+
             const std::string &getPath() const;
             void setPath(const std::string &path);
 
