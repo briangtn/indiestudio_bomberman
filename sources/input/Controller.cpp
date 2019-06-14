@@ -102,25 +102,24 @@ void indie::Controller::generateKeys(const std::string &baseName)
 void indie::Controller::generateAxes(const std::string &baseName)
 {
     for (auto &elem : _axes) {
-        try {
-            generateAxis(baseName + elem.first, elem.second);
-        } catch (indie::AxisAlreadyExistException &e) {}
+        generateAxis(baseName + elem.first, elem.second);
     }
 }
 
 void indie::Controller::generateKey(std::string name, indie::Controller::KeyConfig config)
 {
+    try {
+        InputManager::UnmapKey(name);
+    } catch (KeyNotFoundException e) {
+        std::cout << "Touche not found" << std::endl;
+    }
     switch (config.type) {
         case KEY:
-            try {
-                InputManager::RegisterKey(name, config.keyCode);
-            } catch (indie::KeyAlreadyExistException &e) {}
+            InputManager::RegisterKey(name, config.keyCode);
             break;
         case CONTROLLERKEY:
-            try {
-                InputManager::RegisterKey(name, config.controllerId, config.controllerKeyId);
-            } catch (indie::KeyAlreadyExistException &e) {}
-    break;
+            InputManager::RegisterKey(name, config.controllerId, config.controllerKeyId);
+            break;
         default:
             break;
     }
@@ -128,14 +127,18 @@ void indie::Controller::generateKey(std::string name, indie::Controller::KeyConf
 
 void indie::Controller::generateAxis(std::string name, indie::Controller::AxisConfig config)
 {
+    InputManager::DeleteAxis<KeyAxis, JoystickAxis, ControllerKeyAxis>(name, true);
     switch (config.type) {
         case KEY:
+            std::cout << name << std::endl;
             InputManager::CreateAxis<KeyAxis>(name, config.keyAxis);
             break;
         case JOYSTICK:
+            std::cout << name << std::endl;
             InputManager::CreateAxis<JoystickAxis>(name, config.joystickAxis);
             break;
         case CONTROLLERKEY:
+            std::cout << name << std::endl;
             InputManager::CreateAxis<ControllerKeyAxis>(name, config.controllerKeyAxis);
             break;
     }
