@@ -111,7 +111,6 @@ void indie::Controller::generateKey(std::string name, indie::Controller::KeyConf
     try {
         InputManager::UnmapKey(name);
     } catch (KeyNotFoundException e) {
-        std::cout << "Touche not found" << std::endl;
     }
     switch (config.type) {
         case KEY:
