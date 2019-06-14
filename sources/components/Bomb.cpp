@@ -9,11 +9,11 @@
 
 const std::map<int, std::pair<std::string, std::string>> indie::components::Bomb::_pathTextureBomb =
 {
-    {0, { "../Assets/Bombs/Mesh/NormalBomb.dae.obj", "../Assets/Bombs/Texture/TextureNormalBomb.png"} },
-    {1, {"../Assets/Bombs/Mesh/FireBomb.dae.obj", "../Assets/Bombs/Texture/TextureFireBomb.png"} },
-    {2, {"../Assets/Bombs/Mesh/WaterBomb.dae.obj", "../Assets/Bombs/Texture/TextureWaterBomb.png"} },
-    {3, {"../Assets/Bombs/Mesh/PlasmaBomb.dae.obj", "../Assets/Bombs/Texture/TexturePlasmaBomb.png"} },
-    {4, {"../Assets/Bombs/Mesh/SexyBomb.dae.obj", "../Assets/Bombs/Texture/TextureSexyBomb.png"} }
+    {0, { "bomb_normal_model", "bomb_normal_texture"} },
+    {1, {"bomb_fire_model", "bomb_fire_texture"} },
+    {2, {"bomb_water_model", "bomb_water_texture"} },
+    {3, {"bomb_plasma_model", "bomb_plasma_texture"} },
+    {4, {"bomb_sexy_model", "bomb_sexy_texture"} }
 };
 
 indie::components::Bomb::Bomb(jf::entities::Entity &entity, const int &strength,\

@@ -29,6 +29,7 @@
 #include "EntityHandler.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
 #include "exceptions/AnimatorException.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -553,7 +554,7 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
         button->setButtonNode(buttonNode);
     }
     if (button->isTextureNeedInit())
-        button->setTextureNode(driver->getTexture(button->getTexturePath().c_str()));
+        button->setTextureNode(driver->getTexture(AssetsManager::getAsset(button->getTexturePath()).c_str()));
     buttonNode = button->getButtonNode();
     buttonNode->setText(text);
     buttonNode->setRelativePosition(rect);
@@ -563,7 +564,7 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
         buttonNode->setImage(button->getTextureNode());
     if (font.isValid()) {
         if (!font->isInit()) {
-            font->setFontNode(env->getFont(font->getPath().c_str()));
+            font->setFontNode(env->getFont(AssetsManager::getAsset(font->getPath()).c_str()));
         }
         buttonNode->setOverrideFont(font->getFontNode());
     }
@@ -598,7 +599,7 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
     textNode->setVisible(text->isVisible());
     if (font.isValid()) {
         if (!font->isInit()) {
-            font->setFontNode(env->getFont(font->getPath().c_str()));
+            font->setFontNode(env->getFont(AssetsManager::getAsset(font->getPath()).c_str()));
         }
         textNode->setOverrideFont(font->getFontNode());
     }
@@ -623,7 +624,7 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
         }
     }
     if (!image->isTextureInit()) {
-        textureNode = driver->getTexture(image->getPath().c_str());
+        textureNode = driver->getTexture(AssetsManager::getAsset(image->getPath()).c_str());
         driver->makeColorKeyTexture(textureNode, irr::core::position2d<irr::s32>(0, 0));
         image->setTextureNode(textureNode);
     }

@@ -25,6 +25,7 @@
 #include "systems/BombManagerSystem.hpp"
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 int runBomberman()
 {
@@ -34,6 +35,10 @@ int runBomberman()
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
     indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+
+    auto &assetsManager = indie::AssetsManager::getInstance();
+    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.loadTexturePack("default");
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());

@@ -241,3 +241,14 @@ void indie::InputManager::RegisterKey(const std::string &name, irr::u8 controlle
     RegisterKey(controllerId, keyId);
     MapKey(name, controllerId, keyId);
 }
+
+void indie::InputManager::UnmapKey(const std::string &name)
+{
+    if (nameToControllerKey.find(name) != nameToControllerKey.end()) {
+        nameToControllerKey.erase(name);
+    } else if (nameToKey.find(name) != nameToKey.end()) {
+        nameToKey.erase(name);
+    } else {
+        throw KeyNotFoundException(name);
+    }
+}
