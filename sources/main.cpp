@@ -112,8 +112,14 @@ int runBomberman()
 
 int main()
 {
-
+    try {
         return runBomberman();
-
+    } catch (const jf::ECSException &e) {
+        std::cerr << "An error occurred while running the game: " << e.what() << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "A standard error occurred while running the game: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "An unknown error occurred while running the game." << std::endl;
+    }
     return 84;
 }
