@@ -132,14 +132,14 @@ bool indie::systems::BonusSystem::BombUpAffector(
     if (pc.isValid()) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusBombSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_bombup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         pc->setMaxBomb(pc->getMaxBomb() + _maxBombAdded);
         return true;
     } else if (aic.isValid()) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusBombSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_bombup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         aic->setMaxBomb(aic->getMaxBomb() + _maxBombAdded);
         return true;
@@ -158,14 +158,14 @@ bool indie::systems::BonusSystem::FireUpAffector(
     if (pc.isValid() && pc->getBombForce() < _maxFireUp) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusFireUpSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_fireup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         pc->setBombForce(pc->getBombForce() + _bombTileAdded);
         return true;
     } else if (aic.isValid() && aic->getBombForce() < _maxFireUp) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusFireUpSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_fireup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         aic->setBombForce(aic->getBombForce() + _bombTileAdded);
         return true;
@@ -184,14 +184,14 @@ bool indie::systems::BonusSystem::SpeedUpAffector(
     if (pc.isValid() && pc->getMovementSpeed() < _maxSpeed) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusSpeedSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_speedup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         pc->setMovementSpeed(pc->getMovementSpeed() + _speedAdded);
         return true;
     } else if (aic.isValid() && aic->getMovementSpeed() < _maxSpeed) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusSpeedSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_speedup_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         aic->setMovementSpeed(aic->getMovementSpeed() + _speedAdded);
         return true;
@@ -211,14 +211,14 @@ bool indie::systems::BonusSystem::WallPassAffector(
     if (pc.isValid() && collider.isValid()) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusWallPassSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_wallpass_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
         return true;
     } else if (aic.isValid() && collider.isValid()) {
         auto componentSound = ecs.entityManager.createEntity("soundBonus");
         componentSound->assignComponent<components::DestroyOnTime, float>(10);
-        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BonusSound/BonusWallPassSound.ogg", components::SoundComponent::SoundType::EFFECT);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_wallpass_sound", components::SoundComponent::SoundType::EFFECT);
         getBonusSound->setIsPaused(false);
         collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
         return true;

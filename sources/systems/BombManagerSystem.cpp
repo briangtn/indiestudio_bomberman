@@ -119,7 +119,7 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
         return;
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto componentPlaceBomb = ecs.entityManager.createEntity("soundPlaceBomb");
-    auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BombSound/PlaceBombSound.ogg", components::SoundComponent::SoundType::EFFECT);
+    auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bomb_placed_sound", components::SoundComponent::SoundType::EFFECT);
     componentPlaceBomb->assignComponent<components::DestroyOnTime, float>(1);
     placeBombSound->setIsPaused(false);
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
@@ -380,13 +380,13 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
                 ecs.entityManager.safeDeleteEntity(entity->getID());
                 ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({position, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 auto componentBoxMusic = ecs.entityManager.createEntity("soundBox");
-                auto BoxSound = componentBoxMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/BoxSound/BoxBreakSound.ogg", components::SoundComponent::SoundType::EFFECT);
+                auto BoxSound = componentBoxMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("crate_break_sound", components::SoundComponent::SoundType::EFFECT);
                 BoxSound->setIsPaused(false);
                 componentBoxMusic->assignComponent<components::DestroyOnTime, float>(5);
                 ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & PLAYER_LAYER)) {
                 auto componentDeathMusic = ecs.entityManager.createEntity("soundDeath");
-                auto DeathSound = componentDeathMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("../Sound/PlayerSound/DeathPlayerSound.ogg", components::SoundComponent::SoundType::EFFECT);
+                auto DeathSound = componentDeathMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("player_die_sound", components::SoundComponent::SoundType::EFFECT);
                 DeathSound->setIsPaused(false);
                 componentDeathMusic->assignComponent<components::DestroyOnTime, float>(3);
                 auto playerLiveComponent = entity->getComponent<components::PlayerAlive>();
