@@ -593,6 +593,7 @@ void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IX
 
     std::map<std::string, std::string> args = {
             {"fileName", ""},
+            {"alphaChannel", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createImage");
     if (args["fileName"].empty()) {
@@ -600,6 +601,9 @@ void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IX
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createImage");
     }
     auto component = entity->assignComponent<indie::components::Image>(args["fileName"]);
+    if (!args["alphaChannel"].empty()) {
+        component->setUseAlpha(getBool(args["alphaChannel"], fileName, line));
+    }
 }
 
 void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,

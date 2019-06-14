@@ -41,16 +41,50 @@ void indie::scenes::Scene::onStart()
     ECSWrapper ecs;
 
     if (_fileName == "mainMenu.xml") {
-        ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
+        auto startButton = ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>();
+        auto settingsButton = ecs.entityManager.getEntitiesByName("settingsButton")[0]->getComponent<indie::components::Button>();
+        auto exitButton = ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>();
+
+        startButton->setOnClicked([](indie::components::Button *button){
             indie::scenes::SceneManager::safeChangeScene("playerConfig");
         });
-        ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button){
+        startButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
+            auto transform = button->getEntity()->getComponent<indie::components::Transform>();
+            if (isHovered) {
+                button->setTexturePath("../test_assets/GUI/newgame_hovered.png");
+                transform->setPosition(indie::maths::Vector3D({
+                    transform->getPosition().x - 10,
+                    transform->getPosition().y,
+                    transform->getPosition().z
+                }));
+            } else {
+                button->setTexturePath("../test_assets/GUI/newgame.png");
+                transform->setPosition(indie::maths::Vector3D({
+                    transform->getPosition().x + 10,
+                    transform->getPosition().y,
+                    transform->getPosition().z
+                }));
+            }
+        });
+        settingsButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
+            if (isHovered)
+                button->setTexturePath("../test_assets/GUI/settings_hovered.png");
+            else
+                button->setTexturePath("../test_assets/GUI/settingsbutton.png");
+        });
+        exitButton->setOnClicked([](indie::components::Button *button){
             ECSWrapper ecs;
             try {
                 ecs.systemManager.stopSystem<indie::systems::IrrlichtManagerSystem>();
             } catch (std::exception e) {
 
             }
+        });
+        exitButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
+            if (isHovered)
+                button->setTexturePath("../test_assets/GUI/exit_hovered.png");
+            else
+                button->setTexturePath("../test_assets/GUI/exitbutton.png");
         });
     }
     if (_fileName == "test.xml") {
