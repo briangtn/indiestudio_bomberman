@@ -129,5 +129,21 @@
         </component>
 		<component type="AIController">
 		</component>
+        <component type="LeaderBoard">
+            <player id="1" ranking="1"/>
+        </component>
+        <component type="DynamicCamera">
+            <argument name="movementSpeed" value="25.0"/>
+            <argument name="blockBorders" value="2"/>
+        </component>
+        <component type="PlayerAlive">
+            <argument name="lives" value="1"/>
+            <argument name="markedAsDead" value="false"/>
+        </component>
+        <component type="MoveToTarget">
+            <argument name="target" value="0,0,0"/>
+            <argument name="followTarget" value="true"/>
+            <argument name="speed" value="30.0"/>
+        </component>
     </entity>
 </scene>

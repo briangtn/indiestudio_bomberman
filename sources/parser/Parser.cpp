@@ -36,6 +36,7 @@
 #include "components/DynamicCamera.hpp"
 #include "components/PlayerAlive.hpp"
 #include "components/LeaderBoard.hpp"
+#include "systems/LiveSystem.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -117,6 +118,7 @@ indie::Parser::Parser()
         {(L"DestroyManager"), &createDestroyManager},
         {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"IrrklangAudio"), &createIrrklangAudio},
+        {(L"Live"), &createLive},
         {(L"Movement"), &createMovement},
         {(L"Taunt"), &createTaunt},
         {(L"AI"), &createAI}
@@ -438,6 +440,16 @@ void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const st
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrklangAudio", "system");
     ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
     ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
+}
+
+void indie::Parser::createLive(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createLive", "system");
+    ecs.systemManager.addSystem<systems::LiveSystem>();
+    ecs.systemManager.startSystem<systems::LiveSystem>();
 }
 
 void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)

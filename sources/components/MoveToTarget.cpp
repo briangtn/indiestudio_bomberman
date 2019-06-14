@@ -50,3 +50,13 @@ void indie::components::MoveToTarget::setSpeed(float speed)
 {
     _speed = speed;
 }
+
+indie::components::MoveToTarget &indie::components::MoveToTarget::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="MoveToTarget">)" << std::endl;
+    file << R"(            <argument name="target" value=")" << _target << R"("/>)" << std::endl;
+    file << R"(            <argument name="followTarget" value=")" << std::boolalpha << _followTarget << R"("/>)" << std::endl;
+    file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
+    file << R"(        </component>)" << std::endl;
+    return *this;
+}

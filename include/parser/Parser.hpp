@@ -58,6 +58,8 @@ namespace indie {
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line);
+        static void createLive(irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line);
         static void createMovement(irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createTaunt(irr::io::IXMLReader *xmlReader,

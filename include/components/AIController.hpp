@@ -66,6 +66,8 @@ namespace indie {
                 float getMovementSpeed() const;
                 void setMovementSpeed(float movementSpeed);
 
+                AIController &operator>>(std::ostream &file);
+
         private:
                 indie::maths::Vector3D _target;
                 std::pair<int, int> _previousPos;

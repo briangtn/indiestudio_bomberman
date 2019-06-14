@@ -55,9 +55,6 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
 
-    ecs.systemManager.addSystem<indie::systems::LiveSystem>();
-    ecs.systemManager.startSystem<indie::systems::LiveSystem>();
-
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
             ECSWrapper ecs;

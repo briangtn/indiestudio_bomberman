@@ -185,3 +185,10 @@ void indie::components::AIController::setMovementSpeed(float movementSpeed)
 {
     _movementSpeed = movementSpeed;
 }
+
+indie::components::AIController &indie::components::AIController::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="AIController">)" << std::endl;
+    file << R"(        </component>)" << std::endl;
+    return *this;
+}

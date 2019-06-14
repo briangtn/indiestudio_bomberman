@@ -34,6 +34,9 @@
 #include "components/PlayerController.hpp"
 #include "components/Rotator.hpp"
 #include "components/LeaderBoard.hpp"
+#include "components/AIController.hpp"
+#include "components/DynamicCamera.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -157,6 +160,22 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
     }
     if (entity->hasComponent<components::LeaderBoard>()) {
         components::LeaderBoard &component = *(entity->getComponent<components::LeaderBoard>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::AIController>()) {
+        components::AIController &component = *(entity->getComponent<components::AIController>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::DynamicCamera>()) {
+        components::DynamicCamera &component = *(entity->getComponent<components::DynamicCamera>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::PlayerAlive>()) {
+        components::PlayerAlive &component = *(entity->getComponent<components::PlayerAlive>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::MoveToTarget>()) {
+        components::MoveToTarget &component = *(entity->getComponent<components::MoveToTarget>().get());
         component >> file;
     }
     file << "    </entity>" << std::endl;
