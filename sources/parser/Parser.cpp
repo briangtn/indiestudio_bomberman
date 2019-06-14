@@ -26,6 +26,8 @@
 #include "components/Hoverer.hpp"
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
+#include "components/GUI/Font.hpp"
+#include "components/GUI/Image.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -77,6 +79,18 @@ const std::map<std::string, irr::video::E_MATERIAL_FLAG> indie::Parser::_materia
         {"EMF_POLYGON_OFFSET", irr::video::EMF_POLYGON_OFFSET}
 };
 
+const std::map<std::string, indie::components::Text::VerticalAlignement> indie::Parser::_verticalAlignements = {
+        {"TOP", indie::components::Text::TOP},
+        {"MIDDLE", indie::components::Text::MIDDLE},
+        {"BOTTOM", indie::components::Text::BOTTOM},
+};
+
+const std::map<std::string, indie::components::Text::HorizontalAlignement> indie::Parser::_horizontalAlignements = {
+        {"LEFT", indie::components::Text::LEFT},
+        {"CENTER", indie::components::Text::CENTER},
+        {"RIGHT", indie::components::Text::RIGHT},
+};
+
 indie::Parser::Parser()
     : _device(irr::createDevice(irr::video::EDT_NULL))
     , _xmlReader(nullptr)
@@ -90,14 +104,18 @@ indie::Parser::Parser()
     , _components({
         {(L"Animator"), &createAnimator},
         {(L"BoxCollider"), &createBoxCollider},
+        {(L"Button"), &createButton},
         {(L"Camera"), &createCamera},
+        {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
+        {(L"Image"), &createImage},
         {(L"Particle"), &createParticle},
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
         {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
+        {(L"Text"), &createText},
         {(L"Transform"), &createTransform}
     })
 {
@@ -200,6 +218,7 @@ void indie::Parser::loadScene(const std::string &fileName)
 {
     ECSWrapper ecs;
     std::string currentEntity;
+    jf::entities::EntityHandler entity;
     bool sceneNode = false;
 
     _xmlReader = _device->getFileSystem()->createXMLReader(fileName.c_str());
@@ -230,7 +249,7 @@ void indie::Parser::loadScene(const std::string &fileName)
                             + fileName + ".", "indie::Parser::loadScene");
                 } else {
                     currentEntity = irr::core::stringc(name.c_str()).c_str();
-                    auto entity = ecs.entityManager.createEntity(currentEntity);
+                    entity = ecs.entityManager.createEntity(currentEntity);
                     irr::core::stringw shouldBeKeeped = _xmlReader->getAttributeValueSafe(L"shouldBeKeeped");
                     if (shouldBeKeeped.empty()) {
                         entity->setShouldBeKeeped(false);
@@ -250,7 +269,7 @@ void indie::Parser::loadScene(const std::string &fileName)
                             "Missing attribute 'type' for node 'component' at line " + std::to_string(i) + " in file " + fileName + ".",
                             "indie::Parser::loadScene");
                 } else {
-                    _components.at(type)(currentEntity, _xmlReader, fileName, i);
+                    _components.at(type)(entity, _xmlReader, fileName, i);
                 }
             } else if (irr::core::stringw(L"argument").equals_ignore_case(_xmlReader->getNodeName())) {
                 throw exceptions::ParserInvalidFileException(
@@ -403,10 +422,9 @@ void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::strin
     }
 }
 
-void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"start",      ""},
             {"end",        ""},
@@ -415,7 +433,7 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
             {"transition", ""}
     };
     std::string animationName;
-    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Animator>();
+    auto component = entity->assignComponent<components::Animator>();
     for (; xmlReader->read(); line++) {
         if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             if (irr::core::stringw(L"animation").equals_ignore_case(xmlReader->getNodeName())) {
@@ -435,9 +453,9 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
                 }
                 bool loop = getBool(args["loop"], fileName, line);
                 component->addAnimation(animationName, {
-                        static_cast<unsigned int>(std::stoul(args["start"])),
-                        static_cast<unsigned int>(std::stoul(args["end"])),
-                        static_cast<unsigned int>(std::stoul(args["speed"])),
+                        static_cast<unsigned int>(std::stoul(args["start"], nullptr, 16)),
+                        static_cast<unsigned int>(std::stoul(args["end"], nullptr, 16)),
+                        static_cast<unsigned int>(std::stoul(args["speed"], nullptr, 16)),
                         loop,
                         args["transition"]
                 });
@@ -465,10 +483,9 @@ void indie::Parser::createAnimator(const std::string &entityName, irr::io::IXMLR
     }
 }
 
-void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"size",   ""},
             {"offset", ""},
@@ -484,32 +501,68 @@ void indie::Parser::createBoxCollider(const std::string &entityName, irr::io::IX
     if (args["layer"].empty()) {
         args["layer"] = "0xffffffff";
     }
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::BoxCollider>(
+    entity->assignComponent<components::BoxCollider>(
             getVector3D(args["size"], fileName, line), getVector3D(args["offset"], fileName, line),
             std::stoull(args["layer"], nullptr, 16));
 }
 
-void indie::Parser::createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createButton(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"text", ""},
+            {"id", ""},
+            {"textureFileName", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createButton");
+    if (args["text"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createButton");
+    }
+    auto component = entity->assignComponent<indie::components::Button>(args["text"]);
+    if (!args["id"].empty())
+        component->setId(static_cast<int>(std::stol(args["id"])));
+    if (!args["textureFileName"].empty())
+        component->setTexturePath(args["textureFileName"]);
+}
+
+void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
+    }
+    auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
+}
+
+void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line)
+{
     std::map<std::string, std::string> args = {
             {"FOV", ""}
     };
 
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
     if (args["FOV"].empty()) {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>();
+        entity->assignComponent<components::Camera>();
     } else {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Camera>(
+        entity->assignComponent<components::Camera>(
                 std::stof(args["FOV"]));
     }
 }
 
-void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"speed",       ""},
             {"amplitude",   ""},
@@ -518,10 +571,10 @@ void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLRe
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createHoverer");
     jf::components::ComponentHandler<components::Hoverer> component;
     if (!args["speed"].empty() && !args["amplitude"].empty()) {
-        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Hoverer>(
+        component = entity->assignComponent<components::Hoverer>(
                 getVector3D(args["speed"], fileName, line), getVector3D(args["amplitude"], fileName, line));
     } else {
-        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Hoverer>();
+        component = entity->assignComponent<components::Hoverer>();
         if (!args["speed"].empty()) {
             component->setSpeed(getVector3D(args["speed"], fileName, line));
         } else if (!args["amplitude"].empty()) {
@@ -533,10 +586,25 @@ void indie::Parser::createHoverer(const std::string &entityName, irr::io::IXMLRe
     }
 }
 
-void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int &line)
+void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createImage");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createImage");
+    }
+    auto component = entity->assignComponent<indie::components::Image>(args["fileName"]);
+}
+
+void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line)
+{
     std::map<std::string, std::string> args = {
             {"fileName", ""},
             {"type", ""},
@@ -549,10 +617,10 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
     }
     jf::components::ComponentHandler<components::Material> component;
     if (args["type"].empty()) {
-        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+        component = entity->assignComponent<components::Material>(
                 args["fileName"]);
     } else {
-         component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Material>(
+         component = entity->assignComponent<components::Material>(
                 args["fileName"], getMaterialType(args["type"]));
     }
     if (!args["flags"].empty()) {
@@ -568,10 +636,9 @@ void indie::Parser::createMaterial(const std::string &entityName, irr::io::IXMLR
     }
 }
 
-void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createMesh(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"fileName", ""}
     };
@@ -580,14 +647,13 @@ void indie::Parser::createMesh(const std::string &entityName, irr::io::IXMLReade
         throw exceptions::ParserInvalidFileException(
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMesh");
     }
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Mesh>(
+    entity->assignComponent<components::Mesh>(
         args["fileName"]);
 }
 
-void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"name",        ""},
             {"fileName",    ""},
@@ -607,7 +673,7 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
         throw exceptions::ParserInvalidFileException(
                 "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createParticle");
     }
-    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Particle>(
+    auto component = entity->assignComponent<components::Particle>(
         args["name"]);
     if (!args["fileName"].empty() && !args["layer"].empty()) {
         component->setTexture(std::stoi(args["layer"]), args["fileName"]);
@@ -657,10 +723,9 @@ void indie::Parser::createParticle(const std::string &entityName, irr::io::IXMLR
     }
 }
 
-void indie::Parser::createPlayerController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                            const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"xMove",            ""},
             {"yMove",            ""},
@@ -690,10 +755,11 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
             {"bombTime",         ""},
             {"bombButton",       ""},
             {"bombAnimation",    ""},
-            {"bombDuration",     ""}
+            {"bombDuration",     ""},
+            {"playerType",       ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
-    auto component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::PlayerController>();
+    auto component = entity->assignComponent<components::PlayerController>();
     if (!args["xMove"].empty()) {
         component->setXMovementAxis(args["xMove"]);
     }
@@ -781,25 +847,27 @@ void indie::Parser::createPlayerController(const std::string &entityName, irr::i
     if (!args["bombDuration"].empty()) {
         component->setBombPlacementDuration(std::stof(args["bombDuration"]));
     }
+    if (!args["playerType"].empty()) {
+        component->setPlayerType(static_cast<components::PlayerType>(std::stoi(args["playerType"])));
+    }
 }
 
-void indie::Parser::createRotator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createRotator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
     std::map<std::string, std::string> args = {
             {"speed", ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createRotator");
     if (args["speed"].empty()) {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Rotator>();
+        entity->assignComponent<components::Rotator>();
     } else {
-        ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Rotator>(
+        entity->assignComponent<components::Rotator>(
                 getVector3D(args["speed"], fileName, line));
     }
 }
 
-void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
@@ -829,10 +897,10 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
     }
     jf::components::ComponentHandler<components::SoundComponent> component;
     if (args["position"].empty()) {
-        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+        component = entity->assignComponent<components::SoundComponent>(
                 args["fileName"], getSoundType(args["type"], fileName, line));
     } else {
-        component = ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::SoundComponent>(
+        component = entity->assignComponent<components::SoundComponent>(
                 args["fileName"], getSoundType(args["type"], fileName, line),
                 getVector3D(args["position"], fileName, line));
     }
@@ -853,17 +921,47 @@ void indie::Parser::createSound(const std::string &entityName, irr::io::IXMLRead
         component->setVolume(std::stof(args["volume"]));
     }
     if (!args["playPosition"].empty()) {
-        component->setPlayPosition(std::stoul(args["playPosition"]));
+        component->setPlayPosition(std::stoul(args["playPosition"], nullptr, 16));
     }
     if (!args["velocity"].empty()) {
         component->setVelocity(getVector3D(args["velocity"], fileName, line));
     }
 }
 
-void indie::Parser::createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                    const std::string &fileName, unsigned int &line)
+void indie::Parser::createText(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+
+    std::map<std::string, std::string> args = {
+            {"text", ""},
+            {"horizontalAlignement", ""},
+            {"verticalAlignement", ""},
+            {"color", ""},
+            {"backgroundColor", ""},
+            {"id", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createText");
+    if (args["text"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createText");
+    }
+    auto component = entity->assignComponent<indie::components::Text>(args["text"]);
+    if (!args["horizontalAlignement"].empty())
+        component->setHorizontalAlignement(getHorizontalAlignement(args["horizontalAlignement"]));
+    if (!args["verticalAlignement"].empty())
+        component->setVerticalAlignement(getVerticalAlignement(args["verticalAlignement"]));
+    if (!args["color"].empty())
+        component->setColor(getColor(args["color"], fileName, line));
+    if (!args["backgroundColor"].empty())
+        component->setBackgroundColor(getColor(args["backgroundColor"], fileName, line));
+    if (!args["id"].empty())
+        component->setId(static_cast<int>(std::stol(args["id"])));
+}
+
+void indie::Parser::createTransform(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                    const std::string &fileName, unsigned int &line)
+{
     std::map<std::string, std::string> args = {
             {"position", ""},
             {"rotation", ""},
@@ -879,7 +977,7 @@ void indie::Parser::createTransform(const std::string &entityName, irr::io::IXML
     if (args["scale"].empty()) {
         args["scale"] = "1,1,1";
     }
-    ecs.entityManager.getEntitiesByName(entityName)[0]->assignComponent<components::Transform>(
+    entity->assignComponent<components::Transform>(
             getVector3D(args["position"], fileName, line), getVector3D(args["rotation"], fileName, line),
             getVector3D(args["scale"], fileName, line));
 }
@@ -994,7 +1092,7 @@ const indie::maths::Vector3D indie::Parser::getVector3D(const std::string &value
 const irr::video::SColor indie::Parser::getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line)
 {
-    int a, r, g, b;
+    unsigned int a, r, g, b;
 
     size_t n = std::count(value.begin(), value.end(), ',');
     if (n != 3) {
@@ -1003,14 +1101,14 @@ const irr::video::SColor indie::Parser::getColor(const std::string &value, const
                 + "(expected 'int, int, int, int' but got something else.", "indie::Parser::getColor");
     }
     auto pos = value.find(',');
-    a = std::stoi(value.substr(0, pos));
+    a = std::stoul(value.substr(0, pos), nullptr, 16);
     auto newPos = value.find(',', pos + 1);
-    r = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
+    r = std::stoul(value.substr(pos + 1, newPos - (pos + 1)), nullptr, 16);
     pos = newPos;
     newPos = value.find(',', pos + 1);
-    g = std::stoi(value.substr(pos + 1, newPos - (pos + 1)));
+    g = std::stoul(value.substr(pos + 1, newPos - (pos + 1)), nullptr, 16);
     pos = newPos;
-    b = std::stoi(value.substr(pos + 1));
+    b = std::stoul(value.substr(pos + 1), nullptr, 16);
     return irr::video::SColor(a, r, g, b);
 }
 
@@ -1026,4 +1124,14 @@ bool indie::Parser::getBool(const std::string &value, const std::string &fileNam
                 + value + "' at line " + std::to_string(line) + " in file " + fileName + ".",
                 "indie::Parser::getBool");
     }
+}
+
+indie::components::Text::VerticalAlignement indie::Parser::getVerticalAlignement(const std::string &align)
+{
+    return _verticalAlignements.at(align);
+}
+
+indie::components::Text::HorizontalAlignement indie::Parser::getHorizontalAlignement(const std::string &align)
+{
+    return _horizontalAlignements.at(align);
 }

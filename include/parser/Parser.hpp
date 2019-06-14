@@ -17,10 +17,12 @@
 #include <functional>
 #include "scenes/IScene.hpp"
 #include "components/SoundComponent.hpp"
+#include "components/GUI/Text.hpp"
 #include "scenes/Scene.hpp"
 
 #define SYSTEMS_FILE_PATH   "../resources/systems.xml"
 #define SCENES_FOLDER_PATH  "../resources/scenes"
+#define SAVES_FOLDER_PATH   "../resources/saves"
 
 namespace indie {
 
@@ -54,32 +56,42 @@ namespace indie {
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
-        static void createAnimator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
-        static void createBoxCollider(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
-        static void createCamera(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createButton(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
-        static void createHoverer(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
+        static void createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
+        static void createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
-        static void createMaterial(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int &line);
-        static void createMesh(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                               const std::string &fileName, unsigned int &line);
-        static void createParticle(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                   const std::string &fileName, unsigned int &line);
-        static void createPlayerController(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                           const std::string &fileName, unsigned int &line);
-        static void createRotator(const std::string &entityName, irr::io::IXMLReader *xmlReader,
-                                  const std::string &fileName, unsigned int &line);
-        static void createSound(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
-        static void createTransform(const std::string &entityName, irr::io::IXMLReader *xmlReader,
+        static void createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
+        static void createMesh(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line);
+        static void createParticle(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
+        static void createPlayerController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                           const std::string &fileName, unsigned int &line);
+        static void createRotator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
+        static void createSound(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
+        static void createText(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line);
+        static void createTransform(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                     const std::string &fileName, unsigned int &line);
 
     private: /* CONVERTORS */
         static irr::video::E_MATERIAL_TYPE getMaterialType(const std::string &type);
         static irr::video::E_MATERIAL_FLAG getMaterialFlag(const std::string &flag);
+        static indie::components::Text::VerticalAlignement getVerticalAlignement(const std::string &align);
+        static indie::components::Text::HorizontalAlignement getHorizontalAlignement(const std::string &align);
         static const components::SoundComponent::SoundType getSoundType(const std::string &type, const std::string &fileName,
                                                                         unsigned int &line);
         static const maths::Vector2D getVector2D(const std::string &value, const std::string &fileName,
@@ -97,9 +109,11 @@ namespace indie {
         std::vector<std::pair<std::string, scenes::IScene *>> _scenes;
 
         std::map<const irr::core::stringw, std::function<void(irr::io::IXMLReader *, std::string, unsigned int &)>> _systems;
-        std::map<const irr::core::stringw, std::function<void(std::string, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
+        std::map<const irr::core::stringw, std::function<void(jf::entities::EntityHandler &, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
         static const std::map<std::string, irr::video::E_MATERIAL_TYPE> _materialTypes;
         static const std::map<std::string, irr::video::E_MATERIAL_FLAG> _materialFlags;
+        static const std::map<std::string, indie::components::Text::VerticalAlignement> _verticalAlignements;
+        static const std::map<std::string, indie::components::Text::HorizontalAlignement> _horizontalAlignements;
     };
 
 }

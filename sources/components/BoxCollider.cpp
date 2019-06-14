@@ -10,6 +10,7 @@
 #include <ECSWrapper.hpp>
 #include <components/Transform.hpp>
 #include <maths/Geometry3D.hpp>
+#include <iomanip>
 #include "Events.hpp"
 #include "components/BoxCollider.hpp"
 
@@ -61,12 +62,12 @@ void indie::components::BoxCollider::setLayer(uint64_t layer)
     _layer = layer;
 }
 
-bool indie::components::BoxCollider::hasCollisions()
+bool indie::components::BoxCollider::hasCollisions(bool ignoreLayer)
 {
-    return !getCollisions().empty();
+    return !getCollisions(ignoreLayer).empty();
 }
 
-std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getCollisions()
+std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getCollisions(bool ignoreLayer)
 {
     ECSWrapper ecs;
 
@@ -91,7 +92,7 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
 
         auto collider = entity->getComponent<components::BoxCollider>();
 
-        if (!(collider->getLayer() & _layer))
+        if (!ignoreLayer && !(collider->getLayer() & _layer))
             continue;
 
         auto tr = entity->getComponent<components::Transform>();
@@ -110,4 +111,14 @@ std::vector<jf::entities::EntityHandler> indie::components::BoxCollider::getColl
             colliding.push_back(entity);
     }
     return colliding;
+}
+
+indie::components::BoxCollider &indie::components::BoxCollider::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="BoxCollider">)" << std::endl;
+    file << R"(            <argument name="size" value=")" << _size << R"("/>)" << std::endl;
+    file << R"(            <argument name="offset" value=")" << _offset << R"("/>)" << std::endl;
+    file << R"(            <argument name="layer" value="0x)" << std::setfill('0') << std::hex <<  _layer << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

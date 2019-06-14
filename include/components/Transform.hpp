@@ -23,6 +23,8 @@ namespace indie {
                maths::Vector3D rotation = maths::Vector3D(0, 0, 0), maths::Vector3D scale = maths::Vector3D(1, 1, 1));
             ~Transform() override;
 
+            Transform &operator>>(std::ostream &file);
+
         public:
             const maths::Vector3D &getPosition() const;
             void setPosition(const maths::Vector3D &position);

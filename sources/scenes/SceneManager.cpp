@@ -81,3 +81,10 @@ void indie::scenes::SceneManager::triggerSafeFunctions()
         changeScene(instance._nextScene);
     }
 }
+
+void indie::scenes::SceneManager::addSingleScene(const std::string &name, indie::scenes::IScene *scene)
+{
+    SceneManager &instance = getInstance();
+
+    instance.addScene(name, scene);
+}
