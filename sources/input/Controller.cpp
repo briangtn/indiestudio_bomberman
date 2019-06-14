@@ -129,15 +129,12 @@ void indie::Controller::generateAxis(std::string name, indie::Controller::AxisCo
     InputManager::DeleteAxis<KeyAxis, JoystickAxis, ControllerKeyAxis>(name, true);
     switch (config.type) {
         case KEY:
-            std::cout << name << std::endl;
             InputManager::CreateAxis<KeyAxis>(name, config.keyAxis);
             break;
         case JOYSTICK:
-            std::cout << name << std::endl;
             InputManager::CreateAxis<JoystickAxis>(name, config.joystickAxis);
             break;
         case CONTROLLERKEY:
-            std::cout << name << std::endl;
             InputManager::CreateAxis<ControllerKeyAxis>(name, config.controllerKeyAxis);
             break;
     }
