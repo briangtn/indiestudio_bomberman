@@ -41,8 +41,8 @@ void indie::scenes::EndScene::onStart()
     });
 
     for (int i = 0; i < nbPlayers; ++i) {
-        int playerRanking = results[i].first;
-        int playerNumber = results[i].second;
+        int playerRanking = results[i].second;
+        int playerNumber = results[i].first;
         auto textEntity = ecs.entityManager.createEntity("Player" + std::to_string(playerNumber) + "Score");
         auto textComponent = textEntity->assignComponent<indie::components::Text>(std::to_string(playerRanking) + "\t:\tPlayer " + std::to_string(playerNumber));
         auto transform = textEntity->assignComponent<indie::components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(
