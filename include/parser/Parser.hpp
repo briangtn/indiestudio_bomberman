@@ -20,9 +20,9 @@
 #include "components/GUI/Text.hpp"
 #include "scenes/Scene.hpp"
 
-#define SYSTEMS_FILE_PATH   "../resources/systems.xml"
-#define SCENES_FOLDER_PATH  "../resources/scenes"
-#define SAVES_FOLDER_PATH   "../resources/saves"
+#define SYSTEMS_FILE_PATH   "resources/systems.xml"
+#define SCENES_FOLDER_PATH  "resources/scenes"
+#define SAVES_FOLDER_PATH   "resources/saves"
 
 namespace indie {
 

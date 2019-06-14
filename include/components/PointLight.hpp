@@ -14,7 +14,7 @@
 #include "Component.hpp"
 #include "Entity.hpp"
 
-#define DEFAULT_BILLBOARD_TEXTURE "../test_assets/particle_default.png"
+#define DEFAULT_BILLBOARD_TEXTURE "default_light_texture"
 
 #define POINT_LIGHT_NO_CHANGES             0b00000000000000000000000000000000
 #define POINT_LIGHT_SHOW_SHADOWS_CHANGES   0b00000000000000000000000000000001
