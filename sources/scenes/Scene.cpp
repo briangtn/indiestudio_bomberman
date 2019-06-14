@@ -51,14 +51,14 @@ void indie::scenes::Scene::onStart()
         startButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             auto transform = button->getEntity()->getComponent<indie::components::Transform>();
             if (isHovered) {
-                button->setTexturePath("../test_assets/GUI/newgame_hovered.png");
+                button->setTexturePath("button_new_game_hovered");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x - 10,
                     transform->getPosition().y,
                     transform->getPosition().z
                 }));
             } else {
-                button->setTexturePath("../test_assets/GUI/newgame.png");
+                button->setTexturePath("button_new_game");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x + 10,
                     transform->getPosition().y,
@@ -68,9 +68,9 @@ void indie::scenes::Scene::onStart()
         });
         settingsButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             if (isHovered)
-                button->setTexturePath("../test_assets/GUI/settings_hovered.png");
+                button->setTexturePath("button_settings_hovered");
             else
-                button->setTexturePath("../test_assets/GUI/settingsbutton.png");
+                button->setTexturePath("button_settings");
         });
         exitButton->setOnClicked([](indie::components::Button *button){
             ECSWrapper ecs;
@@ -82,9 +82,9 @@ void indie::scenes::Scene::onStart()
         });
         exitButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             if (isHovered)
-                button->setTexturePath("../test_assets/GUI/exit_hovered.png");
+                button->setTexturePath("button_exit_hovered");
             else
-                button->setTexturePath("../test_assets/GUI/exitbutton.png");
+                button->setTexturePath("button_exit");
         });
     }
     if (_fileName == "test.xml") {

@@ -14,7 +14,7 @@
             <argument name="scale" value="1051, 50, 0"/>
         </component>
         <component type="Image">
-            <argument name="fileName" value="../test_assets/GUI/bombermanlogo.png"/>
+            <argument name="fileName" value="logo"/>
             <argument name="alphaChannel" value="true"/>
         </component>
     </entity>
@@ -23,7 +23,7 @@
             <argument name="position" value="0, 0,0"/>
         </component>
         <component type="Image">
-            <argument name="fileName" value="../test_assets/GUI/background.jpg"/>
+            <argument name="fileName" value="default_menu_background"/>
         </component>
     </entity>
     <entity name="startButton">
@@ -33,11 +33,11 @@
         </component>
         <component type="Button">
             <argument name="text" value="."/>
-            <argument name="textureFileName" value="../test_assets/GUI/newgame.png"/>
+            <argument name="textureFileName" value="button_new_game"/>
             <argument name="id" value="1"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
     <entity name="settingsButton">
@@ -47,11 +47,11 @@
         </component>
         <component type="Button">
             <argument name="text" value="."/>
-            <argument name="textureFileName" value="../test_assets/GUI/settingsbutton.png"/>
+            <argument name="textureFileName" value="button_settings"/>
             <argument name="id" value="2"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
     <entity name="closeButton">
@@ -61,11 +61,11 @@
         </component>
         <component type="Button">
             <argument name="text" value="."/>
-            <argument name="textureFileName" value="../test_assets/GUI/exitbutton.png"/>
+            <argument name="textureFileName" value="button_exit"/>
             <argument name="id" value="3"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
 </scene>
