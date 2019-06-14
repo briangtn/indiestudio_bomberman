@@ -27,6 +27,8 @@ namespace indie {
             bool isMarkedAsDead() const;
             void setMarkedAsDead(bool markedAsDead);
 
+            PlayerAlive &operator>>(std::ostream &file);
+
         private:
             int _lives;
             bool _markedAsDead;

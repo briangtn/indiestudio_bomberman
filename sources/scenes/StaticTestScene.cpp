@@ -26,6 +26,7 @@
 #include "components/Rotator.hpp"
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
+#include "assets_manager/AssetsManager.hpp"
 #include "parser/Parser.hpp"
 
 void indie::scenes::StaticTestScene::onStart()
@@ -36,18 +37,15 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setPosition({50, 130, -105});
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
-    auto cameraControler = cameraEntity->assignComponent<indie::components::PlayerController, std::string, std::string, std::string>("xAxis", "yAxis", "zAxis");
-    cameraControler->setAlwaysLookForward(false);
-    cameraControler->setXRotationAxis("xRotAxis");
-    cameraControler->setYRotationAxis("yRotAxis");
-    cameraControler->setRotationSpeed(100);
+
+    indie::AssetsManager::getInstance().addTexturePack("Minecraft", "../test_assets/lol");
 
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
     playerTr->setScale({8, 8, 8});
     playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P1_LAYER);
-    auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/Players/player.b3d");
-    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/Players/player1.png");
+    auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/players/player.b3d");
+    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/players/player1.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     auto playerAnimator = playerEntity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},

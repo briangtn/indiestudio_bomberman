@@ -11,6 +11,7 @@
 #define INDIESTUDIO_BONUSEFFECTOR_HPP
 
 #include "Component.hpp"
+#include <map>
 
 namespace indie {
 
@@ -29,9 +30,13 @@ namespace indie {
             explicit BonusEffector(jf::entities::Entity &entity, BonusType type);
             ~BonusEffector() override;
 
+            BonusEffector &operator>>(std::ostream &file);
         public:
             BonusType getType() const;
             void setType(BonusType type);
+
+        public:
+            static const std::map<BonusType, std::string> bonusTypes;
 
         private:
             BonusType _type;

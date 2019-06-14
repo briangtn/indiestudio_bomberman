@@ -9,21 +9,21 @@
 
 const std::map<int, std::pair<std::string, std::string>> indie::components::Bomb::_pathTextureBomb =
 {
-    {0, { "../Assets/Bombs/Mesh/NormalBomb.b3d", "../Assets/Bombs/Texture/TextureNormalBomb.png"} },
-    {1, {"../Assets/Bombs/Mesh/FireBomb.b3d", "../Assets/Bombs/Texture/TextureFireBomb.png"} },
-    {2, {"../Assets/Bombs/Mesh/WaterBomb.b3d", "../Assets/Bombs/Texture/TextureWaterBomb.png"} },
-    {3, {"../Assets/Bombs/Mesh/PlasmaBomb.b3d", "../Assets/Bombs/Texture/TexturePlasmaBomb.png"} },
-    {4, {"../Assets/Bombs/Mesh/SexyBomb.b3d", "../Assets/Bombs/Texture/TextureSexyBomb.png"} }
+    {0, { "bomb_normal_model", "bomb_normal_texture"} },
+    {1, {"bomb_fire_model", "bomb_fire_texture"} },
+    {2, {"bomb_water_model", "bomb_water_texture"} },
+    {3, {"bomb_plasma_model", "bomb_plasma_texture"} },
+    {4, {"bomb_sexy_model", "bomb_sexy_texture"} }
 };
 
 indie::components::Bomb::Bomb(jf::entities::Entity &entity, const int &strength,\
-const float &timeBeforeExplose, indie::components::BombType bomb, indie::components::PlayerType player)
+const float &timeBeforeExplode, indie::components::BombType bomb, indie::components::PlayerType player)
     :   Component(entity),
         _strength(strength),
-        _timeBeforeExplose(timeBeforeExplose),
+        _timeBeforeExplode(timeBeforeExplode),
         _bombID(bomb),
         _bombType(bomb),
-        _Player(player)
+        _player(player)
 {
     for (auto &it : _pathTextureBomb)
         if (it.first == _bombID) {
@@ -43,19 +43,19 @@ int indie::components::Bomb::getStrength() const
     return _strength;
 }
 
-void indie::components::Bomb::setStength(const int &newStrength)
+void indie::components::Bomb::setStrength(const int &newStrength)
 {
     _strength = newStrength;
 }
 
-float indie::components::Bomb::getTimeBeforeExplose() const
+float indie::components::Bomb::getTimeBeforeExplode() const
 {
-    return _timeBeforeExplose;
+    return _timeBeforeExplode;
 }
 
-void indie::components::Bomb::setTimeBeforeExplose(const float &newTimeBeforeExplose)
+void indie::components::Bomb::setTimeBeforeExplode(const float &newTimeBeforeExplode)
 {
-    _timeBeforeExplose = newTimeBeforeExplose;
+    _timeBeforeExplode = newTimeBeforeExplode;
 }
 
 indie::components::BombType indie::components::Bomb::getBombType() const
@@ -100,10 +100,24 @@ indie::maths::Vector3D indie::components::Bomb::getInitialPosition() const
 
 void indie::components::Bomb::setPlayerType(const PlayerType &player)
 {
-    _Player = player;
+    _player = player;
 }
 
 indie::components::PlayerType indie::components::Bomb::getPlayerType() const
 {
-    return _Player;
+    return _player;
+}
+
+indie::components::Bomb &indie::components::Bomb::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Bomb">)" << std::endl;
+    file << R"(            <argument name="strength" value=")" << _strength << R"("/>)" << std::endl;
+    file << R"(            <argument name="timeBeforeExplode" value=")" << _timeBeforeExplode << R"("/>)" << std::endl;
+    file << R"(            <argument name="bombType" value=")" << _bombType << R"("/>)" << std::endl;
+    file << R"(            <argument name="player" value=")" << _player << R"("/>)" << std::endl;
+    file << R"(            <argument name="texturePath" value=")" << _texturePath << R"("/>)" << std::endl;
+    file << R"(            <argument name="textureMesh" value=")" << _meshPath << R"("/>)" << std::endl;
+    file << R"(            <argument name="position" value=")" << _vectPos << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

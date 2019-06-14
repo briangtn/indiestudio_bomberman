@@ -40,3 +40,12 @@ void indie::components::DynamicCamera::setBlockBorders(int blockBorders)
 {
     _blockBorders = blockBorders;
 }
+
+indie::components::DynamicCamera &indie::components::DynamicCamera::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="DynamicCamera">)" << std::endl;
+    file << R"(            <argument name="movementSpeed" value=")" << _movementSpeed << R"("/>)" << std::endl;
+    file << R"(            <argument name="blockBorders" value=")" << _blockBorders << R"("/>)" << std::endl;
+    file << R"(        </component>)" << std::endl;
+    return *this;
+}

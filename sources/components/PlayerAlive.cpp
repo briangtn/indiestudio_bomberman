@@ -40,3 +40,12 @@ void indie::components::PlayerAlive::setMarkedAsDead(bool markedAsDead)
 {
     _markedAsDead = markedAsDead;
 }
+
+indie::components::PlayerAlive &indie::components::PlayerAlive::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="PlayerAlive">)" << std::endl;
+    file << R"(            <argument name="lives" value=")" << _lives << R"("/>)" << std::endl;
+    file << R"(            <argument name="markedAsDead" value=")" << std::boolalpha << _markedAsDead << R"("/>)" << std::endl;
+    file << R"(        </component>)" << std::endl;
+    return *this;
+}

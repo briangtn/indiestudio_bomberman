@@ -28,6 +28,8 @@ namespace indie {
             int getBlockBorders() const;
             void setBlockBorders(int blockBorders);
 
+            DynamicCamera &operator>>(std::ostream &file);
+
         private:
             float _movementSpeed;
             int _blockBorders;

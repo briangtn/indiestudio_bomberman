@@ -29,9 +29,9 @@ std::vector<indie::scenes::PlayerSettings> indie::scenes::PlayerConfigScene::pla
 };
 
 std::map<indie::scenes::PlayerControllerType, std::string> indie::scenes::PlayerConfigScene::controllerTypeImages = {
-    {indie::scenes::INPUT_EXIST, "../controller.png"},
-    {indie::scenes::INPUT_CONFIG, "../gear.png"},
-    {indie::scenes::AI, "../bot.png"},
+    {indie::scenes::INPUT_EXIST, "input_exist_icon"},
+    {indie::scenes::INPUT_CONFIG, "input_config_icon"},
+    {indie::scenes::AI, "ai_icon"},
 };
 
 std::map<std::string, indie::Controller> indie::scenes::PlayerConfigScene::controllers;
@@ -73,7 +73,7 @@ void indie::scenes::PlayerConfigScene::onStart()
     auto cameraTransform = cameraEntity->assignComponent<indie::components::Transform>();
 
     auto soundEntity = ecs.entityManager.createEntity("playerSelectMusic");
-    auto sound = soundEntity->assignComponent<indie::components::SoundComponent>("../Sound/Musics/playerSelect.ogg", components::SoundComponent::MUSIC);
+    auto sound = soundEntity->assignComponent<indie::components::SoundComponent>("music_player_select", components::SoundComponent::MUSIC);
     sound->setIsLooped(true);
     sound->setIsPaused(false);
 
@@ -103,7 +103,7 @@ void indie::scenes::PlayerConfigScene::onStart()
         createConfigBlock(i);
 
     auto backgroundEntity = ecs.entityManager.createEntity("background");
-    backgroundEntity->assignComponent<indie::components::Image>("../background.png");
+    backgroundEntity->assignComponent<indie::components::Image>("default_menu_background");
     auto backgroundTransform = backgroundEntity->assignComponent<indie::components::Transform>();
     backgroundTransform->setPosition({0, 0, -1});
     UpdateConfigController();
@@ -128,7 +128,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     std::string idString = std::to_string(id);
 
     auto validImageEntity = ecs.entityManager.createEntity("validImage" + idString);
-    auto validImageComponent = validImageEntity->assignComponent<indie::components::Image>("../valid.png");
+    auto validImageComponent = validImageEntity->assignComponent<indie::components::Image>("valid_selection_icon");
     auto validImageTransform = validImageEntity->assignComponent<indie::components::Transform>();
     validImageTransform->setPosition({basePos.x + buttonSize.x + gapSize, basePos.y, 1});
     validImageComponent->setUseAlpha(true);

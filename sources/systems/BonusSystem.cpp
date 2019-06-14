@@ -17,6 +17,7 @@
 #include "systems/BonusSystem.hpp"
 #include "events/AskingForBonusSpawnEvent.hpp"
 #include "components/AIController.hpp"
+#include "components/DestroyOnTime.hpp"
 
 const std::map<indie::components::BonusType, indie::systems::BonusSystem::BonusFunction> indie::systems::BonusSystem::_bonusAffectorMap = {
     {components::BONUS_T_BOMB_UP, BonusSystem::BombUpAffector},
@@ -33,10 +34,10 @@ const std::map<indie::components::BonusType, float> indie::systems::BonusSystem:
 };
 
 const std::map<indie::components::BonusType, std::pair<std::string, std::string>> indie::systems::BonusSystem::_bonusModelMap = {
-    {components::BONUS_T_BOMB_UP, {"../test_assets/Items/bombUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_FIRE_UP, {"../test_assets/Items/fireUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_SPEED_UP, {"../test_assets/Items/speedUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_WALL_PASS, {"../test_assets/Items/wallPassItem.b3d", "../test_assets/Items/itemTex.png"}},
+    {components::BONUS_T_BOMB_UP, {"item_bombup_model", "items_texture"}},
+    {components::BONUS_T_FIRE_UP, {"item_fireup_model", "items_texture"}},
+    {components::BONUS_T_SPEED_UP, {"item_speedup_model", "items_texture"}},
+    {components::BONUS_T_WALL_PASS, {"item_wallpass_model", "items_texture"}},
 };
 
 indie::systems::BonusSystem::BonusSystem()
@@ -124,12 +125,22 @@ bool indie::systems::BonusSystem::BombUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
+    ECSWrapper ecs;
     auto pc = affectTo->getComponent<components::PlayerController>();
     auto aic = affectTo->getComponent<components::AIController>();
+
     if (pc.isValid()) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_bombup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         pc->setMaxBomb(pc->getMaxBomb() + _maxBombAdded);
         return true;
     } else if (aic.isValid()) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_bombup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         aic->setMaxBomb(aic->getMaxBomb() + _maxBombAdded);
         return true;
     }
@@ -140,12 +151,22 @@ bool indie::systems::BonusSystem::FireUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
+    ECSWrapper ecs;
     auto pc = affectTo->getComponent<components::PlayerController>();
     auto aic = affectTo->getComponent<components::AIController>();
-    if (pc.isValid()) {
+    
+    if (pc.isValid() && pc->getBombForce() < _maxFireUp) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_fireup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         pc->setBombForce(pc->getBombForce() + _bombTileAdded);
         return true;
-    } else if (aic.isValid()) {
+    } else if (aic.isValid() && aic->getBombForce() < _maxFireUp) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_fireup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         aic->setBombForce(aic->getBombForce() + _bombTileAdded);
         return true;
     }
@@ -156,12 +177,22 @@ bool indie::systems::BonusSystem::SpeedUpAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
+    ECSWrapper ecs;
     auto pc = affectTo->getComponent<components::PlayerController>();
     auto aic = affectTo->getComponent<components::AIController>();
+    
     if (pc.isValid() && pc->getMovementSpeed() < _maxSpeed) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_speedup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         pc->setMovementSpeed(pc->getMovementSpeed() + _speedAdded);
         return true;
     } else if (aic.isValid() && aic->getMovementSpeed() < _maxSpeed) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_speedup_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         aic->setMovementSpeed(aic->getMovementSpeed() + _speedAdded);
         return true;
     }
@@ -172,13 +203,23 @@ bool indie::systems::BonusSystem::WallPassAffector(
     jf::entities::EntityHandler affectTo,
     jf::components::ComponentHandler<indie::components::BonusEffector> &effector)
 {
+    ECSWrapper ecs;
     auto pc = affectTo->getComponent<components::PlayerController>();
     auto aic = affectTo->getComponent<components::AIController>();
     auto collider = affectTo->getComponent<components::BoxCollider>();
+    
     if (pc.isValid() && collider.isValid()) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_wallpass_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
         return true;
     } else if (aic.isValid() && collider.isValid()) {
+        auto componentSound = ecs.entityManager.createEntity("soundBonus");
+        componentSound->assignComponent<components::DestroyOnTime, float>(10);
+        auto getBonusSound = componentSound->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bonus_wallpass_sound", components::SoundComponent::SoundType::EFFECT);
+        getBonusSound->setIsPaused(false);
         collider->setLayer(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER);
         return true;
     }
