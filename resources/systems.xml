@@ -5,10 +5,13 @@
     <system type="IrrklangAudio">
     </system>
     <system type="Movement">
-        <argument name="mapSize" value="15,15"/>
     </system>
     <system type="Taunt">
     </system>
-    <system type="AI">
+    <system type="Bonus">
+    </system>
+    <system type="BombManager">
+    </system>
+    <system type="DestroyManager">
     </system>
 </ecs>

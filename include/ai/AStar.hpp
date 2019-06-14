@@ -68,6 +68,8 @@ namespace indie {
         };
 
         AStar::Node::position get2DPositionFromWorldPos(const maths::Vector3D &worldPos);
+        bool hasCrateInPath(const std::stack<AStar::Node> &path);
+        std::vector<AStar::Node> stackPathToVectorPath(std::stack<AStar::Node> path);
     }
 }
 

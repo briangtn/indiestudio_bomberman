@@ -38,7 +38,7 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
+      _bombPlacementDuration(0.8f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
@@ -78,7 +78,7 @@ indie::components::PlayerController::PlayerController(
       _tauntButton(settings.tauntButton),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
+      _bombPlacementDuration(0.8f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
       _bombPlacementAnimation("place bomb"),
@@ -119,7 +119,7 @@ indie::components::PlayerController::PlayerController(
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
+      _bombPlacementDuration(0.8f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
@@ -160,7 +160,7 @@ indie::components::PlayerController::PlayerController(
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
+      _bombPlacementDuration(0.8f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
       _bombPlacementAnimation("place bomb"),
@@ -551,8 +551,9 @@ indie::components::PlayerController &indie::components::PlayerController::operat
         file << R"(            <argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
     }
     file << R"(            <argument name="bombDuration" value=")" << _bombPlacementDuration << R"("/>)" << std::endl;
-    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>")" << std::endl;
-    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>")" << std::endl;
+    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>)" << std::endl;
+    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>)" << std::endl;
+    file << R"(            <argument name="playerType" value=")" << _playerType << R"("/>)" << std::endl;
     file << "        </component>" << std::endl;
     return *this;
 }

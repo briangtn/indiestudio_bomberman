@@ -30,3 +30,13 @@ void indie::components::PlayerAlive::setLives(int lives)
 {
     _lives = lives;
 }
+
+bool indie::components::PlayerAlive::isMarkedAsDead() const
+{
+    return _markedAsDead;
+}
+
+void indie::components::PlayerAlive::setMarkedAsDead(bool markedAsDead)
+{
+    _markedAsDead = markedAsDead;
+}

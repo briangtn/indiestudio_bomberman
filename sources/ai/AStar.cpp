@@ -80,9 +80,9 @@ indie::ai::AStar::NodeGrid indie::ai::AStar::computeNodeGrid(const indie::ai::AI
                 UINT_MAX,
                 false,
                 false,
-                !((viewGrid[i][j] & 1) && ((viewGrid[i][j] != AIView::AI_CELL_TYPE_BREAKABLE_WALL) || !ignoreBreakableWalls)),
+                !((viewGrid[i][j] & AIView::AI_CELL_COLLIDE) && (!(viewGrid[i][j] & AIView::AI_CELL_TYPE_BREAKABLE_WALL) || !ignoreBreakableWalls)),
                 nullptr,
-                viewGrid[i][j] == AIView::AI_CELL_TYPE_BREAKABLE_WALL ? 2u : 1u
+                viewGrid[i][j] & AIView::AI_CELL_TYPE_BREAKABLE_WALL ? 2u : 1u
             });
         }
     }
@@ -191,4 +191,23 @@ std::stack<indie::ai::AStar::Node> indie::ai::AStar::traceBackPath(indie::ai::AS
 indie::ai::AStar::Node::position indie::ai::get2DPositionFromWorldPos(const indie::maths::Vector3D &worldPos)
 {
     return {static_cast<int>(std::round(worldPos.x / 10.0f)), -static_cast<int>(std::round(worldPos.z / 10.0f))};
+}
+
+std::vector<indie::ai::AStar::Node> indie::ai::stackPathToVectorPath(std::stack<indie::ai::AStar::Node> path)
+{
+    std::vector<indie::ai::AStar::Node> ret;
+    while (!path.empty()) {
+        ret.emplace_back(path.top());
+        path.pop();
+    }
+    return ret;
+}
+
+bool indie::ai::hasCrateInPath(const std::stack<indie::ai::AStar::Node> &path)
+{
+    for (auto &elem : stackPathToVectorPath(path)) {
+        if (elem.hasCrate())
+            return true;
+    }
+    return false;
 }

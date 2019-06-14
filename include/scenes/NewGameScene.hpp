@@ -36,6 +36,7 @@ namespace indie {
         private:
             static constexpr unsigned int mapWidth = 15;
             static constexpr unsigned int mapHeight = 15;
+            static constexpr unsigned int nbStartingLives = 1;
 
         private:
             bool _saveOnExit;

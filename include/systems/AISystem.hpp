@@ -42,16 +42,19 @@ namespace indie {
                 static void randomHandling(indie::components::AIController::state &state,
                     std::vector<jf::entities::EntityHandler> bonuses, 
                     std::vector<jf::entities::EntityHandler> players);
-                static std::pair<bool, std::vector<int>> inDanger(std::vector<jf::entities::EntityHandler> bombs);
-                
+                static bool inDanger(indie::ai::AIView::AICellViewGrid &map, maths::Vector3D &playerPos);
+                static std::pair<bool, std::pair<int, int>> determineSafeCell(ai::AIView::AICellViewGrid &grid,
+                                                                              jf::entities::EntityHandler &entity);
+
                 static void focusLogic();
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity);
                 static void searchLogic();
-
+                static void surviveLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                        jf::entities::EntityHandler &entity);
                 static void askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component,
-                                          jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler entity);
+                                          const indie::maths::Vector3D &target, jf::entities::EntityHandler entity);
                 static bool hasMoved(jf::entities::EntityHandler entity, 
                     jf::components::ComponentHandler<indie::components::AIController> component);
 

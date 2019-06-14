@@ -17,6 +17,7 @@
 #include <random>
 #include "components/MoveToTarget.hpp"
 #include "components/Bomb.hpp"
+#include "components/BoxCollider.hpp"
 
 indie::systems::AISystem::AISystem() : _timePassed(0)
 {
@@ -52,6 +53,9 @@ void indie::systems::AISystem::onUpdate(const std::chrono::nanoseconds &elapsedT
 
     ECSWrapper ecs;
     ecs.entityManager.applyToEach<components::AIController>(&AILogic);
+    if (_timePassed >= 500000000) {
+        _timePassed -= 500000000;
+    }
 }
 
 int indie::systems::AISystem::getTimePassed() const
@@ -81,7 +85,6 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
         return;
     component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
                             ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
-    ecs.systemManager.getSystem<indie::systems::AISystem>().setTimePassed(0);
 
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
     jf::components::ComponentHandler<indie::components::MoveToTarget> moveComp = entity->getComponent<indie::components::MoveToTarget>();
@@ -108,6 +111,7 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
         moveComp->setFollowTarget(true);
 
     switch (component->getState()) {
+        case indie::components::AIController::SURVIVE : surviveLogic(component, entity);
         case indie::components::AIController::FOCUS : focusLogic();
         case indie::components::AIController::TAUNT : tauntLogic(component);
         case indie::components::AIController::POWERUP : powerupLogic(component, bonuses[0], entity);
@@ -127,12 +131,62 @@ void indie::systems::AISystem::tauntLogic(jf::components::ComponentHandler<indie
 }
 
 void indie::systems::AISystem::askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component, 
-                                             jf::entities::EntityHandler &target, jf::entities::EntityHandler entity)
+                                             const indie::maths::Vector3D &target, jf::entities::EntityHandler entity)
 {
     jf::components::ComponentHandler<indie::components::MoveToTarget> moveComp = entity->getComponent<indie::components::MoveToTarget>();
     moveComp->setSpeed(component->getMovementSpeed());
-    moveComp->setTarget(target->getComponent<indie::components::Transform>()->getPosition());
+    moveComp->setTarget(target);
     component->setHasTarget(true);
+}
+
+std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell(ai::AIView::AICellViewGrid &grid, jf::entities::EntityHandler &entity)
+{
+    std::pair<bool, std::pair<int, int>> res = {true, {0, 0}};
+    std::vector<std::pair<int, int>> potentialSafeCell;
+    ai::AStar::Node::position playerPos = ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition());
+
+    int xMin = playerPos.x - 3 < 0 ? 0 : playerPos.x - 3;
+    int xMax = playerPos.x + 3 > 14 ? 14 : playerPos.x + 3;
+    int yMin = playerPos.y - 3 < 0 ? 0 : playerPos.y - 3;
+    int yMax = playerPos.y + 3 > 14 ? 14 : playerPos.y + 3;
+
+    for (int i = yMin; i < yMax; i++) {
+        for (int a = xMin; a < xMax; a++) {
+            if (!(grid[i][a] & ai::AIView::AI_CELL_BLAST)) {
+                if (!(entity->getComponent<indie::components::BoxCollider>()->getLayer() & BREAKABLE_BLOCK_LAYER)) { //j'ai le wall pass
+                    potentialSafeCell.emplace_back(i, a);
+                } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) && ai::hasCrateInPath(ai::AStar::findPath(grid, playerPos, {i, a}))) {
+                    potentialSafeCell.emplace_back(i, a);
+                }
+            }
+        }
+    }
+    if (potentialSafeCell.empty()) {
+        res.first = false;
+        return (res);
+    }
+    std::sort(potentialSafeCell.begin(), potentialSafeCell.end(), [&playerPos](std::pair<int, int> safeA, std::pair<int, int> safeB){
+        return std::pow(safeA.first - playerPos.x, 2) + std::pow(safeA.second - playerPos.y, 2) < std::pow(safeB.first - playerPos.x, 2) + std::pow(safeB.second - playerPos.y, 2);
+    });
+    res.second.first = potentialSafeCell[0].first;
+    res.second.second = potentialSafeCell[0].second;
+    return (res);
+}
+
+void indie::systems::AISystem::surviveLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                            jf::entities::EntityHandler &entity)
+{
+    ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
+    if (component->getState() != component->getLastState() || !component->getHasTarget()) {
+        std::pair<bool, std::pair<int, int>> res = determineSafeCell(grid, entity);
+        maths::Vector3D target(res.second.first == 0 ? 0 : res.second.first + 10, -5, res.second.second == 0 ? 0 : res.second.second * -1 + 10);
+        if (res.first == true)
+            askNewTarget(component, target, entity);
+        else {
+            //Bombs
+            tauntLogic(component);
+        }
+    }
 }
 
 void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
@@ -141,7 +195,7 @@ void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<ind
     component->setFullNodePath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
 ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition())));
     if (component->getState() != component->getLastState() || !component->getHasTarget())
-        askNewTarget(component, bonuses, entity);
+        askNewTarget(component, bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
 }
 
 void indie::systems::AISystem::searchLogic()
@@ -159,15 +213,13 @@ std::vector<jf::entities::EntityHandler> &bombs)
     indie::components::AIController::state state = indie::components::AIController::UNKNOWN;
     ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
+    indie::ai::AIView::AICellViewGrid map = ai::AIView::getViewGrid();
 
-    //bomb first; with SURVIVE STATE;
-    /*
-    if (!bombs.empty() && indanger())
+    if (!bombs.empty() && inDanger(map, playerPos))
         state = indie::components::AIController::SURVIVE;
-    */
-    /*if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
+    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::POWERUP;
-    else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
+    /*else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 900)
         state = indie::components::AIController::FOCUS;
     else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 3600)
         state = indie::components::AIController::POWERUP;
@@ -178,16 +230,15 @@ std::vector<jf::entities::EntityHandler> &bombs)
 
     if (component->getState() != indie::components::AIController::POWERUP);
         randomHandling(state, bonuses, players);*/
-    //component->setState(state);
-    if (!bonuses.empty())
-        component->setState(indie::components::AIController::POWERUP);
-    else
-        component->setState(indie::components::AIController::UNKNOWN);
+    component->setState(state);
 }
 
-std::pair<bool, std::vector<int>> indie::systems::AISystem::inDanger(std::vector<jf::entities::EntityHandler> bombs)
+bool indie::systems::AISystem::inDanger(indie::ai::AIView::AICellViewGrid &map, maths::Vector3D &playerPos)
 {
-
+    indie::ai::AStar::Node::position pos = ai::get2DPositionFromWorldPos(playerPos);
+    if (map[pos.y][pos.x] & ai::AIView::AI_CELL_BLAST)
+        return (true);
+    return (false);
 }
 
 void indie::systems::AISystem::randomHandling(indie::components::AIController::state &state, 

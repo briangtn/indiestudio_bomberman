@@ -19,10 +19,12 @@
 #include "components/SoundComponent.hpp"
 #include "components/GUI/Text.hpp"
 #include "scenes/Scene.hpp"
+#include "components/BonusEffector.hpp"
+#include "components/BonusSpawner.hpp"
 
-#define SYSTEMS_FILE_PATH   "../resources/systems.xml"
-#define SCENES_FOLDER_PATH  "../resources/scenes"
-#define SAVES_FOLDER_PATH   "../resources/saves"
+#define SYSTEMS_FILE_PATH   "resources/systems.xml"
+#define SCENES_FOLDER_PATH  "resources/scenes"
+#define SAVES_FOLDER_PATH   "resources/saves"
 
 namespace indie {
 
@@ -43,9 +45,15 @@ namespace indie {
         void loadScene(const std::string &fileName);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &callingMethod,
-                                const std::string &node="component");
+                                const std::string &node = "component");
 
     private: /* SYSTEMS */
+        static void createBombManager(irr::io::IXMLReader *xmlReader, const std::string &fileName,
+                                      unsigned int &line);
+        static void createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName,
+                                unsigned int &line);
+        static void createDestroyManager(irr::io::IXMLReader *xmlReader,
+                                         const std::string &fileName, unsigned int &line);
         static void createIrrlichtManager(irr::io::IXMLReader *xmlReader,
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
@@ -58,14 +66,24 @@ namespace indie {
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
+        static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
+        static void createBomb(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line);
+        static void createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line);
+        static void createBonusSpawner(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                       const std::string &fileName, unsigned int &line);
         static void createButton(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
         static void createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createDestroy(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line);
         static void createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
         static void createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -74,8 +92,8 @@ namespace indie {
                                   const std::string &fileName, unsigned int &line);
         static void createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
-        static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                                  const std::string &fileName, unsigned int &line);
+        static void createLeaderBoard(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line);
         static void createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -111,6 +129,8 @@ namespace indie {
         static const irr::video::SColor getColor(const std::string &value, const std::string &fileName,
                                                  unsigned int &line);
         static bool getBool(const std::string &value, const std::string &fileName, unsigned int &line);
+        static components::BonusType getBonusType(const std::string &type);
+        static components::BonusSpawner::BonusSpawnerType getSpawnerType(const std::string &type);
 
     private:
         irr::IrrlichtDevice *_device;
@@ -122,6 +142,7 @@ namespace indie {
         std::map<const irr::core::stringw, std::function<void(jf::entities::EntityHandler &, irr::io::IXMLReader *, std::string, unsigned int &)>> _components;
         static const std::map<std::string, irr::video::E_MATERIAL_TYPE> _materialTypes;
         static const std::map<std::string, irr::video::E_MATERIAL_FLAG> _materialFlags;
+        static const std::map<std::string, components::BonusType> _bonusTypes;
         static const std::map<std::string, indie::components::Text::VerticalAlignement> _verticalAlignements;
         static const std::map<std::string, indie::components::Text::HorizontalAlignement> _horizontalAlignements;
     };

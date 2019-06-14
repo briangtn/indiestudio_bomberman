@@ -72,7 +72,8 @@ irrklang::ISound *indie::components::SoundComponent::getSound()
 void indie::components::SoundComponent::setSound(irrklang::ISound *sound)
 {
     _sound = sound;
-    _state = STARTED;
+    if (_sound)
+        _state = STARTED;
 }
 
 const std::string &indie::components::SoundComponent::getSourceFile() const

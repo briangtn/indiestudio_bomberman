@@ -12,6 +12,7 @@
 
 #include <list>
 #include "System.hpp"
+#include "components/LeaderBoard.hpp"
 
 namespace indie {
 
@@ -31,13 +32,15 @@ namespace indie {
 
         public:
             void startNewGame();
-            void endGame();
+            void startGame();
+            components::LeaderBoard::PlayerLeaderBoard endGame();
 
         private:
             static constexpr float updateDelta = 0.2f;
 
         private:
             float _elapsedTime;
+            bool _gameLaunched;
         };
     }
 }

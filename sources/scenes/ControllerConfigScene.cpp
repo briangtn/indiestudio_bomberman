@@ -32,7 +32,7 @@ void indie::scenes::ControllerConfigScene::onStart()
     ECSWrapper ecs;
 
     auto backgroundEntity = ecs.entityManager.createEntity("background");
-    backgroundEntity->assignComponent<indie::components::Image>("../background.png");
+    backgroundEntity->assignComponent<indie::components::Image>("default_menu_background");
     auto backgroundTransform = backgroundEntity->assignComponent<indie::components::Transform>();
     backgroundTransform->setPosition({0, 0, -1});
 
@@ -43,7 +43,7 @@ void indie::scenes::ControllerConfigScene::onStart()
     textComponent->setColor(irr::video::SColor(255, 255, 0, 0));
     textComponent->setVerticalAlignement(components::Text::MIDDLE);
     textComponent->setHorizontalAlignement(components::Text::CENTER);
-    textEntity->assignComponent<indie::components::Font>("../bigfont.png");
+    textEntity->assignComponent<indie::components::Font>("default_font");
 
     up();
 }

@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
+#include <typeinfo>
 #include <iostream>
 #include "systems/TauntSystem.hpp"
 #include "systems/BonusSystem.hpp"
@@ -26,6 +27,7 @@
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
 #include "systems/LiveSystem.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 int runBomberman()
 {
@@ -34,22 +36,18 @@ int runBomberman()
 
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
 
-    indie::scenes::PlayerConfigScene::InitControllers();
+    try {
+        ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>();
+    } catch (jf::SystemNotFoundException &e) {
+        throw jf::SystemNotFoundException("A critical system is missing: IrrlichtManagerSystem", "main");
+    }
+
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    indie::scenes::PlayerConfigScene::InitControllers();
 
-    indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
-	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
-    indie::InputManager::CreateAxis("zAxis", indie::JoystickAxis({0, 1, true}));
-    indie::InputManager::CreateAxis("zAxis", indie::KeyAxis({irr::KEY_KEY_Z, irr::KEY_KEY_S}));
-    indie::InputManager::CreateAxis("yAxis", indie::ControllerKeyAxis({0, 0b00000000, 0b00000001}));
-    indie::InputManager::CreateAxis("yAxis", indie::KeyAxis({irr::KEY_SPACE, irr::KEY_LSHIFT}));
-    indie::InputManager::CreateAxis("xRotAxis", indie::JoystickAxis({0, 4}));
-    indie::InputManager::CreateAxis("yRotAxis", indie::JoystickAxis({0, 3}));
-
-
-    indie::InputManager::RegisterKey("taunt", 0, 1);
-//    indie::InputManager::RegisterKey("bomb", 0, 2);
-    indie::InputManager::RegisterKey("bomb", irr::KEY_KEY_B);
+    auto &assetsManager = indie::AssetsManager::getInstance();
+    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.loadTexturePack("default");
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
@@ -57,22 +55,13 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
 
-    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
-    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
-
-    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
-    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
-
-    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
-    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
-
     ecs.systemManager.addSystem<indie::systems::LiveSystem>();
     ecs.systemManager.startSystem<indie::systems::LiveSystem>();
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
             ECSWrapper ecs;
-            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_SPEED_UP});
+            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_WALL_PASS});
         }
     });
 
@@ -82,6 +71,7 @@ int runBomberman()
         if (e.wasPressed)
             indie::scenes::SceneManager::changeScene("mainMenu");
     });
+    listeners.push_back(id);
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
@@ -99,7 +89,7 @@ int runBomberman()
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {
             for (auto &err : errors) {
-                std::cerr << "[ERROR] " << err.error << std::endl;
+                std::cerr << "[ERROR][UNKNOWN SYSTEM](" << typeid(err.system).name() << ") " << err.error << std::endl;
             }
             return 84;
         }
@@ -115,7 +105,7 @@ int main()
     try {
         return runBomberman();
     } catch (const jf::ECSException &e) {
-        std::cerr << "An error occurred while running the game: " << e.what() << std::endl;
+        std::cerr << "An error occurred while running the game: " << e.what() << " at " << e.where() << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "A standard error occurred while running the game: " << e.what() << std::endl;
     } catch (...) {

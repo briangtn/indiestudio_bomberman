@@ -29,9 +29,11 @@
 #include "components/PlayerController.hpp"
 #include "components/Camera.hpp"
 #include "components/DynamicCamera.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(false), _saveName("")
+    : _saveOnExit(false), _saveName("default")
 {
 
 }
@@ -50,6 +52,9 @@ void indie::scenes::NewGameScene::onStart()
     auto p4 = spawnYellow();
     assignSpecificComponents(p4, PlayerConfigScene::playersSettings[3].controllerType);
     spawnCamera();
+    auto entity = ecs.entityManager.createEntity("sound");
+    auto component = entity->assignComponent<components::SoundComponent>("music_battle", components::SoundComponent::MUSIC);
+    component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 }
 
@@ -101,9 +106,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player1");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({0, -5, 0}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/black.png");
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false); //TODO remove
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_black");
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
@@ -112,8 +117,10 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
         {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
+        {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P1_LAYER);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -122,9 +129,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player2");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({10.0f * (mapWidth - 1), -5, 0}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/blue.png");
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false); //TODO remove
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_blue");
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
@@ -133,8 +140,11 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
         {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
+        {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
+        {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P2_LAYER);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -143,19 +153,21 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnWhite()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player3");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({0, -5, -10.0f * (mapHeight - 1)}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/white.png");
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false); //TODO remove
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_white");
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
         {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
+        {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
+        {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P3_LAYER);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -164,19 +176,21 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player4");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({10.0f * (mapWidth - 1), -5, -10.0f * (mapHeight - 1)}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/yellow.png");
-    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false); //TODO remove
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_yellow");
+    mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
         {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
+        {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
+        {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P4_LAYER);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -208,8 +222,8 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnCamera()
 {
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("camera");
-    entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D>({70, 150, -120}, {70, 0, 0});
+    entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D>({70, 150, -140}, {70, 0, 0});
     entity->assignComponent<components::Camera>();
-    entity->assignComponent<components::DynamicCamera>();
+    //entity->assignComponent<components::DynamicCamera>();
     return entity;
 }

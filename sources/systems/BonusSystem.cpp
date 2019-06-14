@@ -34,10 +34,10 @@ const std::map<indie::components::BonusType, float> indie::systems::BonusSystem:
 };
 
 const std::map<indie::components::BonusType, std::pair<std::string, std::string>> indie::systems::BonusSystem::_bonusModelMap = {
-    {components::BONUS_T_BOMB_UP, {"../test_assets/Items/bombUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_FIRE_UP, {"../test_assets/Items/fireUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_SPEED_UP, {"../test_assets/Items/speedUpItem.b3d", "../test_assets/Items/itemTex.png"}},
-    {components::BONUS_T_WALL_PASS, {"../test_assets/Items/wallPassItem.b3d", "../test_assets/Items/itemTex.png"}},
+    {components::BONUS_T_BOMB_UP, {"item_bombup_model", "items_texture"}},
+    {components::BONUS_T_FIRE_UP, {"item_fireup_model", "items_texture"}},
+    {components::BONUS_T_SPEED_UP, {"item_speedup_model", "items_texture"}},
+    {components::BONUS_T_WALL_PASS, {"item_wallpass_model", "items_texture"}},
 };
 
 indie::systems::BonusSystem::BonusSystem()
