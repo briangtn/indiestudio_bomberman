@@ -7,6 +7,7 @@
 
 /* Created the 26/05/2019 at 11:34 by jfrabel */
 
+#include <iomanip>
 #include "Events.hpp"
 #include "components/PlayerController.hpp"
 
@@ -40,7 +41,10 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(1),
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -77,7 +81,10 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(1),
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -115,7 +122,10 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(1),
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -153,7 +163,10 @@ indie::components::PlayerController::PlayerController(
       _bombPlacementDuration(1.0f),
       _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place bomb"),
+      _bombForce(1),
+      _maxBomb(3),
+      _playerType(P1)
 {
     EMIT_CREATE(PlayerController);
 }
@@ -450,4 +463,96 @@ float indie::components::PlayerController::getBombPlacementDuration() const
 void indie::components::PlayerController::setBombPlacementDuration(float bombPlacementDuration)
 {
     _bombPlacementDuration = bombPlacementDuration;
+}
+
+int indie::components::PlayerController::getBombForce() const
+{
+    return _bombForce;
+}
+
+void indie::components::PlayerController::setBombForce(int bombForce)
+{
+    _bombForce = bombForce;
+}
+
+int indie::components::PlayerController::getMaxBomb() const
+{
+    return _maxBomb;
+}
+
+void indie::components::PlayerController::setMaxBomb(int maxBomb)
+{
+    _maxBomb = maxBomb;
+}
+
+indie::components::PlayerType indie::components::PlayerController::getPlayerType() const
+{
+    return _playerType;
+}
+
+void indie::components::PlayerController::setPlayerType(indie::components::PlayerType playerType)
+{
+    _playerType = playerType;
+}
+
+indie::components::PlayerController &indie::components::PlayerController::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="PlayerController">)" << std::endl;
+    if (!_xMovementAxis.empty()) {
+        file << R"(            <argument name="xMove" value=")" << _xMovementAxis << R"("/>)" << std::endl;
+    }
+    if (!_yMovementAxis.empty()) {
+        file << R"(            <argument name="yMove" value=")" << _yMovementAxis << R"("/>)" << std::endl;
+    }
+    if (!_zMovementAxis.empty()) {
+        file << R"(            <argument name="zMove" value=")" << _zMovementAxis << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="lockXMove" value=")" << std::boolalpha << _lockMovementX << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockYMove" value=")" << std::boolalpha << _lockMovementY << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockZMove" value=")" << std::boolalpha << _lockMovementZ << R"("/>)" << std::endl;
+    file << R"(            <argument name="relativeMove" value=")" << std::boolalpha << _movementRelativeToCamera << R"("/>)" << std::endl;
+    file << R"(            <argument name="moveSpeed" value=")" << _movementSpeed << R"("/>)" << std::endl;
+    if (!_xRotationAxis.empty()) {
+        file << R"(            <argument name="xRotate" value=")" << _xRotationAxis << R"("/>)" << std::endl;
+    }
+    if (!_yRotationAxis.empty()) {
+        file << R"(            <argument name="yRotate" value=")" << _yRotationAxis << R"("/>)" << std::endl;
+    }
+    if (!_zRotationAxis.empty()) {
+        file << R"(            <argument name="zRotate" value=")" << _zRotationAxis << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="lockXRotate" value=")" << std::boolalpha << _lockRotationX << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockYRotate" value=")" << std::boolalpha << _lockRotationY << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockZRotate" value=")" << std::boolalpha << _lockRotationZ << R"("/>)" << std::endl;
+    file << R"(            <argument name="lookForward" value=")" << std::boolalpha << _alwaysLookForward << R"("/>)" << std::endl;
+    file << R"(            <argument name="rotateSpeed" value=")" << _rotationSpeed << R"("/>)" << std::endl;
+    if (!_idleAnimation.empty()) {
+        file << R"(            <argument name="idleAnimation" value=")" << _idleAnimation << R"("/>)" << std::endl;
+    }
+    if (!_walkingAnimation.empty()) {
+        file << R"(            <argument name="walkingAnimation" value=")" << _walkingAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="isWalking" value=")" << std::boolalpha << _isWalking << R"("/>)" << std::endl;
+    file << R"(            <argument name="isTaunting" value=")" << std::boolalpha << _isTaunting << R"("/>)" << std::endl;
+    file << R"(            <argument name="tauntTime" value=")" << _tauntTime << R"("/>)" << std::endl;
+    if (!_tauntButton.empty()) {
+        file << R"(            <argument name="tauntButton" value=")" << _tauntButton << R"("/>)" << std::endl;
+    }
+    if (!_tauntAnimation.empty()) {
+        file << R"(            <argument name="tauntAnimation" value=")" << _tauntAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="tauntDuration" value=")" << _tauntDuration << R"("/>)" << std::endl;
+    file << R"(            <argument name="isPlacingBomb" value=")" << std::boolalpha << _isPlacingBomb << R"("/>)" << std::endl;
+    file << R"(            <argument name="bombTime" value=")" << _bombPlacementTime << R"("/>)" << std::endl;
+    if (!_bombPlacementButton.empty()) {
+        file << R"(            <argument name="bombButton" value=")" << _bombPlacementButton << R"("/>)" << std::endl;
+    }
+    if (!_bombPlacementAnimation.empty()) {
+        file << R"(            <argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="bombDuration" value=")" << _bombPlacementDuration << R"("/>)" << std::endl;
+    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>")" << std::endl;
+    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>")" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

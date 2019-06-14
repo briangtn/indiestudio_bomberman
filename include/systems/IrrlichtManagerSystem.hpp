@@ -23,6 +23,11 @@
 #include "components/Material.hpp"
 #include "components/Animator.hpp"
 #include "components/PointLight.hpp"
+#include "components/GUI/Button.hpp"
+#include "components/GUI/Text.hpp"
+#include "components/GUI/Image.hpp"
+#include "components/Bomb.hpp"
+#include "components/SoundComponent.hpp"
 
 namespace indie {
 
@@ -68,6 +73,7 @@ namespace indie {
 
             irr::scene::ISceneManager *getSceneManager();
             irr::video::IVideoDriver *getVideoDriver();
+            irr::gui::IGUIEnvironment *getGUIEnvironment();
             irr::IrrlichtDevice *getDevice();
 
             bool isWindowOpen() const;
@@ -111,6 +117,21 @@ namespace indie {
             static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
+
+        private:
+            static void drawButton(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Button> button);
+            static void drawText(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Text> text);
+            static void drawImage(
+                    jf::entities::EntityHandler entity,
+                    jf::components::ComponentHandler<components::Transform> tr,
+                    jf::components::ComponentHandler<components::Image> image);
+
 
         private:
             void openWindow();

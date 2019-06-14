@@ -30,7 +30,6 @@ jf::internal::ID indie::InputManager::eventControlleKeyInputID;
 std::map<std::string, irr::EKEY_CODE> indie::InputManager::nameToKey;
 std::map<std::string, irr::u16> indie::InputManager::nameToControllerKey;
 
-
 void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axis)
 {
     ECSWrapper ecs;
