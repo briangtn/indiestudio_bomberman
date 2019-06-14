@@ -53,6 +53,12 @@ namespace indie {
             onHoverFuncPtr getOnHovered() const;
             void setOnHovered(onHoverFuncPtr func);
 
+            bool isUseAlpha() const;
+            void setUseAlpha(bool useAlpha);
+
+            bool isDrawBorder() const;
+            void setDrawBorder(bool drawBorder);
+
             bool isInit() const;
             bool isTextureNeedInit() const;
 
@@ -64,6 +70,8 @@ namespace indie {
             jf::internal::ID _eventCloseID;
             onClickedFuncPtr _onClicked;
             onHoverFuncPtr _onHovered;
+            bool _useAlpha;
+            bool _drawBorder;
         };
     };
 };

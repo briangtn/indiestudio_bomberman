@@ -87,6 +87,7 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["ai_icon"] = _texturePacks[texturePackName] + "textures/GUI/ai_icon.png";
     _currentAssets["input_config_icon"] = _texturePacks[texturePackName] + "textures/GUI/input_config_icon.png";
     _currentAssets["input_exist_icon"] = _texturePacks[texturePackName] + "textures/GUI/input_exist_icon.png";
+    _currentAssets["none_icon"] = _texturePacks[texturePackName] + "textures/GUI/none_icon.png";
     _currentAssets["valid_selection_icon"] = _texturePacks[texturePackName] + "textures/GUI/valid_selection_icon.png";
     _currentAssets["button_exit"] = _texturePacks[texturePackName] + "textures/GUI/button_exit.png";
     _currentAssets["button_exit_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_exit_hovered.png";
@@ -94,6 +95,8 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["button_new_game_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_new_game_hovered.png";
     _currentAssets["button_settings"] = _texturePacks[texturePackName] + "textures/GUI/button_settings.png";
     _currentAssets["button_settings_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_settings_hovered.png";
+    _currentAssets["play_button"] = _texturePacks[texturePackName] + "textures/GUI/play_button.png";
+    _currentAssets["reload_button"] = _texturePacks[texturePackName] + "textures/GUI/reload_button.png";
     _currentAssets["logo"] = _texturePacks[texturePackName] + "textures/GUI/logo.png";
 
 
