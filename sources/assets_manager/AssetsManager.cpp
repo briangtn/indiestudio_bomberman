@@ -81,7 +81,7 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["bomb_fire_sound"] = _texturePacks[texturePackName] + "sounds/bomb_fire.ogg";
 
     _currentAssets["default_menu_background"] = _texturePacks[texturePackName] + "textures/GUI/default_menu_background.png";
-    _currentAssets["default_font"] = _texturePacks[texturePackName] + "fonts/default_font.png";
+    _currentAssets["default_font"] = _texturePacks[texturePackName] + "fonts/default_font.xml";
     _currentAssets["default_button_texture"] = _texturePacks[texturePackName] + "textures/GUI/default_button.png";
     _currentAssets["default_particle_texture"] = _texturePacks[texturePackName] + "textures/default_particle.png";
     _currentAssets["ai_icon"] = _texturePacks[texturePackName] + "textures/GUI/ai_icon.png";
@@ -94,6 +94,10 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["button_new_game_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_new_game_hovered.png";
     _currentAssets["button_settings"] = _texturePacks[texturePackName] + "textures/GUI/button_settings.png";
     _currentAssets["button_settings_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_settings_hovered.png";
+    _currentAssets["button_back_to_menu"] = _texturePacks[texturePackName] + "textures/GUI/button_back_to_menu.png";
+    _currentAssets["button_back_to_menu_hovered"] = _texturePacks[texturePackName] + "textures/GUI/button_back_to_menu_hovered.png";
+    _currentAssets["button_volume_up"] = _texturePacks[texturePackName] + "textures/GUI/button_volume_up.png";
+    _currentAssets["button_volume_down"] = _texturePacks[texturePackName] + "textures/GUI/button_volume_down.png";
     _currentAssets["logo"] = _texturePacks[texturePackName] + "textures/GUI/logo.png";
 
 

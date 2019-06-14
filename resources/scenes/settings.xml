@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<scene>
+    <entity name="backgroundImage">
+        <component type="Transform">
+            <argument name="position" value="0, 0,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="default_menu_background"/>
+        </component>
+    </entity>
+    <entity name="backToMenuButton">
+        <component type="Transform">
+            <argument name="position" value="10,640,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="367,75,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_back_to_menu"/>
+            <argument name="id" value="1"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+    <entity name="effectVolumeUpButton">
+        <component type="Transform">
+            <argument name="position" value="725,400,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="100,100,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_volume_up"/>
+            <argument name="id" value="2"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+    <entity name="effectVolumeDownButton">
+        <component type="Transform">
+            <argument name="position" value="450,400,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="100,100,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_volume_down"/>
+            <argument name="id" value="3"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+    <entity name="musicVolumeUpButton">
+        <component type="Transform">
+            <argument name="position" value="725,200,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="100,100,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_volume_up"/>
+            <argument name="id" value="4"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+    <entity name="musicVolumeDownButton">
+        <component type="Transform">
+            <argument name="position" value="450,200,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="100,100,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_volume_down"/>
+            <argument name="id" value="5"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+    <entity name="effectVolumeText">
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="scale" value="1280,720,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="ta daronne"/>
+            <argument name="color" value="ff,00,00,00"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+            <argument name="verticalAlignement" value="MIDDLE"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+    <entity name="musicVolumeText">
+        <component type="Transform">
+            <argument name="position" value="0,150,0"/>
+            <argument name="scale" value="1280,720,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="ta daronne"/>
+            <argument name="color" value="ff,00,00,00"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+</scene>
