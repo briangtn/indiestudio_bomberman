@@ -8,6 +8,7 @@
 #include <iomanip>
 #include "components/ComponentParticle.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 indie::components::Particle::Particle(jf::entities::Entity &entity, const std::string &name)
     : Component(entity),
@@ -97,7 +98,7 @@ void indie::components::Particle::initParticle()
     }
     _particle->setName(_name.c_str());
     _particle->setVisible(_isVisible);
-    _particle->setMaterialTexture(_layer, videoDriver->getTexture(_texturePath.c_str()));
+    _particle->setMaterialTexture(_layer, videoDriver->getTexture(AssetsManager::getAsset(_texturePath).c_str()));
     _particle->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     _particle->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);
     _particle->setMaterialType(irr::video::EMT_TRANSPARENT_ADD_COLOR);
@@ -319,7 +320,7 @@ void indie::components::Particle::setTexture(int layer, const std::string &textu
     if (_particle != nullptr) {
         auto videoDriver = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getVideoDriver();
         if (videoDriver != nullptr)
-            _particle->setMaterialTexture(_layer, videoDriver->getTexture(texturePath.c_str()));
+            _particle->setMaterialTexture(_layer, videoDriver->getTexture(AssetsManager::getAsset(texturePath).c_str()));
     }
 }
 

@@ -53,7 +53,7 @@ void indie::scenes::NewGameScene::onStart()
     assignSpecificComponents(p4, PlayerConfigScene::playersSettings[3].controllerType);
     spawnCamera();
     auto entity = ecs.entityManager.createEntity("sound");
-    auto component = entity->assignComponent<components::SoundComponent>("../Sound/Musics/battleMode.ogg", components::SoundComponent::MUSIC);
+    auto component = entity->assignComponent<components::SoundComponent>("music_battle", components::SoundComponent::MUSIC);
     component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 }
@@ -106,9 +106,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player1");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({0, -5, 0}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/black.png");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_black");
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
@@ -129,9 +129,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player2");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({10.0f * (mapWidth - 1), -5, 0}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/blue.png");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_blue");
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
@@ -153,9 +153,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnWhite()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player3");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({0, -5, -10.0f * (mapHeight - 1)}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/white.png");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_white");
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
@@ -176,9 +176,9 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("player4");
     entity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>({10.0f * (mapWidth - 1), -5, -10.0f * (mapHeight - 1)}, {0, 180, 0}, {8, 8, 8});
-    auto mat = entity->assignComponent<components::Material, std::string>("../test_assets/Players/yellow.png");
+    auto mat = entity->assignComponent<components::Material, std::string>("player_texture_yellow");
     mat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    entity->assignComponent<components::Mesh, std::string>("../test_assets/Players/player.b3d");
+    entity->assignComponent<components::Mesh, std::string>("player_model");
     entity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},

@@ -27,6 +27,7 @@
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
 #include "systems/LiveSystem.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 int runBomberman()
 {
@@ -41,23 +42,18 @@ int runBomberman()
         throw jf::SystemNotFoundException("A critical system is missing: IrrlichtManagerSystem", "main");
     }
 
-    indie::scenes::PlayerConfigScene::InitControllers();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    indie::scenes::PlayerConfigScene::InitControllers();
+
+    auto &assetsManager = indie::AssetsManager::getInstance();
+    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.loadTexturePack("default");
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
-
-    ecs.systemManager.addSystem<indie::systems::BonusSystem>();
-    ecs.systemManager.startSystem<indie::systems::BonusSystem>();
-
-    ecs.systemManager.addSystem<indie::systems::BombManagerSystem>();
-    ecs.systemManager.startSystem<indie::systems::BombManagerSystem>();
-
-    ecs.systemManager.addSystem<indie::systems::DestroyOnTimeSystem>();
-    ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
 
     ecs.systemManager.addSystem<indie::systems::LiveSystem>();
     ecs.systemManager.startSystem<indie::systems::LiveSystem>();
@@ -75,6 +71,7 @@ int runBomberman()
         if (e.wasPressed)
             indie::scenes::SceneManager::changeScene("mainMenu");
     });
+    listeners.push_back(id);
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;

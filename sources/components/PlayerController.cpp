@@ -551,8 +551,9 @@ indie::components::PlayerController &indie::components::PlayerController::operat
         file << R"(            <argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
     }
     file << R"(            <argument name="bombDuration" value=")" << _bombPlacementDuration << R"("/>)" << std::endl;
-    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>")" << std::endl;
-    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>")" << std::endl;
+    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>)" << std::endl;
+    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>)" << std::endl;
+    file << R"(            <argument name="playerType" value=")" << _playerType << R"("/>)" << std::endl;
     file << "        </component>" << std::endl;
     return *this;
 }
