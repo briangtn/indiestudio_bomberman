@@ -111,7 +111,7 @@ void indie::ai::AIView::recomputeBombs(int width, int height)
             _viewGrid[z][x] |= AI_CELL_TYPE_BOMB;
             _viewGrid[z][x] |= AI_CELL_BLAST;
         }
-        for (int i = 0; i < bombComponent->getStrength(); ++i) {
+        for (int i = 0; i < bombComponent->getStrength() + 1; ++i) {
             if (z - i >= 0)
                 _viewGrid[z - i][x] |= AI_CELL_BLAST;
             if (z + i < height)
