@@ -32,7 +32,7 @@ indie::systems::IrrklangAudioSystem::~IrrklangAudioSystem()
                 ecs.systemManager.getSystem<IrrklangAudioSystem>().removeSound(component);
             }
         }, false);
-//    _engine->drop();
+    _engine->drop();
 }
 
 void indie::systems::IrrklangAudioSystem::onAwake()
