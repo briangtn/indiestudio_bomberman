@@ -807,12 +807,16 @@ void indie::Parser::createPlayerAlive(jf::entities::EntityHandler &entity, irr::
                                       const std::string &fileName, unsigned int &line)
 {
     std::map<std::string, std::string> args = {
-        {"lives", ""},
+        {"lives",        ""},
+        {"markedAsDead", ""},
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPlayerController");
     auto component = entity->assignComponent<components::PlayerAlive>();
     if (!args["lives"].empty()) {
         component->setLives(std::atoi(args["lives"].c_str()));
+    }
+    if (!args["markedAsDead"].empty()) {
+        component->setMarkedAsDead(getBool(args["markedAsDead"], fileName, line));
     }
 }
 

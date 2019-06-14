@@ -10,6 +10,8 @@
 #include "systems/LiveSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "components/PlayerAlive.hpp"
+#include "components/PlayerController.hpp"
+#include "components/AIController.hpp"
 
 indie::systems::LiveSystem::LiveSystem()
     : _elapsedTime(0)
@@ -41,8 +43,15 @@ void indie::systems::LiveSystem::onUpdate(const std::chrono::nanoseconds &elapse
         auto entityWithLives = ecs.entityManager.getEntitiesWith<indie::components::PlayerAlive>();
         for (auto &entity : entityWithLives) {
             auto playerAliveComponent = entity->getComponent<components::PlayerAlive>();
-            if (playerAliveComponent->getLives() <= 0) {
-
+            if (playerAliveComponent->getLives() <= 0 && !playerAliveComponent->isMarkedAsDead()) {
+                entity->removeComponent<components::PlayerController>();
+                entity->removeComponent<components::AIController>();
+                entity->removeComponent<components::MoveToTarget>();
+                entity->removeComponent<components::BoxCollider>();
+                auto animator = entity->getComponent<components::Animator>();
+                animator->setCurrentAnimation("die");
+                playerAliveComponent->setMarkedAsDead(true);
+                //TODO mark as dead in player board
             }
         }
         _elapsedTime -= updateDelta;

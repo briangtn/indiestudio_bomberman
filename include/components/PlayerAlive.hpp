@@ -24,8 +24,12 @@ namespace indie {
             int getLives() const;
             void setLives(int lives);
 
+            bool isMarkedAsDead() const;
+            void setMarkedAsDead(bool markedAsDead);
+
         private:
             int _lives;
+            bool _markedAsDead;
         };
     }
 }

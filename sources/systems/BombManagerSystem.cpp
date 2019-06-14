@@ -9,6 +9,7 @@
 #include "components/AIController.hpp"
 #include "input/InputManager.hpp"
 #include "exceptions/BombException.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -375,7 +376,12 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
                 ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({position, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
                 ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & PLAYER_LAYER)) {
-                std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
+                auto playerLiveComponent = entity->getComponent<components::PlayerAlive>();
+                if (playerLiveComponent.isValid()) {
+                    playerLiveComponent->setLives(playerLiveComponent->getLives() - 1);
+                } else {
+                    std::cerr << "Player " << entity->getName() << " was hit by a bomb but has no component PlayerAlive" << std::endl;
+                }
             } else {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
             }
