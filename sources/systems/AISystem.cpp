@@ -52,6 +52,9 @@ void indie::systems::AISystem::onUpdate(const std::chrono::nanoseconds &elapsedT
 
     ECSWrapper ecs;
     ecs.entityManager.applyToEach<components::AIController>(&AILogic);
+    if (_timePassed >= 500000000) {
+        _timePassed -= 500000000;
+    }
 }
 
 int indie::systems::AISystem::getTimePassed() const
@@ -81,7 +84,6 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
         return;
     component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
                             ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
-    ecs.systemManager.getSystem<indie::systems::AISystem>().setTimePassed(0);
 
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
     jf::components::ComponentHandler<indie::components::MoveToTarget> moveComp = entity->getComponent<indie::components::MoveToTarget>();
