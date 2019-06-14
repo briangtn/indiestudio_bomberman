@@ -64,7 +64,7 @@ int runBomberman()
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
             ECSWrapper ecs;
-            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_SPEED_UP});
+            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_WALL_PASS});
         }
     });
 

@@ -45,7 +45,7 @@ void indie::ai::AIView::recomputeViewGrid(int width, int height)
     recomputeBombs(width, height);
     for (int z = 0; z < height; ++z) {
         for (int x = 0; x < width; ++x) {
-            _collisionGrid[z][x] = (_viewGrid[z][x] & 0b1);
+            _collisionGrid[z][x] = (_viewGrid[z][x] & AI_CELL_COLLIDE);
         }
     }
 }
@@ -59,7 +59,7 @@ void indie::ai::AIView::recomputePlayers(int width, int height)
         int x = static_cast<int>(std::round(tr->getPosition().x / 10.0f));
         int z = -static_cast<int>(std::round(tr->getPosition().z / 10.0f));
         if (x >= 0 && x < width && z >= 0 && z < height) {
-            _viewGrid[z][x] = AI_CELL_TYPE_PLAYER;
+            _viewGrid[z][x] |= AI_CELL_TYPE_PLAYER;
         }
     }
 }
@@ -75,7 +75,7 @@ void indie::ai::AIView::recomputeUnbreakableWalls(int width, int height)
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {
-            _viewGrid[z][x] = AI_CELL_TYPE_UNBREAKABLE_WALL;
+            _viewGrid[z][x] |= AI_CELL_TYPE_UNBREAKABLE_WALL;
         }
     }
 }
@@ -91,7 +91,7 @@ void indie::ai::AIView::recomputeBreakableWalls(int width, int height)
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {
-            _viewGrid[z][x] = AI_CELL_TYPE_BREAKABLE_WALL;
+            _viewGrid[z][x] |= AI_CELL_TYPE_BREAKABLE_WALL;
         }
     }
 }
@@ -107,7 +107,7 @@ void indie::ai::AIView::recomputeBombs(int width, int height)
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {
-            _viewGrid[z][x] = AI_CELL_TYPE_BOMB;
+            _viewGrid[z][x] |= AI_CELL_TYPE_BOMB;
         }
     }
 }
@@ -123,15 +123,15 @@ void indie::ai::AIView::recomputePowerUps(int width, int height)
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {
             switch (effector->getType()) {
-            case components::BONUS_T_BOMB_UP: _viewGrid[z][x] = AI_CELL_TYPE_POWER_UP_BOMB_UP;
+            case components::BONUS_T_BOMB_UP: _viewGrid[z][x] |= AI_CELL_TYPE_POWER_UP_BOMB_UP;
                 break;
-            case components::BONUS_T_SPEED_UP: _viewGrid[z][x] = AI_CELL_TYPE_POWER_UP_SPEED_UP;
+            case components::BONUS_T_SPEED_UP: _viewGrid[z][x] |= AI_CELL_TYPE_POWER_UP_SPEED_UP;
                 break;
-            case components::BONUS_T_FIRE_UP: _viewGrid[z][x] = AI_CELL_TYPE_POWER_UP_FIRE_UP;
+            case components::BONUS_T_FIRE_UP: _viewGrid[z][x] |= AI_CELL_TYPE_POWER_UP_FIRE_UP;
                 break;
-            case components::BONUS_T_WALL_PASS: _viewGrid[z][x] = AI_CELL_TYPE_POWER_UP_WALL_PASS;
+            case components::BONUS_T_WALL_PASS: _viewGrid[z][x] |= AI_CELL_TYPE_POWER_UP_WALL_PASS;
                 break;
-            default: _viewGrid[z][x] = AI_CELL_TYPE_UNKNOWN;
+            default: _viewGrid[z][x] |= AI_CELL_TYPE_UNKNOWN;
                 break;
             }
         }

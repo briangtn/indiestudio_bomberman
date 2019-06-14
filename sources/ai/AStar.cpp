@@ -80,9 +80,9 @@ indie::ai::AStar::NodeGrid indie::ai::AStar::computeNodeGrid(const indie::ai::AI
                 UINT_MAX,
                 false,
                 false,
-                !((viewGrid[i][j] & 1) && ((viewGrid[i][j] != AIView::AI_CELL_TYPE_BREAKABLE_WALL) || !ignoreBreakableWalls)),
+                !((viewGrid[i][j] & AIView::AI_CELL_COLLIDE) && (!(viewGrid[i][j] & AIView::AI_CELL_TYPE_BREAKABLE_WALL) || !ignoreBreakableWalls)),
                 nullptr,
-                viewGrid[i][j] == AIView::AI_CELL_TYPE_BREAKABLE_WALL ? 2u : 1u
+                viewGrid[i][j] & AIView::AI_CELL_TYPE_BREAKABLE_WALL ? 2u : 1u
             });
         }
     }
