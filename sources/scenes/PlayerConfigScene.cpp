@@ -98,7 +98,7 @@ void indie::scenes::PlayerConfigScene::onStart()
         indie::scenes::SceneManager::safeChangeScene("test");
     });
 
-    auto buttonReloadEntity = ecs.entityManager.createEntity("buttonStart");
+    auto buttonReloadEntity = ecs.entityManager.createEntity("buttonReload");
     auto buttonReloadComponent = buttonReloadEntity->assignComponent<indie::components::Button>("", 4);
     auto buttonReloadTransform = buttonReloadEntity->assignComponent<indie::components::Transform>();
     buttonReloadTransform->setPosition({(1280 - 128), 0, 100});
@@ -375,8 +375,11 @@ void indie::scenes::PlayerConfigScene::updatePlayButton()
 
     auto buttonEntity = ecs.entityManager.getEntityByName("buttonStart");
     auto buttonComponent = buttonEntity->getComponent<components::Button>();
+    int noneCount = 0;
     for (auto &playerSetting : playersSettings) {
-        if (!playerSetting.isValid && playerSetting.controllerType != NONE) {
+        if (playerSetting.controllerType == NONE)
+            noneCount++;
+        if ((!playerSetting.isValid && playerSetting.controllerType != NONE) || noneCount > 2) {
             buttonComponent->setVisible(false);
             return;
         }
