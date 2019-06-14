@@ -24,6 +24,8 @@
 #include "components/AIController.hpp"
 #include "components/DynamicCamera.hpp"
 #include <cfloat>
+#include "events/HasReachedTarget.hpp"
+
 #include <limits>
 
 indie::systems::MovementSystem::MovementSystem(): _mapSize(), _viewGridCache(), _pathsCache(), _timeBeforeCacheComputation(recomputeCacheDeltaTime)
@@ -241,6 +243,9 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
 
             if ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
                 path.pop();
+            } else {
+                ECSWrapper ecs;
+                ecs.eventManager.emit(events::HasReachedTarget({mtt}));
             }
         }
     }

@@ -192,3 +192,22 @@ indie::ai::AStar::Node::position indie::ai::get2DPositionFromWorldPos(const indi
 {
     return {static_cast<int>(std::round(worldPos.x / 10.0f)), -static_cast<int>(std::round(worldPos.z / 10.0f))};
 }
+
+std::vector<indie::ai::AStar::Node> indie::ai::stackPathToVectorPath(std::stack<indie::ai::AStar::Node> path)
+{
+    std::vector<indie::ai::AStar::Node> ret;
+    while (!path.empty()) {
+        ret.emplace_back(path.top());
+        path.pop();
+    }
+    return ret;
+}
+
+bool indie::ai::hasCrateInPath(const std::stack<indie::ai::AStar::Node> &path)
+{
+    for (auto &elem : stackPathToVectorPath(path)) {
+        if (elem.hasCrate())
+            return true;
+    }
+    return false;
+}

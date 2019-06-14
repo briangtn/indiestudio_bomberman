@@ -111,15 +111,31 @@ void indie::ai::AIView::recomputeBombs(int width, int height)
             _viewGrid[z][x] |= AI_CELL_TYPE_BOMB;
             _viewGrid[z][x] |= AI_CELL_BLAST;
         }
+        bool zNegExpand = true;
+        bool zPosExpand = true;
+        bool xNegExpand = true;
+        bool xPosExpand = true;
         for (int i = 0; i < bombComponent->getStrength(); ++i) {
-            if (z - i >= 0)
+            if (z - i >= 0 && zNegExpand) {
                 _viewGrid[z - i][x] |= AI_CELL_BLAST;
-            if (z + i < height)
+                if (_viewGrid[z - i][x] & AI_CELL_COLLIDE)
+                    zNegExpand = false;
+            }
+            if (z + i < height && zPosExpand) {
                 _viewGrid[z + i][x] |= AI_CELL_BLAST;
-            if (x - i >= 0)
+                if (_viewGrid[z + i][x] & AI_CELL_COLLIDE)
+                    zPosExpand = false;
+            }
+            if (x - i >= 0 && xNegExpand) {
                 _viewGrid[z][x - i] |= AI_CELL_BLAST;
-            if (x + i < width)
+                if (_viewGrid[z][x - i] & AI_CELL_COLLIDE)
+                    xNegExpand = false;
+            }
+            if (x + i < width && xPosExpand) {
                 _viewGrid[z][x + i] |= AI_CELL_BLAST;
+                if (_viewGrid[z][x + i] & AI_CELL_COLLIDE)
+                    xPosExpand = false;
+            }
         }
     }
 }
