@@ -102,7 +102,9 @@ void indie::Controller::generateKeys(const std::string &baseName)
 void indie::Controller::generateAxes(const std::string &baseName)
 {
     for (auto &elem : _axes) {
-        generateAxis(baseName + elem.first, elem.second);
+        try {
+            generateAxis(baseName + elem.first, elem.second);
+        } catch (indie::AxisAlreadyExistException &e) {}
     }
 }
 
@@ -110,11 +112,15 @@ void indie::Controller::generateKey(std::string name, indie::Controller::KeyConf
 {
     switch (config.type) {
         case KEY:
-            InputManager::RegisterKey(name, config.keyCode);
+            try {
+                InputManager::RegisterKey(name, config.keyCode);
+            } catch (indie::KeyAlreadyExistException &e) {}
             break;
         case CONTROLLERKEY:
-            InputManager::RegisterKey(name, config.controllerId, config.controllerKeyId);
-            break;
+            try {
+                InputManager::RegisterKey(name, config.controllerId, config.controllerKeyId);
+            } catch (indie::KeyAlreadyExistException &e) {}
+    break;
         default:
             break;
     }
