@@ -25,6 +25,7 @@
 #include "systems/BombManagerSystem.hpp"
 #include "systems/DestroyOnTimeSystem.hpp"
 #include "components/Bomb.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 int runBomberman()
 {
@@ -38,6 +39,10 @@ int runBomberman()
 
     ecs.systemManager.addSystem<indie::systems::BonusSystem>();
     ecs.systemManager.startSystem<indie::systems::BonusSystem>();
+
+    auto &assetsManager = indie::AssetsManager::getInstance();
+    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.loadTexturePack("default");
 
     indie::InputManager::CreateAxis("xAxis", indie::JoystickAxis({0, 0}));
 	indie::InputManager::CreateAxis("xAxis", indie::KeyAxis({irr::KEY_KEY_D, irr::KEY_KEY_Q}));
@@ -107,14 +112,8 @@ int runBomberman()
 
 int main()
 {
-    try {
+
         return runBomberman();
-    } catch (const jf::ECSException &e) {
-        std::cerr << "An error occurred while running the game: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "A standard error occurred while running the game: " << e.what() << std::endl;
-    } catch (...) {
-        std::cerr << "An unknown error occurred while running the game." << std::endl;
-    }
+
     return 84;
 }
