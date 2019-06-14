@@ -79,7 +79,6 @@ void indie::components::Button::setTexturePath(const std::string &texturePath)
 {
     _texturePath = texturePath;
     if (_textureNode != nullptr) {
-        _textureNode->drop();
         _textureNode = nullptr;
     }
 }
