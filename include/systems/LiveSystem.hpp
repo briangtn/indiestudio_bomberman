@@ -32,6 +32,7 @@ namespace indie {
 
         public:
             void startNewGame();
+            void startGame();
             components::LeaderBoard::PlayerLeaderBoard endGame();
 
         private:
@@ -39,6 +40,7 @@ namespace indie {
 
         private:
             float _elapsedTime;
+            bool _gameLaunched;
         };
     }
 }

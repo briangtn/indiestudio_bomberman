@@ -13,9 +13,10 @@
 #include "components/PlayerController.hpp"
 #include "components/AIController.hpp"
 #include "components/LeaderBoard.hpp"
+#include "scenes/SceneManager.hpp"
 
 indie::systems::LiveSystem::LiveSystem()
-    : _elapsedTime(0)
+    : _elapsedTime(0), _gameLaunched(false)
 {
 
 }
@@ -42,16 +43,35 @@ void indie::systems::LiveSystem::onUpdate(const std::chrono::nanoseconds &elapse
     if (_elapsedTime >= updateDelta) {
         ECSWrapper ecs;
         auto entityWithLives = ecs.entityManager.getEntitiesWith<indie::components::PlayerAlive>();
+
+        if (entityWithLives.size() <= 1 && _gameLaunched) {
+            if (entityWithLives.size() >= 1) {
+                int playerNumber = std::atoi(entityWithLives[0]->getName().substr(6).c_str());
+                auto leaderBoardEntity = ecs.entityManager.getEntityByName("leaderBoard");
+                if (leaderBoardEntity.isValid()) {
+                    auto leaderBoardComponent = leaderBoardEntity->getComponent<components::LeaderBoard>();
+                    if (leaderBoardComponent.isValid()) {
+                        leaderBoardComponent->addPlayerToLeaderBoard(leaderBoardComponent->getPlayerLeaderboard().size() + 1, playerNumber);
+                    } else
+                        std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
+                } else
+                    std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
+            }
+            _gameLaunched = false;
+            scenes::SceneManager::safeChangeScene("mainMenu"); //todo change to end instead of menu
+        }
+
         for (auto &entity : entityWithLives) {
             auto playerAliveComponent = entity->getComponent<components::PlayerAlive>();
             if (playerAliveComponent->getLives() <= 0 && !playerAliveComponent->isMarkedAsDead()) {
+                playerAliveComponent->setMarkedAsDead(true);
                 entity->removeComponent<components::PlayerController>();
                 entity->removeComponent<components::AIController>();
                 entity->removeComponent<components::MoveToTarget>();
                 entity->removeComponent<components::BoxCollider>();
+                entity->removeComponent<components::PlayerAlive>();
                 auto animator = entity->getComponent<components::Animator>();
                 animator->setCurrentAnimation("die");
-                playerAliveComponent->setMarkedAsDead(true);
 
                 int playerNumber = std::atoi(entity->getName().substr(6).c_str());
 
@@ -85,10 +105,18 @@ void indie::systems::LiveSystem::startNewGame()
     ECSWrapper ecs;
     auto entity = ecs.entityManager.createEntity("leaderBoard");
     entity->assignComponent<components::LeaderBoard>();
+    entity->setShouldBeKeeped(true);
+    startGame();
+}
+
+void indie::systems::LiveSystem::startGame()
+{
+    _gameLaunched = true;
 }
 
 indie::components::LeaderBoard::PlayerLeaderBoard indie::systems::LiveSystem::endGame()
 {
+    _gameLaunched = false;
     ECSWrapper ecs;
     components::LeaderBoard::PlayerLeaderBoard values;
     auto leaderBoardEntity = ecs.entityManager.getEntityByName("leaderBoard");

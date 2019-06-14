@@ -33,7 +33,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(true), _saveName("tktCMaFote")
+    : _saveOnExit(false), _saveName("default")
 {
 
 }

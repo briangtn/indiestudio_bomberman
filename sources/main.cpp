@@ -7,6 +7,7 @@
 
 /* Created the 09/05/2019 at 21:39 by jfrabel */
 
+#include <typeinfo>
 #include <iostream>
 #include "systems/TauntSystem.hpp"
 #include "systems/BonusSystem.hpp"
@@ -91,7 +92,7 @@ int runBomberman()
         auto errors = ecs.systemManager.getErrors();
         if (!errors.empty()) {
             for (auto &err : errors) {
-                std::cerr << "[ERROR] " << err.error << std::endl;
+                std::cerr << "[ERROR][UNKNOWN SYSTEM](" << typeid(err.system).name() << ") " << err.error << std::endl;
             }
             return 84;
         }
@@ -107,7 +108,7 @@ int main()
     try {
         return runBomberman();
     } catch (const jf::ECSException &e) {
-        std::cerr << "An error occurred while running the game: " << e.what() << std::endl;
+        std::cerr << "An error occurred while running the game: " << e.what() << " at " << e.where() << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "A standard error occurred while running the game: " << e.what() << std::endl;
     } catch (...) {
