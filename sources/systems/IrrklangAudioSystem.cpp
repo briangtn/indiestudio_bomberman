@@ -53,10 +53,10 @@ void indie::systems::IrrklangAudioSystem::onUpdate(const std::chrono::nanosecond
             [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::SoundComponent> component) {
                 if (component->getState() == components::SoundComponent::STARTING && !component->getSpatialization()) {
                     ECSWrapper ecs;
-                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile()));
+                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), component->getIsLooped(), component->getIsPaused()));
                 } else if (component->getState() == components::SoundComponent::STARTING && component->getSpatialization()) {
                     ECSWrapper ecs;
-                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition()));
+                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition(), component->getIsLooped(), component->getIsPaused()));
                 }
             });
     _engine->update();
@@ -74,19 +74,21 @@ void indie::systems::IrrklangAudioSystem::onTearDown()
 
 irrklang::ISound *indie::systems::IrrklangAudioSystem::add2DSound(const std::string &sourceFile, bool playLooped, bool startPaused)
 {
-    return _engine->play2D(AssetsManager::getAsset(sourceFile).c_str(), playLooped, startPaused);
+    return _engine->play2D(AssetsManager::getAsset(sourceFile).c_str(), playLooped, startPaused, true);
 }
 
 irrklang::ISound *indie::systems::IrrklangAudioSystem::add3DSound(const std::string &sourceFile, indie::maths::Vector3D position,
                                                                   bool playLooped, bool startPaused)
 {
-    return _engine->play3D(AssetsManager::getAsset(sourceFile).c_str(), irrklang::vec3df(position.x, position.y, position.z), playLooped, startPaused);
+    return _engine->play3D(AssetsManager::getAsset(sourceFile).c_str(), irrklang::vec3df(position.x, position.y, position.z), playLooped, startPaused, true);
 }
 
 void indie::systems::IrrklangAudioSystem::removeSound(jf::components::ComponentHandler<components::SoundComponent> component)
 {
-    if (component->getSound() != nullptr)
+    if (component->getSound() != nullptr) {
+        component->getSound()->stop();
         component->getSound()->drop();
+    }
     component->setSound(nullptr);
 }
 

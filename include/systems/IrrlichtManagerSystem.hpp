@@ -28,6 +28,7 @@
 #include "components/GUI/Image.hpp"
 #include "components/Bomb.hpp"
 #include "components/SoundComponent.hpp"
+#include "components/MoveToTarget.hpp"
 
 namespace indie {
 
@@ -117,6 +118,7 @@ namespace indie {
             static void syncPointChanges(jf::components::ComponentHandler<components::PointLight> pl);
 
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
+            static void drawMoveToTargetGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::MoveToTarget> mtt);
 
         private:
             static void drawButton(

@@ -21,11 +21,11 @@ namespace indie {
             /* enum for each type of bomb */
 
             enum BombType {
-                NORMAL, // Normal
-                FIRE, // Fire
-                WATER, // Water
-                ELECTRIC, // Plasma
-                LOVE // Sexy
+                NORMAL,
+                FIRE,
+                WATER,
+                ELECTRIC,
+                LOVE
             };
 
             /* enum for each type of player */
@@ -40,12 +40,12 @@ namespace indie {
         class Bomb : public jf::components::Component {
         public:
 
-            /* Bombe Constructor */
+            /* Bomb Constructor */
 
             Bomb(jf::entities::Entity &entity, const int &strength,\
             const float &timeBeforeExplode, BombType bomb, PlayerType player);
 
-            /* Bombe Destructor */
+            /* Bomb Destructor */
 
             ~Bomb();
 
@@ -60,7 +60,7 @@ namespace indie {
             /* Set & Get TimeBeforeExplose */
 
             float getTimeBeforeExplode() const;
-            void setTimeBeforeExplode(const int &newTimeBeforeExplode);
+            void setTimeBeforeExplode(const float &newTimeBeforeExplode);
 
             /* Set & Get BombType */
 

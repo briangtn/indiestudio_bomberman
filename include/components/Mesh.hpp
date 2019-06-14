@@ -18,7 +18,7 @@ namespace indie {
         class Mesh : public jf::components::Component {
         public:
             Mesh(jf::entities::Entity &entity, const std::string filename);
-            ~Mesh();
+            ~Mesh() override;
 
             Mesh &operator>>(std::ostream &file);
 

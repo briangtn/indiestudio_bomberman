@@ -17,6 +17,15 @@
         </component>
     </entity>
 
+    <entity name="music">
+        <component type="Sound">
+            <argument name="fileName" value="music_title"/>
+            <argument name="type" value="MUSIC"/>
+            <argument name="playLooped" value="true"/>
+            <argument name="startPaused" value="false"/>
+        </component>
+    </entity>
+
     <entity name="mainText">
         <component type="Transform">
             <argument name="position" value="0,0,0"/>

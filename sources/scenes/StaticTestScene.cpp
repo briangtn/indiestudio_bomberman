@@ -44,8 +44,8 @@ void indie::scenes::StaticTestScene::onStart()
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
     playerTr->setScale({8, 8, 8});
     playerEntity->assignComponent<indie::components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P1_LAYER);
-    auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/White/white.b3d");
-    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/White/white.png");
+    auto playerMesh = playerEntity->assignComponent<indie::components::Mesh, std::string>("../test_assets/players/player.b3d");
+    auto playerMat = playerEntity->assignComponent<indie::components::Material, std::string>("../test_assets/players/player1.png");
     playerMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     auto playerAnimator = playerEntity->assignComponent<indie::components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"default", components::Animator::Animation(0, 0, 0, true, "")},

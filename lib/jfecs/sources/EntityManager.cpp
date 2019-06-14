@@ -111,9 +111,14 @@ std::vector<jf::entities::EntityHandler> jf::entities::EntityManager::getEntitie
 
 void jf::entities::EntityManager::deleteAllEntities()
 {
-    while (!_entities.empty()) {
-        if (!_entities.begin()->second->shouldBeKeeped())
-            deleteEntity(_entities.begin()->first);
+    auto entity = std::find_if(_entities.begin(), _entities.end(), [](const std::pair<internal::ID, Entity *> &pair) {
+        return !pair.second->shouldBeKeeped();
+    });
+    while (entity != _entities.end()) {
+        deleteEntity(entity->first);
+        entity = std::find_if(_entities.begin(), _entities.end(), [](const std::pair<internal::ID, Entity *> &pair) {
+            return !pair.second->shouldBeKeeped();
+        });
     }
 }
 

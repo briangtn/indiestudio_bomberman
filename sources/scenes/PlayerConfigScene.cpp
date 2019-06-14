@@ -19,6 +19,7 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/SceneManager.hpp"
 #include "scenes/ControllerConfigScene.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 std::vector<indie::scenes::PlayerSettings> indie::scenes::PlayerConfigScene::playersSettings = {
     {INPUT_EXIST, Controller("")},
@@ -71,6 +72,11 @@ void indie::scenes::PlayerConfigScene::onStart()
     cameraEntity->assignComponent<indie::components::Camera>();
     auto cameraTransform = cameraEntity->assignComponent<indie::components::Transform>();
 
+    auto soundEntity = ecs.entityManager.createEntity("playerSelectMusic");
+    auto sound = soundEntity->assignComponent<indie::components::SoundComponent>("music_player_select", components::SoundComponent::MUSIC);
+    sound->setIsLooped(true);
+    sound->setIsPaused(false);
+
     auto buttonStartEntity = ecs.entityManager.createEntity("buttonStart");
     auto buttonStartComponent = buttonStartEntity->assignComponent<indie::components::Button>("Start", 3);
     auto buttonStartTransform = buttonStartEntity->assignComponent<indie::components::Transform>();
@@ -90,7 +96,7 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        indie::scenes::SceneManager::safeChangeScene("test");
+        indie::scenes::SceneManager::safeChangeScene("newGameScene");
     });
 
     for (unsigned int i = 1; i <= 4; i++)
@@ -105,7 +111,6 @@ void indie::scenes::PlayerConfigScene::onStart()
 
 void indie::scenes::PlayerConfigScene::onStop()
 {
-
 }
 
 void indie::scenes::PlayerConfigScene::createConfigBlock(int id)

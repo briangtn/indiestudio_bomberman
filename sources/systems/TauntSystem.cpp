@@ -12,6 +12,7 @@
 #include "ECSWrapper.hpp"
 #include "systems/TauntSystem.hpp"
 #include "components/PlayerController.hpp"
+#include "components/AIController.hpp"
 
 void indie::systems::TauntSystem::onAwake()
 {
@@ -41,10 +42,22 @@ void indie::systems::TauntSystem::onUpdate(const std::chrono::nanoseconds &elaps
             if (!pc->getTauntButton().empty() && indie::InputManager::IsKeyPressed(pc->getTauntButton())) {
                 pc->setIsTaunting(true);
                 pc->setTauntTime(pc->getTauntDuration());
-                auto animator = pc->getEntity()->getComponent<components::Animator>();
+                auto animator = entity->getComponent<components::Animator>();
                 if (animator.isValid()) {
                     animator->setCurrentAnimation(pc->getTauntAnimation());
                 }
+            }
+        }
+    );
+    ecs.entityManager.applyToEach<components::AIController>(
+        [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::AIController> ai) {
+            if (ai->getNeedToTaunt()) {
+                auto animator = entity->getComponent<components::Animator>();
+                if (animator.isValid()) {
+                    animator->setCurrentAnimation("taunt"); // DOUBT TO DO METHOD AND ADDED ARGUMENT TO PARSER
+                    ai->setIsTaunting(true);
+                }
+                ai->setNeedToTaunt(false);
             }
         }
     );
