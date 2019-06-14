@@ -32,6 +32,7 @@
 #include "components/GUI/Image.hpp"
 #include "components/DynamicCamera.hpp"
 #include "components/PlayerAlive.hpp"
+#include "components/LeaderBoard.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -453,6 +454,16 @@ void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::strin
     }
 }
 
+void indie::Parser::createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args {
+        {"", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAIController");
+    entity->assignComponent<components::AIController>();
+}
+
 void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
@@ -650,14 +661,46 @@ void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IX
     auto component = entity->assignComponent<indie::components::Image>(args["fileName"]);
 }
 
-void indie::Parser::createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                                       const std::string &fileName, unsigned int &line)
+void indie::Parser::createLeaderBoard(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line)
 {
-    std::map<std::string, std::string> args {
-        {"", ""}
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAIController");
-    entity->assignComponent<components::AIController>();
+    components::LeaderBoard::PlayerLeaderBoard playerLeaderboard;
+    auto component = entity->assignComponent<indie::components::LeaderBoard>();
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (irr::core::stringw(L"player").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string id = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"id")).c_str()).c_str();
+                if (id.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                        "Missing attribute 'id' for node 'player' at line " + std::to_string(line) + " in file "
+                        + fileName + ".", "indie::Parser::createLeaderBoard");
+                }
+                std::string ranking = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"ranking")).c_str()).c_str();
+                ranking.erase(remove_if(ranking.begin(), ranking.end(), isspace), ranking.end());
+                if (ranking.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                        "Missing attribute 'ranking' for node 'player' at line " + std::to_string(line) + " in file "
+                        + fileName + ".", "indie::Parser::createLeaderBoard");
+                }
+                playerLeaderboard.emplace_back(std::stoi(id), std::stoi(ranking));
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                    "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
+                    + " at line " + std::to_string(line) + " in file " + fileName + ".", "indie::createLeaderBoard");
+            }
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (!(irr::core::stringw("component").equals_ignore_case(xmlReader->getNodeName()))) {
+                throw exceptions::ParserInvalidFileException(
+                    "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                    + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                    "indie::parser::createLeaderBoard");
+            }
+            line++;
+            return;
+        } else {
+            continue;
+        }
+    }
 }
 
 void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,

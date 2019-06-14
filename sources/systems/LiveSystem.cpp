@@ -12,6 +12,7 @@
 #include "components/PlayerAlive.hpp"
 #include "components/PlayerController.hpp"
 #include "components/AIController.hpp"
+#include "components/LeaderBoard.hpp"
 
 indie::systems::LiveSystem::LiveSystem()
     : _elapsedTime(0)
@@ -51,7 +52,18 @@ void indie::systems::LiveSystem::onUpdate(const std::chrono::nanoseconds &elapse
                 auto animator = entity->getComponent<components::Animator>();
                 animator->setCurrentAnimation("die");
                 playerAliveComponent->setMarkedAsDead(true);
-                //TODO mark as dead in player board
+
+                int playerNumber = std::atoi(entity->getName().substr(6).c_str());
+
+                auto leaderBoardEntity = ecs.entityManager.getEntityByName("leaderBoard");
+                if (leaderBoardEntity.isValid()) {
+                    auto leaderBoardComponent = leaderBoardEntity->getComponent<components::LeaderBoard>();
+                    if (leaderBoardComponent.isValid()) {
+                        leaderBoardComponent->addPlayerToLeaderBoard(leaderBoardComponent->getPlayerLeaderboard().size() + 1, playerNumber);
+                    } else
+                        std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
+                } else
+                    std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
             }
         }
         _elapsedTime -= updateDelta;
@@ -71,10 +83,26 @@ void indie::systems::LiveSystem::onTearDown()
 void indie::systems::LiveSystem::startNewGame()
 {
     ECSWrapper ecs;
-//    auto entity = ecs.
+    auto entity = ecs.entityManager.createEntity("leaderBoard");
+    entity->assignComponent<components::LeaderBoard>();
 }
 
-void indie::systems::LiveSystem::endGame()
+indie::components::LeaderBoard::PlayerLeaderBoard indie::systems::LiveSystem::endGame()
 {
-
+    ECSWrapper ecs;
+    components::LeaderBoard::PlayerLeaderBoard values;
+    auto leaderBoardEntity = ecs.entityManager.getEntityByName("leaderBoard");
+    if (leaderBoardEntity.isValid()) {
+        auto leaderBoardComponent = leaderBoardEntity->getComponent<components::LeaderBoard>();
+        if (leaderBoardComponent.isValid()) {
+            values = leaderBoardComponent->getPlayerLeaderboard();
+            int nbPlayers = values.size();
+            for (auto &value : values) {
+                value.first = nbPlayers - value.first + 1;
+            }
+            return values;
+        }
+    }
+    std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
+    return values;
 }

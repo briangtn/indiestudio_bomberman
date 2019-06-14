@@ -58,6 +58,8 @@ namespace indie {
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
+        static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -74,8 +76,8 @@ namespace indie {
                                   const std::string &fileName, unsigned int &line);
         static void createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
-        static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                                  const std::string &fileName, unsigned int &line);
+        static void createLeaderBoard(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line);
         static void createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,

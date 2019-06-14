@@ -33,6 +33,7 @@
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
 #include "components/Rotator.hpp"
+#include "components/LeaderBoard.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -245,6 +246,10 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
     }
     if (entity->hasComponent<components::Transform>()) {
         components::Transform &component = *(entity->getComponent<components::Transform>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::LeaderBoard>()) {
+        components::LeaderBoard &component = *(entity->getComponent<components::LeaderBoard>().get());
         component >> file;
     }
     file << "    </entity>" << std::endl;
