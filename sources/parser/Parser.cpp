@@ -974,7 +974,6 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
             {"playPosition", ""},
             {"velocity",     ""}
     };
-    auto &audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
     if (args["fileName"].empty() || args["type"].empty()) {
         throw exceptions::ParserInvalidFileException(
@@ -995,12 +994,17 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
     if (!args["startPaused"].empty()) {
         component->setIsPaused(getBool(args["startPaused"], fileName, line));
     }
-    if (component->getSpatialization()) {
-        component->setSound(audioSystem.add3DSound(
+    try {
+        auto &audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
+        if (component->getSpatialization()) {
+            component->setSound(audioSystem.add3DSound(
                 component->getSourceFile(), component->getPosition(), component->getIsLooped(), component->getIsPaused()));
-    } else {
-        component->setSound(audioSystem.add2DSound(
+        } else {
+            component->setSound(audioSystem.add2DSound(
                 component->getSourceFile(), component->getIsLooped(), component->getIsPaused()));
+        }
+    } catch (jf::SystemNotFoundException &e) {
+        std::cerr << "[WARNING][IrrklangAudioSystem] Parser found a sound to add but system is uninitialized" << std::endl;
     }
     if (!args["volume"].empty()) {
         component->setVolume(std::stof(args["volume"]));
