@@ -120,7 +120,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P1_LAYER);
-    entity->assignComponent<components::PlayerAlive, int>(1);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -144,7 +144,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P2_LAYER);
-    entity->assignComponent<components::PlayerAlive, int>(1);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -167,7 +167,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnWhite()
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P3_LAYER);
-    entity->assignComponent<components::PlayerAlive, int>(1);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 
@@ -190,7 +190,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
     });
     entity->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.25f, 0.5f, 0.25f}, {0, 0.5f, 0}, P4_LAYER);
-    entity->assignComponent<components::PlayerAlive, int>(1);
+    entity->assignComponent<components::PlayerAlive, int>(nbStartingLives);
     return entity;
 }
 

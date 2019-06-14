@@ -104,10 +104,22 @@ void indie::ai::AIView::recomputeBombs(int width, int height)
         auto tr = bomb->getComponent<components::Transform>();
         if (!tr.isValid())
             continue;
+        auto bombComponent = bomb->getComponent<components::Bomb>();
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {
             _viewGrid[z][x] |= AI_CELL_TYPE_BOMB;
+            _viewGrid[z][x] |= AI_CELL_BLAST;
+        }
+        for (int i = 0; i < bombComponent->getStrength(); ++i) {
+            if (z - i >= 0)
+                _viewGrid[z - i][x] |= AI_CELL_BLAST;
+            if (z + i < height)
+                _viewGrid[z + i][x] |= AI_CELL_BLAST;
+            if (x - i >= 0)
+                _viewGrid[z][x - i] |= AI_CELL_BLAST;
+            if (x + i < width)
+                _viewGrid[z][x + i] |= AI_CELL_BLAST;
         }
     }
 }

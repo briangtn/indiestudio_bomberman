@@ -70,7 +70,8 @@ void indie::systems::LiveSystem::onTearDown()
 
 void indie::systems::LiveSystem::startNewGame()
 {
-
+    ECSWrapper ecs;
+//    auto entity = ecs.
 }
 
 void indie::systems::LiveSystem::endGame()
