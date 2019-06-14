@@ -54,6 +54,7 @@ namespace indie {
             static constexpr int _bombTileAdded = 1;
             static constexpr float _speedAdded = 10.0f;
             static constexpr float _maxSpeed = 60.0f;
+            static constexpr int _maxFireUp = 9;
             static constexpr int _maxBombAdded = 1;
 
         private:
