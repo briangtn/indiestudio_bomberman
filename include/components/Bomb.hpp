@@ -21,11 +21,11 @@ namespace indie {
             /* enum for each type of bomb */
 
             enum BombType {
-                NORMAL,
-                FIRE,
-                WATER,
-                ELECTRIC,
-                LOVE
+                NORMAL, // Normal
+                FIRE, // Fire
+                WATER, // Water
+                ELECTRIC, // Plasma
+                LOVE // Sexy
             };
 
             /* enum for each type of player */

@@ -14,7 +14,7 @@
             <argument name="scale" value="1280,600,0"/>
         </component>
         <component type="Image">
-            <argument name="fileName" value="../background.png"/>
+            <argument name="fileName" value="default_menu_background"/>
         </component>
     </entity>
     <entity name="mainText">
@@ -28,7 +28,7 @@
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
         <component type="Font">
-            <argument name="fileName" value="../bigfont.png"/>
+            <argument name="fileName" value="default_font"/>
         </component>
     </entity>
 </scene>
