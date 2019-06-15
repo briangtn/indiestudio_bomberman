@@ -230,6 +230,10 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
         auto &mtt = std::get<0>(tuple);
         auto &tr = std::get<1>(tuple);
         auto &path = std::get<2>(tuple);
+        jf::components::ComponentHandler<components::Animator> animator;
+        if (mtt.isValid()) {
+            animator = mtt->getEntity()->getComponent<components::Animator>();
+        }
         if (!path.empty() && mtt.isValid() && tr.isValid() && mtt->isFollowTarget() && !mtt->hasReachedTarget()) {
             auto nextNode = path.top();
 
@@ -240,6 +244,10 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
             maths::Vector3D rot = tr->getRotation();
             tr->lookAt(tr->getPosition() + movementVector);
             tr->setRotation({rot.x, tr->getRotation().y, rot.z});
+
+            if (animator.isValid() && animator->getCurrentAnimation() == "idle") {
+                animator->setCurrentAnimation("walk");
+            }
 
             while ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
                 path.pop();
@@ -252,6 +260,8 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
                     nextNode = path.top();
                 }
             }
+        } else if (animator.isValid() && animator->getCurrentAnimation() == "walk") {
+            animator->setCurrentAnimation("idle");
         }
     }
 }
