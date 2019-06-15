@@ -8,6 +8,7 @@
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
 #include <algorithm>
+#include <input/InputManager.hpp>
 #include "maths/Vectors.hpp"
 #include "maths/Matrices.hpp"
 #include "maths/Geometry3D.hpp"
@@ -125,7 +126,9 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
-
+    indie::InputManager::RegisterKeyInputEvent();
+    indie::InputManager::RegisterJoystickInputEvent();
+    indie::InputManager::RegisterControllerKeyInputEvent();
     _driver->endScene();
 }
 
