@@ -83,10 +83,11 @@ void indie::scenes::ControllerConfigScene::up()
         for (unsigned short i = 0; i < e.data.NUMBER_OF_AXES; i++) {
             irr::u16 toSearch = (e.data.Joystick << 8) + i;
             auto finded = joysticksActivated.find(toSearch);
-            if ((e.data.Axis[i] >= 30000 || e.data.Axis[i] <= -30000) && finded == joysticksActivated.end()) {
-                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -30000);
+            std::cout << i << " - " << e.data.Axis[i] << std::endl;
+            if ((e.data.Axis[i] >= 20000 || e.data.Axis[i] <= -20000) && finded == joysticksActivated.end()) {
+                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -20000);
                 return;
-            } else if ((e.data.Axis[i] <= 20000 && e.data.Axis[i] >= -20000) && finded != joysticksActivated.end()) {
+            } else if ((e.data.Axis[i] <= 15000 && e.data.Axis[i] >= -15000) && finded != joysticksActivated.end()) {
                 controller.addAxis<JoystickAxis>("zAxis", {e.data.Joystick, i, finded->second});
                 joysticksActivated.erase(finded);
                 left();
@@ -171,10 +172,10 @@ void indie::scenes::ControllerConfigScene::left()
         for (unsigned short i = 0; i < e.data.NUMBER_OF_AXES; i++) {
             irr::u16 toSearch = (e.data.Joystick << 8) + i;
             auto finded = joysticksActivated.find(toSearch);
-            if ((e.data.Axis[i] >= 30000 || e.data.Axis[i] <= -30000) && finded == joysticksActivated.end()) {
-                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -30000);
+            if ((e.data.Axis[i] >= 20000 || e.data.Axis[i] <= -20000) && finded == joysticksActivated.end()) {
+                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -20000);
                 return;
-            } else if ((e.data.Axis[i] <= 20000 && e.data.Axis[i] >= -20000) && finded != joysticksActivated.end()) {
+            } else if ((e.data.Axis[i] <= 15000 && e.data.Axis[i] >= -15000) && finded != joysticksActivated.end()) {
                 joysticksActivated.erase(finded);
                 controller.addAxis<JoystickAxis>("xAxis", {e.data.Joystick, finded->second});
                 taunt();
