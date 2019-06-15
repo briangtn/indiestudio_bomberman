@@ -550,19 +550,60 @@ void indie::systems::IrrlichtManagerSystem::drawAIControllerGizmos(
     jf::entities::EntityHandler entity,
     jf::components::ComponentHandler<components::AIController> aic)
 {
-    if (aic->getFullNodePath().empty())
-        return;
-    auto target = aic->getFinalTarget(aic->getFullNodePath());
-    auto position = entity->getComponent<components::Transform>()->getPosition();
-
-    irr::core::vector3df irrPos(position.x, position.y, position.z);
-    irr::core::vector3df irrTarget(target.x, target.y, target.z);
 
     ECSWrapper ecs;
     auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
 
-    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 255, 0));
+    auto position = entity->getComponent<components::Transform>()->getPosition();
+    irr::core::vector3df irrPos(position.x, position.y, position.z);
     constexpr float boxSize = 1;
+
+    auto state = aic->getState();
+    switch (state) {
+    case components::AIController::SEARCH:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 0, 255));
+        break;
+    case components::AIController::FOCUS:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 0, 0));
+        break;
+    case components::AIController::POWERUP:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 0, 255));
+        break;
+    case components::AIController::SURVIVE:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 255, 0));
+        break;
+    case components::AIController::TAUNT:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 255, 0));
+        break;
+    case components::AIController::UNKNOWN:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 255, 255));
+        break;
+    default:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 255, 255));
+        break;
+    }
+
+    if (aic->getFullNodePath().empty())
+        return;
+    auto target = aic->getFinalTarget(aic->getFullNodePath());
+
+    irr::core::vector3df irrTarget(target.x, target.y, target.z);
+
+    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 255, 0));
     driver->draw3DBox(
         irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
         irr::video::SColor(255, 255, 255, 0));

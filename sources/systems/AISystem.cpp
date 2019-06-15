@@ -245,11 +245,11 @@ void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<ind
     if (component->getState() != component->getLastState() || !component->getHasTarget()) {
         component->setFullNodePath(ai::stackPathToVectorPath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
 ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition()), true)));
-        bool check = checkNeedSubtarget(subtarget, component);
+        int check = checkNeedSubtarget(subtarget, component);
         if (check == 2)
             askNewTarget(component, playerPos, entity);
         else
-            askNewTarget(component, (check == true) ? subtarget.toWorldPos() : bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
+            askNewTarget(component, check ? subtarget.toWorldPos() : bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
     }
 }
 
@@ -261,10 +261,10 @@ void indie::systems::AISystem::searchLogic(jf::components::ComponentHandler<indi
     if (component->getState() != component->getLastState() || !component->getHasTarget()) {
         component->setFullNodePath(ai::stackPathToVectorPath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
 {7, 7}, true)));
-        bool check = checkNeedSubtarget(subtarget, component);
+        int check = checkNeedSubtarget(subtarget, component);
         if (check == 2)
             askNewTarget(component, playerPos, entity);
-        askNewTarget(component, (check == true) ? subtarget.toWorldPos() : maths::Vector3D(70, 0, 70), entity);
+        askNewTarget(component, check ? subtarget.toWorldPos() : maths::Vector3D(70, 0, -70), entity);
     }
 }
 
