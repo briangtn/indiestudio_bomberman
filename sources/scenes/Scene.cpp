@@ -256,7 +256,7 @@ void indie::scenes::Scene::onStart()
         id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
             ECSWrapper ecs;
             if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place_bomb");
             }
         });
         _listeners.emplace_back(id);

@@ -83,7 +83,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -168,7 +168,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -253,7 +253,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -338,7 +338,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>

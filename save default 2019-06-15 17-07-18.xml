@@ -100,7 +100,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -185,7 +185,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -270,7 +270,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -355,7 +355,7 @@
                 <argument name="speed" value="14"/>
                 <argument name="loop" value="true"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="78"/>
@@ -410,7 +410,7 @@
             <argument name="tauntAnimation" value="taunt"/>
             <argument name="isPlacingBomb" value="false"/>
             <argument name="bombButton" value="player1bomb"/>
-            <argument name="bombAnimation" value="place bomb"/>
+            <argument name="bombAnimation" value="place_bomb"/>
             <argument name="bombForce" value="3"/>
             <argument name="maxBomb" value="3"/>
             <argument name="playerType" value="1"/>

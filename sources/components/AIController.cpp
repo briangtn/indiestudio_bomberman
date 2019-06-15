@@ -32,7 +32,7 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
         if (a->getEntity()->getID() == e.entityId) {
             if (e.animationName == "taunt")
                 a->setIsTaunting(false);
-            else if (e.animationName == "place bomb")
+            else if (e.animationName == "place_bomb")
                 a->setIsPlacingBombs(false);
         }      
     });

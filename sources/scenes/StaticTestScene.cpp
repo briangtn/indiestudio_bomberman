@@ -52,7 +52,7 @@ void indie::scenes::StaticTestScene::onStart()
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
-        {"place bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 100, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
     });
@@ -88,7 +88,7 @@ void indie::scenes::StaticTestScene::onStart()
     id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
         if (e.wasPressed) {
-            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
+            ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place_bomb");
         }
     });
     _listeners.emplace_back(id);

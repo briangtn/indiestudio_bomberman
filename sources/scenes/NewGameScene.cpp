@@ -36,7 +36,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(false), _saveName("default.xml"), _eventKeyJustPressedID()
+    : _saveOnExit(true), _saveName("default.xml"), _eventKeyJustPressedID()
 {
 
 }
@@ -155,7 +155,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -178,7 +178,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -201,7 +201,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnWhite()
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -224,7 +224,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
