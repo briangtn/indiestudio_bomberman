@@ -403,7 +403,7 @@ bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D ve
     auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
 
     indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
-    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D scaleHitBox = {2, 2, 2};
     indie::maths::Vector3D rotationHitBox = {0, 0, 0};
 
     indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
