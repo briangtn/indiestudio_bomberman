@@ -120,10 +120,10 @@ void indie::scenes::Scene::onStart()
         std::stringstream musicVolumeStringStream;
         auto backToMenuButton = ecs.entityManager.getEntitiesByName("backToMenuButton")[0]->getComponent<indie::components::Button>();
 
-        musicVolumeStringStream << "Musics volume: " << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
-        effectVolumeStringStream << "Effects volume: " << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
-        ecs.entityManager.getEntitiesByName("effectVolumeText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
-        ecs.entityManager.getEntitiesByName("musicVolumeText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+        musicVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
+        effectVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
+        ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+        ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
 
         backToMenuButton->setOnClicked([](indie::components::Button *button) {
             indie::scenes::SceneManager::safeChangeScene("mainMenu");
@@ -143,8 +143,8 @@ void indie::scenes::Scene::onStart()
 
             if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() + 0.05f < 1.05) {
                 ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setEffectVolume(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() + 0.05f);
-                effectVolumeStringStream << "Effects volume: " << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
-                ecs.entityManager.getEntitiesByName("effectVolumeText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+                effectVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
+                ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
             }
         });
 
@@ -156,8 +156,8 @@ void indie::scenes::Scene::onStart()
             if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() > 0) {
                 volume -= 5;
                 ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setEffectVolume(volume / 100.0f);
-                effectVolumeStringStream << "Effects volume: " << volume << "%";
-                ecs.entityManager.getEntitiesByName("effectVolumeText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+                effectVolumeStringStream << volume << "%";
+                ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
             }
         });
 
@@ -168,8 +168,8 @@ void indie::scenes::Scene::onStart()
 
             if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() + 0.05f < 1.05) {
                 ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setMusicVolume(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() + 0.05f);
-                musicVolumeStringStream << "Musics volume: " << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
-                ecs.entityManager.getEntitiesByName("musicVolumeText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+                musicVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
+                ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
             }
         });
 
@@ -181,8 +181,8 @@ void indie::scenes::Scene::onStart()
             if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() > 0) {
                 volume -= 5;
                 ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setMusicVolume(volume / 100.0f);
-                musicVolumeStringStream << "Musics volume: " << volume << "%";
-                ecs.entityManager.getEntitiesByName("musicVolumeText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+                musicVolumeStringStream << volume << "%";
+                ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
             }
         });
     }

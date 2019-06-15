@@ -88,7 +88,7 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="ta daronne"/>
+            <argument name="text" value="Effect Volume:"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
             <argument name="verticalAlignement" value="MIDDLE"/>
@@ -103,7 +103,36 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="ta daronne"/>
+            <argument name="text" value="Musics Volume:"/>
+            <argument name="color" value="ff,00,00,00"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+
+    <entity name="musicValueText">
+        <component type="Transform">
+            <argument name="position" value="0,225,0"/>
+            <argument name="scale" value="1280,720,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="Musics Volume:"/>
+            <argument name="color" value="ff,00,00,00"/>
+            <argument name="horizontalAlignement" value="CENTER"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+    <entity name="effectValueText">
+        <component type="Transform">
+            <argument name="position" value="0,425,0"/>
+            <argument name="scale" value="1280,720,0"/>
+        </component>
+        <component type="Text">
+            <argument name="text" value="Effect Volume:"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
