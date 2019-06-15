@@ -14,6 +14,7 @@
 #include <sstream>
 #include <iomanip>
 #include <fstream>
+#include <random>
 #include <boost/filesystem/operations.hpp>
 #include "ECSWrapper.hpp"
 #include "scenes/NewGameScene.hpp"
@@ -40,7 +41,9 @@ indie::scenes::NewGameScene::NewGameScene()
 
 void indie::scenes::NewGameScene::onStart()
 {
-    indie::Map::generateMap(mapWidth, mapHeight, 421, false);
+    std::random_device rd;
+    std::uniform_int_distribution<int> dist(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+    indie::Map::generateMap(mapWidth, mapHeight, dist(rd), false);
     ECSWrapper ecs;
     ecs.systemManager.getSystem<systems::MovementSystem>().setMapSize({static_cast<float>(mapWidth), static_cast<float>(mapHeight)});
     auto p1 = spawnBlack();
