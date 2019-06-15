@@ -16,9 +16,9 @@
 #include <fstream>
 #include <random>
 #include <boost/filesystem/operations.hpp>
-#include <events/IrrlichtKeyJustChangedEvent.hpp>
-#include <systems/PauseSystem.hpp>
-#include <events/AskingForSaveEvent.hpp>
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
+#include "systems/PauseSystem.hpp"
+#include "events/AskingForSaveEvent.hpp"
 #include "ECSWrapper.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "parser/Parser.hpp"
