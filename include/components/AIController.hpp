@@ -42,11 +42,13 @@ namespace indie {
                 void setPreviousPos(std::pair<int, int>assign);
                 void setFullNodePath(std::vector<ai::AStar::Node> fullPath);
                 void setHasTarget(bool assign);
+                void setHasBombWaitingToExplode(bool assign);
 
                 std::vector<ai::AStar::Node> getFullNodePath() const;
                 std::pair<int, int> getPreviousPos() const;
                 bool getIsTaunting() const;
                 bool getIsPlacingBomb() const;
+                bool getHasBombWaitingToExplode() const;
                 indie::maths::Vector3D getTarget() const;
                 state getState() const;
                 state getLastState() const;
@@ -80,6 +82,7 @@ namespace indie {
                 state _state;
                 state _lastState;
                 std::vector<ai::AStar::Node> _fullNodePath;
+                bool _hasBombWaitingToExplode;
 
                 int _bombForce;
                 int _maxBomb;
@@ -90,6 +93,7 @@ namespace indie {
 
                 jf::internal::ID _endAnimationListenerEventId;
                 jf::internal::ID _reachTargetListenerEventId;
+                jf::internal::ID _bombExplosion;
         };
     }
 }

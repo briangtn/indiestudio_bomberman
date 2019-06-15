@@ -492,6 +492,7 @@ indie::components::PlayerType indie::components::PlayerController::getPlayerType
 
 void indie::components::PlayerController::setPlayerType(indie::components::PlayerType playerType)
 {
+    //std::cout << "PlayerController : " << playerType << std::endl;
     _playerType = playerType;
 }
 

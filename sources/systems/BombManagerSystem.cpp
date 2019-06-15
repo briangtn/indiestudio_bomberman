@@ -10,6 +10,7 @@
 #include "input/InputManager.hpp"
 #include "exceptions/BombException.hpp"
 #include "components/PlayerAlive.hpp"
+#include "events/BombExplosionEvent.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -71,6 +72,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
                 this->handleCollide(bomb);                
                 this->playSoundExplosion(bomb->getBombType(), pass);
                 this->removeBombPlace(bomb->getPlayerType());
+                ecs.eventManager.emit(events::BombExplosionEvent({bomb->getPlayerType()}));
             }
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {

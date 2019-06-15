@@ -83,6 +83,7 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     ECSWrapper ecs;
     if (ecs.systemManager.getSystem<indie::systems::AISystem>().getTimePassed() < 500000000 && !hasMoved(entity, component))
         return;
+    ai::AIView::recomputeViewGrid(15, 15);
     component->setPreviousPos(std::pair<int, int>(static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().x) / 10
                             ,static_cast<int>(entity->getComponent<indie::components::Transform>()->getPosition().z) *-1 / 10));
 
@@ -106,10 +107,16 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     });
 
     component->setLastState(component->getState());
-    chooseState(component, entity, bonuses, players, bombs);
     if (component->getIsTaunting() == false && component->getIsPlacingBomb() == false)
         moveComp->setFollowTarget(true);
+    if (component->getState() == indie::components::AIController::SURVIVE && component->getHasTarget())
+        return;
+    chooseState(component, entity, bonuses, players, bombs);
 
+    if (component->getHasBombWaitingToExplode() && component->getState() != indie::components::AIController::SURVIVE)
+        return;
+    //if (component->getPlayerType() == indie::components::PlayerType::P3)
+    //    std::cout << "state : " << component->getState() << std::endl;
     switch (component->getState()) {
         case indie::components::AIController::SURVIVE : surviveLogic(component, entity); break;
         case indie::components::AIController::FOCUS : focusLogic(); break;
@@ -120,6 +127,22 @@ void indie::systems::AISystem::AILogic(jf::entities::EntityHandler entity,
     }
     if (component->getIsTaunting() || component->getIsPlacingBomb())
         moveComp->setFollowTarget(false);
+    if (component->getHasTarget() && component->getLastState() != indie::components::AIController::SURVIVE) {
+        std::vector<ai::AStar::Node> path = component->getFullNodePath();
+        bool moment = false;
+        ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
+        for (auto &i : path) {
+            if (moment == true) {
+                if (grid[i.pos.y][i.pos.x] & ai::AIView::AI_CELL_BLAST)
+                    moveComp->setFollowTarget(false);
+            }
+            if (i.pos.x == ai::get2DPositionFromWorldPos(playerPos).x && i.pos.y == ai::get2DPositionFromWorldPos(playerPos).y)
+                moment = true;
+        }
+        if (moment == false && !path.empty())
+            if (grid[path[0].pos.y][path[0].pos.x] & ai::AIView::AI_CELL_BLAST)
+                moveComp->setFollowTarget(false);
+    }
 }
 
 void indie::systems::AISystem::focusLogic()

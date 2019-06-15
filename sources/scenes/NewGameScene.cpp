@@ -197,10 +197,17 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
 void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityHandler entity,
                                                            indie::scenes::PlayerControllerType type)
 {
+
+    std::map<std::string, components::PlayerType> map = {
+        {"player1", components::P1},
+        {"player2", components::P2},
+        {"player3", components::P3},
+        {"player4", components::P4},
+    };
     if (type == AI) {
-        entity->assignComponent<components::AIController>();
+        auto ai = entity->assignComponent<components::AIController>();
+        ai->setPlayerType(map[entity->getName()]);
         auto mtt = entity->assignComponent<components::MoveToTarget>();
-        mtt->setTarget(entity->getComponent<components::Transform>()->getPosition());
     } else {
         auto pc = entity->assignComponent<components::PlayerController, components::PlayerController::PlayerControllerSettings>({
             entity->getName() + "xAxis",
@@ -208,12 +215,6 @@ void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityH
             entity->getName() + "taunt",
             entity->getName() + "bomb",
         });
-        std::map<std::string, components::PlayerType> map = {
-            {"player1", components::P1},
-            {"player2", components::P2},
-            {"player3", components::P3},
-            {"player4", components::P4},
-        };
         pc->setPlayerType(map[entity->getName()]);
     }
 }

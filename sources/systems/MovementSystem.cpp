@@ -231,7 +231,7 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
         auto &tr = std::get<1>(tuple);
         auto &path = std::get<2>(tuple);
         if (!path.empty() && mtt.isValid() && tr.isValid() && mtt->isFollowTarget() && !mtt->hasReachedTarget()) {
-            auto &nextNode = path.top();
+            auto nextNode = path.top();
 
             float speed = mtt->getSpeed();
             maths::Vector3D movementVector = (nextNode.toWorldPos() - tr->getPosition()).normalized();
@@ -241,12 +241,15 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
             tr->lookAt(tr->getPosition() + movementVector);
             tr->setRotation({rot.x, tr->getRotation().y, rot.z});
 
-            if ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
+            while ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
                 path.pop();
                 if (path.empty()) {
                     ECSWrapper ecs;
                     mtt->setReachedTarget(true);
                     ecs.eventManager.emit(events::HasReachedTarget({mtt}));
+                    break;
+                } else {
+                    nextNode = path.top();
                 }
             }
         }
@@ -311,6 +314,11 @@ void indie::systems::MovementSystem::recomputeCaches()
             auto collider = entity->getComponent<components::BoxCollider>();
             bool canGoThroughCrate = !collider.isValid() || !(collider->getLayer() & BREAKABLE_BLOCK_LAYER);
             auto path = ai::AStar::findPath(_viewGridCache, {playerX, playerZ}, {targetX, targetZ}, canGoThroughCrate);
+            if (path.empty() && !mtt->hasReachedTarget() && mtt->isFollowTarget()) {
+                ECSWrapper ecs;
+                mtt->setReachedTarget(true);
+                ecs.eventManager.emit(events::HasReachedTarget({mtt}));
+            }
             _pathsCache.push_front(std::make_tuple(mtt, tr, path));
         }
     );
