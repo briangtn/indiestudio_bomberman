@@ -28,7 +28,7 @@
         <component type="Button">
             <argument name="text" value="."/>
             <argument name="textureFileName" value="button_resources_packs"/>
-            <argument name="id" value="5"/>
+            <argument name="id" value="12"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
