@@ -17,6 +17,7 @@
 #include "Exceptions.hpp"
 #include "ECSWrapper.hpp"
 #include "components/SoundComponent.hpp"
+#include "systems/AISystem.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -24,10 +25,18 @@
 #include "components/Camera.hpp"
 #include "components/PointLight.hpp"
 #include "components/Hoverer.hpp"
+#include "components/AIController.hpp"
 #include "components/Rotator.hpp"
 #include "components/PlayerController.hpp"
+#include "systems/BonusSystem.hpp"
+#include "systems/BombManagerSystem.hpp"
+#include "systems/DestroyOnTimeSystem.hpp"
 #include "components/GUI/Font.hpp"
 #include "components/GUI/Image.hpp"
+#include "components/DynamicCamera.hpp"
+#include "components/PlayerAlive.hpp"
+#include "components/LeaderBoard.hpp"
+#include "systems/LiveSystem.hpp"
 
 const std::map<std::string, irr::video::E_MATERIAL_TYPE> indie::Parser::_materialTypes = {
     {"EMT_SOLID", irr::video::EMT_SOLID},
@@ -79,6 +88,14 @@ const std::map<std::string, irr::video::E_MATERIAL_FLAG> indie::Parser::_materia
         {"EMF_POLYGON_OFFSET", irr::video::EMF_POLYGON_OFFSET}
 };
 
+const std::map<std::string, indie::components::BonusType> indie::Parser::_bonusTypes = {
+        {"BONUS_T_BOMB_UP", indie::components::BONUS_T_BOMB_UP},
+        {"BONUS_T_SPEED_UP", indie::components::BONUS_T_SPEED_UP},
+        {"BONUS_T_FIRE_UP", indie::components::BONUS_T_FIRE_UP},
+        {"BONUS_T_WALL_PASS", indie::components::BONUS_T_WALL_PASS},
+        {"BONUS_T_NB", indie::components::BONUS_T_NB}
+};
+
 const std::map<std::string, indie::components::Text::VerticalAlignement> indie::Parser::_verticalAlignements = {
         {"TOP", indie::components::Text::TOP},
         {"MIDDLE", indie::components::Text::MIDDLE},
@@ -96,23 +113,36 @@ indie::Parser::Parser()
     , _xmlReader(nullptr)
     , _scenes()
     , _systems({
+        {(L"BombManager"), &createBombManager},
+        {(L"Bonus"), &createBonus},
+        {(L"DestroyManager"), &createDestroyManager},
         {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"IrrklangAudio"), &createIrrklangAudio},
+        {(L"Live"), &createLive},
         {(L"Movement"), &createMovement},
-        {(L"Taunt"), &createTaunt}
+        {(L"Taunt"), &createTaunt},
+        {(L"AI"), &createAI}
     })
     , _components({
+        {(L"AIController"), &createAIController},
         {(L"Animator"), &createAnimator},
+        {(L"Bomb"), &createBomb},
+        {(L"BonusEffector"), &createBonusEffector},
+        {(L"BonusSpawner"), &createBonusSpawner},
         {(L"BoxCollider"), &createBoxCollider},
         {(L"Button"), &createButton},
         {(L"Camera"), &createCamera},
+        {(L"Destroy"), &createDestroy},
+        {(L"DynamicCamera"), &createDynamicCamera},
         {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
         {(L"Image"), &createImage},
         {(L"Particle"), &createParticle},
+        {(L"PlayerAlive"), &createPlayerAlive},
         {(L"PlayerController"), &createPlayerController},
         {(L"Material"), &createMaterial},
         {(L"Mesh"), &createMesh},
+        {(L"MoveToTarget"), &createMoveToTarget},
         {(L"Rotator"), &createRotator},
         {(L"Sound"), &createSound},
         {(L"Text"), &createText},
@@ -318,108 +348,142 @@ void indie::Parser::loadScene(const std::string &fileName)
     _xmlReader = nullptr;
 }
 
-void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+void indie::Parser::createAI(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
 
     for (; xmlReader->read(); line++) {
         if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
             throw exceptions::ParserInvalidFileException(
-                    "Node 'system' of type 'IrrlichtManager' does not required subnodes, at line "
+                    "Node 'system' of type 'AI' does not required subnodes, at line "
                     + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createIrrlichtManager");
         } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
             if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
-                ecs.systemManager.addSystem<systems::IrrlichtManagerSystem>();
-                ecs.systemManager.startSystem<systems::IrrlichtManagerSystem>();
+                ecs.systemManager.addSystem<systems::AISystem>();
+                ecs.systemManager.startSystem<systems::AISystem>();
                 break;
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
                         + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createIrrlichtManager");
+                        "indie::Parser::createIA");
             }
         } else {
             continue;
         }
+    }
+}
+
+void indie::Parser::createBombManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBombManager", "system");
+    ecs.systemManager.addSystem<systems::BombManagerSystem>();
+    ecs.systemManager.startSystem<systems::BombManagerSystem>();
+}
+
+void indie::Parser::createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonus", "system");
+    ecs.systemManager.addSystem<systems::BonusSystem>();
+    ecs.systemManager.startSystem<systems::BonusSystem>();
+}
+
+void indie::Parser::createDestroyManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDestroyManager", "system");
+    ecs.systemManager.addSystem<systems::DestroyOnTimeSystem>();
+    ecs.systemManager.startSystem<systems::DestroyOnTimeSystem>();
+}
+
+void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {
+            {"fullScreen", ""},
+            {"vSync", ""},
+            {"windowCaption", ""},
+            {"windowDimension", ""}
+    };
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrlichtManager", "system");
+    ecs.systemManager.addSystem<systems::IrrlichtManagerSystem>();
+    ecs.systemManager.startSystem<systems::IrrlichtManagerSystem>();
+    auto &system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
+    if (!args["fullScreen"].empty()) {
+        system.setFullScreenEnabled(getBool(args["fullScreen"], fileName, line));
+    }
+    if (!args["vSync"].empty()) {
+        system.setVSyncEnabled(getBool(args["vSync"], fileName, line));
+    }
+    if (!args["windowCaption"].empty()) {
+        system.setWindowCaption(args["windowCaption"]);
+    }
+    if (!args["windowDimension"].empty()) {
+        system.setWindowDimension(getVector2D(args["windowDimension"], fileName, line));
     }
 }
 
 void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
 
-    for (; xmlReader->read(); line++) {
-        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            throw exceptions::ParserInvalidFileException(
-                    "Node 'system' of type 'IrrklangAudio' does not required subnodes, at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createIrrklangAudio");
-        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
-                ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
-                ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
-                break;
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createIrrklangAudio");
-            }
-        } else {
-            continue;
-        }
-    }
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrklangAudio", "system");
+    ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
+    ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
+}
+
+void indie::Parser::createLive(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createLive", "system");
+    ecs.systemManager.addSystem<systems::LiveSystem>();
+    ecs.systemManager.startSystem<systems::LiveSystem>();
 }
 
 void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"mapSize", ""}};
 
-    for (; xmlReader->read(); line++) {
-        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            throw exceptions::ParserInvalidFileException(
-                    "Node 'system' of type 'Movement' does not required subnodes, at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createMovement");
-        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
-                ecs.systemManager.addSystem<systems::MovementSystem>();
-                ecs.systemManager.startSystem<systems::MovementSystem>();
-                break;
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createMovement");
-            }
-        } else {
-            continue;
-        }
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMovement", "system");
+    ecs.systemManager.addSystem<systems::MovementSystem>();
+    auto &system = ecs.systemManager.getSystem<systems::MovementSystem>();
+    if (!args["mapSize"].empty()) {
+        system.setMapSize(getVector2D(args["mapSize"], fileName, line));
     }
+    ecs.systemManager.startSystem<systems::MovementSystem>();
 }
 
 void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
 
-    for (; xmlReader->read(); line++) {
-        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
-            throw exceptions::ParserInvalidFileException(
-                    "Node 'system' of type 'Taunt' does not required subnodes, at line "
-                    + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createTaunt");
-        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
-            if (irr::core::stringw(L"system").equals_ignore_case(xmlReader->getNodeName())) {
-                ecs.systemManager.addSystem<systems::TauntSystem>();
-                ecs.systemManager.startSystem<systems::TauntSystem>();
-                break;
-            } else {
-                throw exceptions::ParserInvalidFileException(
-                        "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'system' but got '"
-                        + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
-                        "indie::Parser::createTaunt");
-            }
-        } else {
-            continue;
-        }
-    }
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTaunt", "system");
+    ecs.systemManager.addSystem<systems::TauntSystem>();
+    ecs.systemManager.startSystem<systems::TauntSystem>();
+}
+
+void indie::Parser::createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args {
+        {"", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createAIController");
+    entity->assignComponent<components::AIController>();
 }
 
 void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -432,6 +496,7 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
             {"loop",       ""},
             {"transition", ""}
     };
+    bool currentAnimation = false;
     std::string animationName;
     auto component = entity->assignComponent<components::Animator>();
     for (; xmlReader->read(); line++) {
@@ -447,8 +512,8 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
                 for (auto &it : args) {
                     if (it.second.empty() && it.first != "transition") {
                         throw exceptions::ParserInvalidFileException(
-                                "Missing mandatory argument '" + it.first + "' at line " + std::to_string(line) + " in file "
-                                + fileName + ".", "indie::Parser::createMaterial");
+                                "Missing mandatory argument '" + it.first + "' for component 'Animator' at line "
+                                + std::to_string(line) + " in file " + fileName + ".", "indie::Parser::createMaterial");
                     }
                 }
                 bool loop = getBool(args["loop"], fileName, line);
@@ -463,6 +528,34 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
                     it.second = "";
                 }
                 animationName.clear();
+            } else if (irr::core::stringw(L"argument").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string name = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"name")).c_str()).c_str();
+                if (name.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'name' for node 'argument' at line " + std::to_string(line)
+                            + " in file " + fileName + ".", "indie::Parser::createAnimator");
+                } else if (name != "currentAnimation") {
+                    throw exceptions::ParserInvalidFileException(
+                            "Invalid attribute 'name' for node 'argument' at line " + std::to_string(line)
+                            + " in file " + fileName + ".", "indie::Parser::createAnimator");
+                }
+                if (currentAnimation) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Redefinition of 'currentAnimation' at line " + std::to_string(line) + " in file "
+                            + fileName + ".", "indie::Parser::createAnimator");
+                }
+                currentAnimation = true;
+                std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
+                if (value.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                            "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) +
+                            " in file " + fileName + ".", "indie::Parser::createAnimator");
+                }
+                std::string trimmed = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"trimmed")).c_str()).c_str();
+                if (trimmed.empty() || getBool(trimmed, fileName, line)) {
+                    value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
+                }
+                component->setCurrentAnimation(value);
             } else {
                 throw exceptions::ParserInvalidFileException(
                         "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
@@ -481,6 +574,91 @@ void indie::Parser::createAnimator(jf::entities::EntityHandler &entity, irr::io:
             continue;
         }
     }
+}
+
+void indie::Parser::createBomb(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"strength", ""},
+            {"timeBeforeExplode", ""},
+            {"bombType", ""},
+            {"player", ""},
+            {"texturePath", ""},
+            {"textureMesh", ""},
+            {"position", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBomb");
+    if (args["strength"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'strength' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["timeBeforeExplode"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'timeBeforeExplode' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["bombType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bombType' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    if (args["player"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'player' for component 'Bomb' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBomb");
+    }
+    auto component = entity->assignComponent<components::Bomb>(
+            std::stoi(args["strength"]),
+            std::stof(args["timeBeforeExplode"]),
+            static_cast<components::BombType>(std::stoi(args["bombType"])),
+            static_cast<components::PlayerType>(std::stoi(args["player"])));
+    if (!args["texturePath"].empty()) {
+        component->setTexturePath(args["texturePath"]);
+    }
+    if (!args["textureMesh"].empty()) {
+        component->setTextureMesh(args["textureMesh"]);
+    }
+    if (!args["position"].empty()) {
+        component->setInitialPosition(getVector3D(args["position"], fileName, line));
+    }
+}
+
+void indie::Parser::createBonusEffector(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"bonusType", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonusEffector");
+    if (args["bonusType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bonusType' for component 'BonusEffector' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusEffector");
+    }
+    entity->assignComponent<components::BonusEffector>(getBonusType(args["bonusType"]));
+}
+
+void indie::Parser::createBonusSpawner(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"spawnerType", ""},
+            {"bonusType",   ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createBonusSpawner");
+    if (args["spawnerType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'spawnerType' for component 'BonusSpawner' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusSpawner");
+    }
+    if (args["bonusType"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'bonusType' for component 'BonusSpawner' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createBonusSpawner");
+    }
+    entity->assignComponent<components::BonusSpawner>(getSpawnerType(args["spawnerType"]), getBonusType(args["bonusType"]));
 }
 
 void indie::Parser::createBoxCollider(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -528,6 +706,35 @@ void indie::Parser::createButton(jf::entities::EntityHandler &entity, irr::io::I
         component->setTexturePath(args["textureFileName"]);
 }
 
+void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"FOV", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
+    if (args["FOV"].empty()) {
+        entity->assignComponent<components::Camera>();
+    } else {
+        entity->assignComponent<components::Camera>(
+                std::stof(args["FOV"]));
+    }
+}
+
+void indie::Parser::createDestroy(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                  const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"time", ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDestroy");
+    if (args["time"].empty()) {
+        entity->assignComponent<components::DestroyOnTime>();
+    } else {
+        entity->assignComponent<components::DestroyOnTime>(std::stof(args["time"]));
+    }
+}
+
 void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line)
 {
@@ -544,19 +751,20 @@ void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXM
     auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
 }
 
-void indie::Parser::createCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                                 const std::string &fileName, unsigned int &line)
+void indie::Parser::createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line)
 {
     std::map<std::string, std::string> args = {
-            {"FOV", ""}
+        {"movementSpeed", ""},
+        {"blockBorders",  ""}
     };
-
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createCamera");
-    if (args["FOV"].empty()) {
-        entity->assignComponent<components::Camera>();
-    } else {
-        entity->assignComponent<components::Camera>(
-                std::stof(args["FOV"]));
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createDynamicCamera");
+    auto component = entity->assignComponent<components::DynamicCamera>();
+    if (!args["movementSpeed"].empty()) {
+        component->setMovementSpeed(std::atof(args["movementSpeed"].c_str()));
+    }
+    if (!args["blockBorders"].empty()) {
+        component->setBlockBorders(std::atoi(args["blockBorders"].c_str()));
     }
 }
 
@@ -606,6 +814,48 @@ void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IX
     }
 }
 
+void indie::Parser::createLeaderBoard(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line)
+{
+    components::LeaderBoard::PlayerLeaderBoard playerLeaderboard;
+    auto component = entity->assignComponent<indie::components::LeaderBoard>();
+    for (; xmlReader->read(); line++) {
+        if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (irr::core::stringw(L"player").equals_ignore_case(xmlReader->getNodeName())) {
+                std::string id = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"id")).c_str()).c_str();
+                if (id.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                        "Missing attribute 'id' for node 'player' at line " + std::to_string(line) + " in file "
+                        + fileName + ".", "indie::Parser::createLeaderBoard");
+                }
+                std::string ranking = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"ranking")).c_str()).c_str();
+                ranking.erase(remove_if(ranking.begin(), ranking.end(), isspace), ranking.end());
+                if (ranking.empty()) {
+                    throw exceptions::ParserInvalidFileException(
+                        "Missing attribute 'ranking' for node 'player' at line " + std::to_string(line) + " in file "
+                        + fileName + ".", "indie::Parser::createLeaderBoard");
+                }
+                playerLeaderboard.emplace_back(std::stoi(id), std::stoi(ranking));
+            } else {
+                throw exceptions::ParserInvalidFileException(
+                    "Unknown node '" + std::string(irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str())
+                    + " at line " + std::to_string(line) + " in file " + fileName + ".", "indie::createLeaderBoard");
+            }
+        } else if (xmlReader->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (!(irr::core::stringw("component").equals_ignore_case(xmlReader->getNodeName()))) {
+                throw exceptions::ParserInvalidFileException(
+                    "Wrong closing node at line " + std::to_string(line) + " in file " + fileName + "(expected 'component' but got '"
+                    + irr::core::stringc(irr::core::stringw(xmlReader->getNodeName()).c_str()).c_str() + "').",
+                    "indie::parser::createLeaderBoard");
+            }
+            line++;
+            return;
+        } else {
+            continue;
+        }
+    }
+}
+
 void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line)
 {
@@ -617,7 +867,8 @@ void indie::Parser::createMaterial(jf::entities::EntityHandler &entity, irr::io:
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMaterial");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMaterial");
+                "Missing mandatory argument 'fileName' for component 'Material' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createMaterial");
     }
     jf::components::ComponentHandler<components::Material> component;
     if (args["type"].empty()) {
@@ -649,10 +900,33 @@ void indie::Parser::createMesh(jf::entities::EntityHandler &entity, irr::io::IXM
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createTransform");
     if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createMesh");
+                "Missing mandatory argument 'fileName' for component 'Transform' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createMesh");
     }
     entity->assignComponent<components::Mesh>(
         args["fileName"]);
+}
+
+void indie::Parser::createMoveToTarget(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+        {"target",       ""},
+        {"followTarget", ""},
+        {"speed",        ""}
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMoveToTarget");
+    auto component = entity->assignComponent<components::MoveToTarget>();
+
+    if (!args["target"].empty()) {
+        component->setTarget(getVector3D(args["target"], fileName, line));
+    }
+    if (!args["followTarget"].empty()) {
+        component->setFollowTarget(getBool(args["followTarget"], fileName, line));
+    }
+    if (!args["speed"].empty()) {
+        component->setSpeed(std::atof(args["speed"].c_str()));
+    }
 }
 
 void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -675,7 +949,8 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createParticle");
     if (args["name"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createParticle");
+                "Missing mandatory argument 'name' for component 'Particle' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createParticle");
     }
     auto component = entity->assignComponent<components::Particle>(
         args["name"]);
@@ -727,6 +1002,23 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
     }
 }
 
+void indie::Parser::createPlayerAlive(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+        {"lives",        ""},
+        {"markedAsDead", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPlayerController");
+    auto component = entity->assignComponent<components::PlayerAlive>();
+    if (!args["lives"].empty()) {
+        component->setLives(std::atoi(args["lives"].c_str()));
+    }
+    if (!args["markedAsDead"].empty()) {
+        component->setMarkedAsDead(getBool(args["markedAsDead"], fileName, line));
+    }
+}
+
 void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                            const std::string &fileName, unsigned int &line)
 {
@@ -760,9 +1052,11 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
             {"bombButton",       ""},
             {"bombAnimation",    ""},
             {"bombDuration",     ""},
+            {"bombForce",        ""},
+            {"maxBomb",          ""},
             {"playerType",       ""}
     };
-    fillMapArgs(args, xmlReader, fileName, line, "inide::Parser::createPlayerController");
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPlayerController");
     auto component = entity->assignComponent<components::PlayerController>();
     if (!args["xMove"].empty()) {
         component->setXMovementAxis(args["xMove"]);
@@ -851,6 +1145,12 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
     if (!args["bombDuration"].empty()) {
         component->setBombPlacementDuration(std::stof(args["bombDuration"]));
     }
+    if (!args["bombForce"].empty()) {
+        component->setBombForce(std::stoi(args["bombForce"]));
+    }
+    if (!args["maxBomb"].empty()) {
+        component->setMaxBomb(std::stoi(args["maxBomb"]));
+    }
     if (!args["playerType"].empty()) {
         component->setPlayerType(static_cast<components::PlayerType>(std::stoi(args["playerType"])));
     }
@@ -885,19 +1185,16 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
             {"playPosition", ""},
             {"velocity",     ""}
     };
-    systems::IrrklangAudioSystem audioSystem;
-    try {
-        audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
-    } catch (jf::SystemNotFoundException &e) {
-        throw exceptions::ParserInvalidFileException(
-                "Component 'Sound' found at line " + std::to_string(line) + " in file " + fileName
-                + " but no system of type 'IrrklangAudio' has been previously instancied. "
-                  "Systems have to be added in file systems.xml.", "indie::Parser::createSound");
-    }
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createSound");
-    if (args["fileName"].empty() || args["type"].empty()) {
+    if (args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createSound");
+                "Missing mandatory argument 'fileName' for component 'Sound' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createSound");
+    }
+    if (args["type"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument 'type' for component 'Sound' at line " + std::to_string(line)
+                + " in file " + fileName + ".", "indie::Parser::createSound");
     }
     jf::components::ComponentHandler<components::SoundComponent> component;
     if (args["position"].empty()) {
@@ -914,12 +1211,17 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
     if (!args["startPaused"].empty()) {
         component->setIsPaused(getBool(args["startPaused"], fileName, line));
     }
-    if (component->getSpatialization()) {
-        component->setSound(audioSystem.add3DSound(
+    try {
+        auto &audioSystem = ecs.systemManager.getSystem<systems::IrrklangAudioSystem>();
+        if (component->getSpatialization()) {
+            component->setSound(audioSystem.add3DSound(
                 component->getSourceFile(), component->getPosition(), component->getIsLooped(), component->getIsPaused()));
-    } else {
-        component->setSound(audioSystem.add2DSound(
+        } else {
+            component->setSound(audioSystem.add2DSound(
                 component->getSourceFile(), component->getIsLooped(), component->getIsPaused()));
+        }
+    } catch (jf::SystemNotFoundException &e) {
+        std::cerr << "[WARNING][IrrklangAudioSystem] Parser found a sound to add but system is uninitialized" << std::endl;
     }
     if (!args["volume"].empty()) {
         component->setVolume(std::stof(args["volume"]));
@@ -935,8 +1237,6 @@ void indie::Parser::createSound(jf::entities::EntityHandler &entity, irr::io::IX
 void indie::Parser::createText(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
-
     std::map<std::string, std::string> args = {
             {"text", ""},
             {"horizontalAlignement", ""},
@@ -1000,11 +1300,14 @@ void indie::Parser::fillMapArgs(std::map<std::string, std::string> &args, irr::i
                             callingMethod);
                 }
                 std::string value = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"value")).c_str()).c_str();
-                value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
                 if (value.empty()) {
                     throw exceptions::ParserInvalidFileException(
                             "Missing attribute 'value' for node 'argument' at line " + std::to_string(line) + " in file " + fileName + ".",
                             callingMethod);
+                }
+                std::string trimmed = irr::core::stringc(irr::core::stringw(xmlReader->getAttributeValueSafe(L"trimmed")).c_str()).c_str();
+                if (trimmed.empty() || getBool(trimmed, fileName, line)) {
+                    value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
                 }
                 if (!args.at(name).empty()) {
                     throw exceptions::ParserInvalidFileException(
@@ -1127,6 +1430,22 @@ bool indie::Parser::getBool(const std::string &value, const std::string &fileNam
                 "Invalid value for attribute 'shouldBeKeeped', expected 'true' or 'false', but got '"
                 + value + "' at line " + std::to_string(line) + " in file " + fileName + ".",
                 "indie::Parser::getBool");
+    }
+}
+
+indie::components::BonusType indie::Parser::getBonusType(const std::string &type)
+{
+    return _bonusTypes.at(type);
+}
+
+indie::components::BonusSpawner::BonusSpawnerType indie::Parser::getSpawnerType(const std::string &type)
+{
+    if (type == "BONUS_SPAWNER_T_RANDOM") {
+        return components::BonusSpawner::BONUS_SPAWNER_T_RANDOM;
+    } else if (type == "BONUS_SPAWNER_T_SPECIFIC") {
+        return components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC;
+    } else {
+        throw exceptions::ParserInvalidFileException("Invalid BonusSpawerType", "indie::Parser::getSpawnerType");
     }
 }
 

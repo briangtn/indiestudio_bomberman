@@ -28,6 +28,8 @@ namespace indie {
             BonusSpawner(jf::entities::Entity &entity, BonusSpawnerType spawnerType = BONUS_SPAWNER_T_RANDOM, BonusType bonusType = BONUS_T_WALL_PASS);
             ~BonusSpawner() override;
 
+            BonusSpawner &operator>>(std::ostream &file);
+
         public:
             BonusSpawnerType getSpawnerType() const;
             void setSpawnerType(BonusSpawnerType spawnerType);

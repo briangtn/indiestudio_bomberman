@@ -7,10 +7,10 @@
 
 /* Created the 27/05/2019 at 15:27 by jbulteau */
 
+#include <iostream>
 #include <regex>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
 #include "scenes/Scene.hpp"
@@ -22,6 +22,10 @@
 #include "components/Animator.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
+#include "ai/AiView.hpp"
+#include "components/BonusSpawner.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
+#include "ai/AStar.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "input/Controller.hpp"
@@ -29,6 +33,10 @@
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
 #include "components/Rotator.hpp"
+#include "components/LeaderBoard.hpp"
+#include "components/AIController.hpp"
+#include "components/DynamicCamera.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -111,65 +119,14 @@ void indie::scenes::Scene::onStart()
             }
         });
     }
-    if (_fileName == "test.xml") {
-        auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
-            }
-        });
-        _listeners.emplace_back(id);
-
-        indie::Map::generateMap(15, 13, 420, false);
-
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
-            }
-        });
-        _listeners.emplace_back(id);
-    }
 }
 
 void indie::scenes::Scene::onStop()
 {
-    save(false, false);
+
+    if (_fileName != "mainMenu.xml") {
+        save(false, false);
+    }
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
@@ -257,6 +214,26 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
     }
     if (entity->hasComponent<components::Transform>()) {
         components::Transform &component = *(entity->getComponent<components::Transform>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::LeaderBoard>()) {
+        components::LeaderBoard &component = *(entity->getComponent<components::LeaderBoard>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::AIController>()) {
+        components::AIController &component = *(entity->getComponent<components::AIController>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::DynamicCamera>()) {
+        components::DynamicCamera &component = *(entity->getComponent<components::DynamicCamera>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::PlayerAlive>()) {
+        components::PlayerAlive &component = *(entity->getComponent<components::PlayerAlive>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::MoveToTarget>()) {
+        components::MoveToTarget &component = *(entity->getComponent<components::MoveToTarget>().get());
         component >> file;
     }
     file << "    </entity>" << std::endl;

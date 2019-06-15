@@ -35,6 +35,8 @@ namespace indie {
                     const std::string &texturePath = "");
             ~Button();
 
+            Button &operator>>(std::ostream &file);
+
             const std::string &getText() const;
             void setText(const std::string &text);
 

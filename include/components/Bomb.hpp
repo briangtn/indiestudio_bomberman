@@ -21,11 +21,11 @@ namespace indie {
             /* enum for each type of bomb */
 
             enum BombType {
-                NORMAL, // Normal
-                FIRE, // Fire
-                WATER, // Water
-                ELECTRIC, // Plasma
-                LOVE // Sexy
+                NORMAL,
+                FIRE,
+                WATER,
+                ELECTRIC,
+                LOVE
             };
 
             /* enum for each type of player */
@@ -40,24 +40,27 @@ namespace indie {
         class Bomb : public jf::components::Component {
         public:
 
-            /* Bombe Constructor */
+            /* Bomb Constructor */
 
             Bomb(jf::entities::Entity &entity, const int &strength,\
-            const float &timeBeforeExplose, BombType bomb, PlayerType player);
+            const float &timeBeforeExplode, BombType bomb, PlayerType player);
 
-            /* Bombe Destructor */
+            /* Bomb Destructor */
 
             ~Bomb();
+
+
+            Bomb &operator>>(std::ostream &file);
 
             /* Set & Get Strength */
 
             int getStrength() const;
-            void setStength(const int &newStrength);
+            void setStrength(const int &newStrength);
 
             /* Set & Get TimeBeforeExplose */
 
-            float getTimeBeforeExplose() const;
-            void setTimeBeforeExplose(const int &newTimeBeforeExplose);
+            float getTimeBeforeExplode() const;
+            void setTimeBeforeExplode(const float &newTimeBeforeExplode);
 
             /* Set & Get BombType */
 
@@ -87,10 +90,10 @@ namespace indie {
         protected:
         private:
             int _strength;
-            float _timeBeforeExplose;
+            float _timeBeforeExplode;
             int _bombID;
             BombType _bombType;
-            PlayerType _Player;
+            PlayerType _player;
             std::string _meshPath;
             std::string _texturePath;
             static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;
