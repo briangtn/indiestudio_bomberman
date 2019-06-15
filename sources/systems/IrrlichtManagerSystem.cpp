@@ -121,6 +121,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 
     _sceneManager->drawAll();
 
+    getGUIEnvironment()->getSkin()->setColor(irr::gui::EGDC_BUTTON_TEXT, irr::video::SColor(255,255,255,255));
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
