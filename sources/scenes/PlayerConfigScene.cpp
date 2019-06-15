@@ -327,6 +327,7 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
         }
         indie::scenes::PlayerConfigScene::playersSettings[id - 1].controller = controller->second;
         indie::scenes::PlayerConfigScene::setValid(true, id);
+        removeListeners(playersSettings[id - 1]);
     });
     playersSettings[id - 1].eventKeyboardId = eventId;
     eventId = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [id](void *a, events::IrrlichtJoystickEvent e) {
@@ -342,6 +343,7 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
                         controller.second.setControllerId(e.data.Joystick);
                         indie::scenes::PlayerConfigScene::playersSettings[id - 1].controller = controller.second;
                         setValid(true, id);
+                        removeListeners(playersSettings[id - 1]);
                         return;
                     }
                 }
