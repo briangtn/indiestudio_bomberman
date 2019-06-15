@@ -23,7 +23,7 @@
             <argument name="scale" value="800,600,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="Appuyez sur la touche de votre controller"/>
+            <argument name="text" value="Appuyez sur la touche de votre controller" trimmed="false"/>
             <argument name="color" value="255, 255, 0, 0"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
