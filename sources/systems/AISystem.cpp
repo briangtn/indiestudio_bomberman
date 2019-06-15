@@ -169,8 +169,38 @@ ai::get2DPositionFromWorldPos(player->getComponent<indie::components::Transform>
         if (check == 2)
             askNewTarget(component, playerPos, entity);
         else
-            askNewTarget(component, check ? subtarget.toWorldPos() : player->getComponent<indie::components::Transform>()->getPosition(), entity);
+            askNewTarget(component, check ? subtarget.toWorldPos() : findRealFocusCase(player->getComponent<indie::components::Transform>()->getPosition()), entity);
     }
+}
+
+indie::maths::Vector3D indie::systems::AISystem::findRealFocusCase(const maths::Vector3D &target)
+{
+    auto posTarget = ai::get2DPositionFromWorldPos(target);
+    std::vector<indie::ai::AStar::Node::position> possibleTarget;
+    indie::ai::AIView::AICellViewGrid grid = ai::AIView::getViewGrid();
+
+    possibleTarget.emplace_back(posTarget);
+    if (posTarget.x - 1 >= 0) {
+        if (!(grid[posTarget.y][posTarget.x - 1] & ai::AIView::AI_CELL_COLLIDE))
+            possibleTarget.emplace_back(ai::AStar::Node::position({posTarget.x - 1, posTarget.y}));
+    }
+    if (posTarget.x + 1 < 15) {
+        if (!(grid[posTarget.y][posTarget.x + 1] & ai::AIView::AI_CELL_COLLIDE))
+            possibleTarget.emplace_back(ai::AStar::Node::position({posTarget.x + 1, posTarget.y}));
+    }
+    if (posTarget.y - 1 >= 0) {
+        if (!(grid[posTarget.y - 1][posTarget.x] & ai::AIView::AI_CELL_COLLIDE))
+            possibleTarget.emplace_back(ai::AStar::Node::position({posTarget.x, posTarget.y - 1}));
+    }
+    if (posTarget.y + 1 < 15) {
+        if (!(grid[posTarget.y + 1][posTarget.x] & ai::AIView::AI_CELL_COLLIDE))
+            possibleTarget.emplace_back(ai::AStar::Node::position({posTarget.x, posTarget.y + 1}));
+    }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, possibleTarget.size());
+    int number = dis(gen);
+    return (maths::Vector3D(possibleTarget[number - 1].x * 10, 0, possibleTarget[number - 1].y * 10 * -1));
 }
 
 void indie::systems::AISystem::tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component)
@@ -205,7 +235,7 @@ std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell
                 if (path.empty()) {
                     continue;
                 }
-                if (!(entity->getComponent<indie::components::BoxCollider>()->getLayer() & BREAKABLE_BLOCK_LAYER)) { //j'ai le wall pass
+                if (!(entity->getComponent<indie::components::BoxCollider>()->getLayer() & BREAKABLE_BLOCK_LAYER)) {
                     potentialSafeCell.emplace_back(i, a);
                 } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) && !(ai::hasCrateInPath(path))) {
                     potentialSafeCell.emplace_back(i, a);

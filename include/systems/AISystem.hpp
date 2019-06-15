@@ -60,7 +60,7 @@ namespace indie {
                     jf::components::ComponentHandler<indie::components::AIController> component);
                 static int checkNeedSubtarget(ai::AStar::Node &subtarget, 
                                                jf::components::ComponentHandler<indie::components::AIController> &component);
-
+                static maths::Vector3D findRealFocusCase(const maths::Vector3D &target);
             private:
                 int _timePassed;
         };
