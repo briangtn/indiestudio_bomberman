@@ -77,11 +77,11 @@ void indie::scenes::NewGameScene::onStart()
     component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 
-    InputManager::RegisterKey(irr::KEY_KEY_P);
+    InputManager::RegisterKey(irr::KEY_ESCAPE);
     _pauseButtonEventID = ecs.eventManager.addListener<void, events::IrrlichtKeyJustChangedEvent>(nullptr, [](void *, events::IrrlichtKeyJustChangedEvent e) {
         ECSWrapper ecs;
 
-        if (e.keyCode == irr::KEY_KEY_P && e.pressed) {
+        if (e.keyCode == irr::KEY_ESCAPE && e.pressed) {
             if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::RUNNING) {
                 ecs.systemManager.stopSystem<systems::PauseSystem>();
             } else if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::STOPPED || ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::NOT_STARTED) {
