@@ -43,10 +43,8 @@ void indie::scenes::SceneManager::addScenes(const std::vector<std::pair<std::str
 {
     SceneManager &instance = getInstance();
     for (auto &pair : scenes) {
-        std::cout << pair.first << std::endl;
         instance.addScene(pair.first, pair.second);
     }
-    std::cout << "=============" << std::endl << std::endl;
 }
 
 void indie::scenes::SceneManager::changeScene(const std::string &sceneName)

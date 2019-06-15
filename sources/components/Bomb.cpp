@@ -53,7 +53,7 @@ float indie::components::Bomb::getTimeBeforeExplode() const
     return _timeBeforeExplode;
 }
 
-void indie::components::Bomb::setTimeBeforeExplode(const int &newTimeBeforeExplode)
+void indie::components::Bomb::setTimeBeforeExplode(const float &newTimeBeforeExplode)
 {
     _timeBeforeExplode = newTimeBeforeExplode;
 }

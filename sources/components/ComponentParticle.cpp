@@ -102,6 +102,7 @@ void indie::components::Particle::initParticle()
     _particle->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     _particle->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);
     _particle->setMaterialType(irr::video::EMT_TRANSPARENT_ADD_COLOR);
+    _particle->setMaterialFlag(irr::video::EMF_COLOR_MATERIAL, true);
     activate();
 }
 

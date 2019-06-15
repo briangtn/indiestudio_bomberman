@@ -16,8 +16,8 @@
             <argument name="timeBeforeExplode" value="10.5"/>
             <argument name="bombType" value="1"/>
             <argument name="player" value="1"/>
-            <argument name="texturePath" value="../test_assets/cube_texture.png"/>
-            <argument name="textureMesh" value="../test_assets/cube.obj"/>
+            <argument name="texturePath" value="bomb_normal_texture"/>
+            <argument name="textureMesh" value="bomb_normal_model"/>
             <argument name="position" value="0,0,0"/>
         </component>
         <component type="BonusEffector">
@@ -41,16 +41,16 @@
             <argument name="advancement" value="0,0,0"/>
         </component>
         <component type="Material">
-            <argument name="fileName" value="../test_assets/cube_texture.png"/>
+            <argument name="fileName" value="player_texture_red"/>
             <argument name="type" value="EMT_SOLID"/>
             <argument name="flags" value="EMF_WIREFRAME;!EMF_WIREFRAME"/>
         </component>
         <component type="Mesh">
-            <argument name="fileName" value="../test_assets/cube.obj"/>
+            <argument name="fileName" value="player_model"/>
         </component>
         <component type="Particle">
             <argument name="name" value="testParticule"/>
-            <argument name="fileName" value="../test_assets/cube_texture.png"/>
+            <argument name="fileName" value="bomb_normal_particle_texture"/>
             <argument name="layer" value="0"/>
             <argument name="emitterSize" value="0,0,0;0,0,0"/>
             <argument name="direction" value="0,0,0"/>
@@ -99,7 +99,7 @@
             <argument name="speed" value="1,1,1"/>
         </component>
         <component type="Sound">
-            <argument name="fileName" value="../Sound/BombSound/ExplosionSoundElectricBomb.ogg"/>
+            <argument name="fileName" value="bomb_plasma_sound"/>
             <argument name="type" value="EFFECT"/>
             <argument name="position" value="0,0,0"/>
         </component>
@@ -126,6 +126,24 @@
         </component>
         <component type="Image">
             <argument name="fileName" value="path/to/image"/>
+        </component>
+		<component type="AIController">
+		</component>
+        <component type="LeaderBoard">
+            <player id="1" ranking="1"/>
+        </component>
+        <component type="DynamicCamera">
+            <argument name="movementSpeed" value="25.0"/>
+            <argument name="blockBorders" value="2"/>
+        </component>
+        <component type="PlayerAlive">
+            <argument name="lives" value="1"/>
+            <argument name="markedAsDead" value="false"/>
+        </component>
+        <component type="MoveToTarget">
+            <argument name="target" value="0,0,0"/>
+            <argument name="followTarget" value="true"/>
+            <argument name="speed" value="30.0"/>
         </component>
     </entity>
 </scene>
