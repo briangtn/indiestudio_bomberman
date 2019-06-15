@@ -310,7 +310,7 @@ ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform
 
 void indie::systems::AISystem::searchLogic(jf::components::ComponentHandler<indie::components::AIController> &component, jf::entities::EntityHandler &entity)
 {
-    ai::AStar::Node subtarget;
+    ai::AStar::Node subtarget({{0, 0}, 0, 0, false, false, false, nullptr, 10});
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
 
     if (component->getState() != component->getLastState() || !component->getHasTarget()) {
@@ -354,6 +354,8 @@ std::vector<jf::entities::EntityHandler> &bombs)
 bool indie::systems::AISystem::inDanger(indie::ai::AIView::AICellViewGrid &map, maths::Vector3D &playerPos)
 {
     indie::ai::AStar::Node::position pos = ai::get2DPositionFromWorldPos(playerPos);
+    if (pos.y < 0 || pos.x < 0 || pos.y >= 15 || pos.x >= 15)
+        return false;
     if (map[pos.y][pos.x] & ai::AIView::AI_CELL_BLAST)
         return (true);
     return (false);
