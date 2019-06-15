@@ -105,6 +105,8 @@ void indie::ai::AIView::recomputeBombs(int width, int height)
         if (!tr.isValid())
             continue;
         auto bombComponent = bomb->getComponent<components::Bomb>();
+        if (!bombComponent.isValid())
+            continue;
         int x = static_cast<int>(tr->getPosition().x / 10.0f);
         int z = -static_cast<int>(tr->getPosition().z / 10.0f);
         if (x >= 0 && x < width && z >= 0 && z < height) {

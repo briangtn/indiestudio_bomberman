@@ -471,6 +471,8 @@ void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::st
     auto &system = ecs.systemManager.getSystem<systems::MovementSystem>();
     if (!args["mapSize"].empty()) {
         system.setMapSize(getVector2D(args["mapSize"], fileName, line));
+    } else {
+        system.setMapSize({15, 15});
     }
     ecs.systemManager.startSystem<systems::MovementSystem>();
 }

@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
+#include <components/DestroyOnTime.hpp>
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -40,6 +41,7 @@
 #include "components/AIController.hpp"
 #include "components/DynamicCamera.hpp"
 #include "components/PlayerAlive.hpp"
+#include "components/GUI/Font.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -329,16 +331,44 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
         components::Animator &component = *(entity->getComponent<components::Animator>().get());
         component >> file;
     }
+    if (entity->hasComponent<components::Bomb>()) {
+        components::Bomb &component = *(entity->getComponent<components::Bomb>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::BonusEffector>()) {
+        components::BonusEffector &component = *(entity->getComponent<components::BonusEffector>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::BonusSpawner>()) {
+        components::BonusSpawner &component = *(entity->getComponent<components::BonusSpawner>().get());
+        component >> file;
+    }
     if (entity->hasComponent<components::BoxCollider>()) {
         components::BoxCollider &component = *(entity->getComponent<components::BoxCollider>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Button>()) {
+        components::Button &component = *(entity->getComponent<components::Button>().get());
         component >> file;
     }
     if (entity->hasComponent<components::Camera>()) {
         components::Camera &component = *(entity->getComponent<components::Camera>().get());
         component >> file;
     }
+    if (entity->hasComponent<components::DestroyOnTime>()) {
+        components::DestroyOnTime &component = *(entity->getComponent<components::DestroyOnTime>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Font>()) {
+        components::Font &component = *(entity->getComponent<components::Font>().get());
+        component >> file;
+    }
     if (entity->hasComponent<components::Hoverer>()) {
         components::Hoverer &component = *(entity->getComponent<components::Hoverer>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Image>()) {
+        components::Image &component = *(entity->getComponent<components::Image>().get());
         component >> file;
     }
     if (entity->hasComponent<components::Material>()) {
@@ -367,6 +397,10 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
     }
     if (entity->hasComponent<components::Transform>()) {
         components::Transform &component = *(entity->getComponent<components::Transform>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::Text>()) {
+        components::Text &component = *(entity->getComponent<components::Text>().get());
         component >> file;
     }
     if (entity->hasComponent<components::LeaderBoard>()) {
