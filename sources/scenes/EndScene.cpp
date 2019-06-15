@@ -18,10 +18,26 @@
 #include "scenes/SceneManager.hpp"
 #include "systems/LiveSystem.hpp"
 #include "components/Mesh.hpp"
+#include "components/Rotator.hpp"
 
 void indie::scenes::EndScene::onStart()
 {
     ECSWrapper ecs;
+
+    auto particleSystemEntity = ecs.entityManager.createEntity("particleSystem");
+    particleSystemEntity->assignComponent<indie::components::Transform, indie::maths::Vector3D>({-10, -15, 5});
+    auto sys = particleSystemEntity->assignComponent<indie::components::Particle, std::string>("p1");
+    sys->setTexture(0, "default_particle_texture");
+    sys->setAngle(0);
+    sys->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 145, 145, 0), irr::video::SColor(0, 255, 255, 0)));
+    sys->setEmitterSize(irr::core::aabbox3df(-7, 0, -7, 7, 10, 7));
+    sys->setEmitRate(std::make_pair(40, 80));
+    sys->setFadeColor(irr::video::SColor(0, 0, 0, 0));
+    sys->setFadeTime(1000);
+    sys->setMinMaxAge(std::make_pair(1600, 3000));
+    sys->setMinMaxSize(std::make_pair(irr::core::dimension2d<irr::f32>(0.3, 0.3), irr::core::dimension2d<irr::f32>(0.6, 0.6)));
+    sys->setInitialDirection(irr::core::vector3df(0.0f, 0.01f, 0.0f));
+    sys->initParticle();
 
     auto cameraEntity = ecs.entityManager.createEntity("camera");
     cameraEntity->assignComponent<indie::components::Camera>();
@@ -73,6 +89,7 @@ void indie::scenes::EndScene::onStart()
     winnerEntity->assignComponent<components::Mesh, std::string>("player_model");
     auto winnerMaterial = winnerEntity->assignComponent<components::Material, std::string>(getMaterial(getWinner(results)));
     winnerMaterial->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    winnerEntity->assignComponent<components::Rotator, float, float, float>(0, 60, 0);
     winnerEntity->assignComponent<components::Animator, std::map<std::string, components::Animator::Animation>>({
         {"taunt", components::Animator::Animation(123, 145, 40, true, "")}
     });

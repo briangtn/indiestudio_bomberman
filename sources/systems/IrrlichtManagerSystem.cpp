@@ -8,6 +8,7 @@
 /* Created the 09/05/2019 at 13:55 by jfrabel */
 
 #include <algorithm>
+#include <input/InputManager.hpp>
 #include "maths/Vectors.hpp"
 #include "maths/Matrices.hpp"
 #include "maths/Geometry3D.hpp"
@@ -102,6 +103,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
         ecs.entityManager.applyToEach<components::MoveToTarget>(&drawMoveToTargetGizmos);
+        ecs.entityManager.applyToEach<components::AIController>(&drawAIControllerGizmos);
     }
 
     //ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
@@ -125,7 +127,9 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
-
+    indie::InputManager::RegisterKeyInputEvent();
+    indie::InputManager::RegisterJoystickInputEvent();
+    indie::InputManager::RegisterControllerKeyInputEvent();
     _driver->endScene();
 }
 
@@ -546,6 +550,69 @@ void indie::systems::IrrlichtManagerSystem::drawMoveToTargetGizmos(
         (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
 }
 
+void indie::systems::IrrlichtManagerSystem::drawAIControllerGizmos(
+    jf::entities::EntityHandler entity,
+    jf::components::ComponentHandler<components::AIController> aic)
+{
+
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    auto position = entity->getComponent<components::Transform>()->getPosition();
+    irr::core::vector3df irrPos(position.x, position.y, position.z);
+    constexpr float boxSize = 1;
+
+    auto state = aic->getState();
+    switch (state) {
+    case components::AIController::SEARCH:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 0, 255));
+        break;
+    case components::AIController::FOCUS:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 0, 0));
+        break;
+    case components::AIController::POWERUP:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 0, 255));
+        break;
+    case components::AIController::SURVIVE:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 255, 0));
+        break;
+    case components::AIController::TAUNT:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 255, 0));
+        break;
+    case components::AIController::UNKNOWN:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 0, 255, 255));
+        break;
+    default:
+        driver->draw3DBox(
+            irr::core::aabbox3df(irrPos.X - boxSize, 20 - boxSize, irrPos.Z - boxSize, irrPos.X + boxSize, 20 + boxSize, irrPos.Z + boxSize),
+            irr::video::SColor(255, 255, 255, 255));
+        break;
+    }
+
+    if (aic->getFullNodePath().empty())
+        return;
+    auto target = aic->getFinalTarget(aic->getFullNodePath());
+
+    irr::core::vector3df irrTarget(target.x, target.y, target.z);
+
+    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 255, 0));
+    driver->draw3DBox(
+        irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
+        irr::video::SColor(255, 255, 255, 0));
+}
+
 void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
 {
     _drawGizmos = value;
@@ -665,7 +732,6 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
         image->getImageNode()->draw();
     }
 }
-
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {

@@ -41,6 +41,9 @@ namespace indie {
 
     class InputManager {
     public:
+        static void RegisterKeyInputEvent();
+        static void RegisterJoystickInputEvent();
+        static void RegisterControllerKeyInputEvent();
         static void CreateAxis(const std::string &name, KeyAxis);
         static void CreateAxis(const std::string &name, JoystickAxis);
         static void CreateAxis(const std::string &name, ControllerKeyAxis);
@@ -135,9 +138,6 @@ namespace indie {
         static float GetAxis(const std::string &name);
 
     private:
-        static void RegisterKeyInputEvent();
-        static void RegisterJoystickInputInputEvent();
-        static void RegisterControllerKeyInputEvent();
 
         template<typename A>
         static bool isValidAxisTypeId()

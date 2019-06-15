@@ -50,7 +50,7 @@ namespace indie {
 
                 /* Funciton For Create A Bomb */
 
-                void createBomb(jf::entities::EntityHandler playerEntity);
+                bool createBomb(jf::entities::EntityHandler playerEntity);
 
                 /* Display Particle And Play Sound For Each Bomb */
 

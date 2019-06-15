@@ -46,18 +46,21 @@ namespace indie {
                 static std::pair<bool, std::pair<int, int>> determineSafeCell(ai::AIView::AICellViewGrid &grid,
                                                                               jf::entities::EntityHandler &entity);
 
-                static void focusLogic();
+                static void focusLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                            jf::entities::EntityHandler &player, jf::entities::EntityHandler &entity);
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity);
-                static void searchLogic();
+                static void searchLogic(jf::components::ComponentHandler<indie::components::AIController> &component, jf::entities::EntityHandler &entity);
                 static void surviveLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &entity);
                 static void askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component,
                                           const indie::maths::Vector3D &target, jf::entities::EntityHandler entity);
                 static bool hasMoved(jf::entities::EntityHandler entity, 
                     jf::components::ComponentHandler<indie::components::AIController> component);
-
+                static int checkNeedSubtarget(ai::AStar::Node &subtarget, 
+                                               jf::components::ComponentHandler<indie::components::AIController> &component);
+                static maths::Vector3D findRealFocusCase(const maths::Vector3D &target);
             private:
                 int _timePassed;
         };

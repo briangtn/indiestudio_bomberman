@@ -38,7 +38,7 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb"),
+      _bombPlacementAnimation("place_bomb"),
       _bombForce(2),
       _maxBomb(3),
       _playerType(P1)
@@ -83,7 +83,7 @@ indie::components::PlayerController::PlayerController(
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
       _bombPlacementButton(settings.bombButton),
-      _bombPlacementAnimation("place bomb"),
+      _bombPlacementAnimation("place_bomb"),
       _bombForce(2),
       _maxBomb(3),
       _playerType(P1)
@@ -129,7 +129,7 @@ indie::components::PlayerController::PlayerController(
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb"),
+      _bombPlacementAnimation("place_bomb"),
       _bombForce(2),
       _maxBomb(3),
       _playerType(P1)
@@ -175,7 +175,7 @@ indie::components::PlayerController::PlayerController(
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb"),
+      _bombPlacementAnimation("place_bomb"),
       _bombForce(2),
       _maxBomb(3),
       _playerType(P1)
@@ -475,6 +475,7 @@ indie::components::PlayerType indie::components::PlayerController::getPlayerType
 
 void indie::components::PlayerController::setPlayerType(indie::components::PlayerType playerType)
 {
+    //std::cout << "PlayerController : " << playerType << std::endl;
     _playerType = playerType;
 }
 

@@ -73,7 +73,7 @@
                 <argument name="loop" value="false"/>
                 <argument name="transition" value="idle"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="b8"/>
                 <argument name="end" value="f3"/>
                 <argument name="speed" value="64"/>
@@ -145,7 +145,7 @@
                 <argument name="loop" value="false"/>
                 <argument name="transition" value="idle"/>
             </animation>
-            <animation name="place bomb">
+            <animation name="place_bomb">
                 <argument name="start" value="184"/>
                 <argument name="end" value="243"/>
                 <argument name="speed" value="100"/>

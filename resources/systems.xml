@@ -16,4 +16,6 @@
     </system>
     <system type="Live">
     </system>
+    <system type="AI">
+    </system>
 </ecs>
