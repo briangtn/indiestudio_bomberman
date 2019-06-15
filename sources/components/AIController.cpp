@@ -40,7 +40,7 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
     });
     _reachTargetListenerEventId = ecs.eventManager.addListener<AIController, events::HasReachedTarget>(this, [](AIController *a, events::HasReachedTarget e){
         if (a->getEntity()->getID() == e.mtt->getEntity()->getID()) {
-            if (e.mtt->getTarget() == a->getFinalTarget(a->getFullNodePath())) {
+            if (a->getHasTarget() && e.mtt->getTarget() == a->getFinalTarget(a->getFullNodePath())) {
                 a->setHasTarget(false);
                 return;
             } else {
