@@ -46,7 +46,8 @@ namespace indie {
                 static std::pair<bool, std::pair<int, int>> determineSafeCell(ai::AIView::AICellViewGrid &grid,
                                                                               jf::entities::EntityHandler &entity);
 
-                static void focusLogic();
+                static void focusLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
+                                            jf::entities::EntityHandler &player, jf::entities::EntityHandler &entity);
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity);
