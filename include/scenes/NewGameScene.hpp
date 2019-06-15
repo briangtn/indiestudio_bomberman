@@ -41,6 +41,7 @@ namespace indie {
         private:
             bool _saveOnExit;
             std::string _saveName;
+            jf::internal::ID _eventKeyJustPressedID;
         };
     }
 }

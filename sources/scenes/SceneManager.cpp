@@ -71,6 +71,7 @@ indie::scenes::SceneManager &indie::scenes::SceneManager::getInstance()
 void indie::scenes::SceneManager::safeChangeScene(const std::string &sceneName)
 {
     SceneManager &instance = getInstance();
+    std::cout << "Safe change scene: " << sceneName << std::endl;
     instance._nextScene = sceneName;
 }
 
@@ -78,6 +79,7 @@ void indie::scenes::SceneManager::triggerSafeFunctions()
 {
     SceneManager &instance = getInstance();
     if (!instance._nextScene.empty()) {
+        std::cout << "Trigger Safe change scene: " << instance._nextScene << std::endl;
         changeScene(instance._nextScene);
     }
 }

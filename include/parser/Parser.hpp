@@ -42,6 +42,7 @@ namespace indie {
 
         void loadSystems(const std::string &fileName);
         const std::vector<std::pair<std::string, scenes::IScene *>> &loadScenes(const std::string &pathToFolder);
+        scenes::IScene *loadSingleScene(const std::string &name, const std::string &path);
         void loadScene(const std::string &fileName);
         static void fillMapArgs(std::map<std::string, std::string> &args, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line, const std::string &callingMethod,

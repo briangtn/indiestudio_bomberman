@@ -16,6 +16,8 @@
 #include <fstream>
 #include <random>
 #include <boost/filesystem/operations.hpp>
+#include <events/IrrlichtKeyJustChangedEvent.hpp>
+#include "scenes/SceneManager.hpp"
 #include "ECSWrapper.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "parser/Parser.hpp"
@@ -34,7 +36,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(true), _saveName("default.xml")
+    : _saveOnExit(false), _saveName("default.xml"), _eventKeyJustPressedID()
 {
 
 }
@@ -73,12 +75,27 @@ void indie::scenes::NewGameScene::onStart()
     auto component = entity->assignComponent<components::SoundComponent>("music_battle", components::SoundComponent::MUSIC);
     component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
+
+    InputManager::RegisterKey(irr::KEY_KEY_Y);
+    _eventKeyJustPressedID = ecs.eventManager.addListener<NewGameScene, indie::events::IrrlichtKeyJustChangedEvent>(this, [](NewGameScene *self, events::IrrlichtKeyJustChangedEvent e){
+        if (e.pressed && e.keyCode == irr::KEY_KEY_Y) {
+            ECSWrapper ecs;
+
+            self->save(true, true);
+            ecs.systemManager.getSystem<systems::LiveSystem>().endGame();
+            SceneManager::safeChangeScene("mainMenu");
+        }
+    });
 }
 
 void indie::scenes::NewGameScene::onStop()
 {
+    ECSWrapper ecs;
+
     if (_saveOnExit)
-        save(_saveName, true, true);
+        save(true, true);
+    if (_eventKeyJustPressedID.isValid())
+        ecs.eventManager.removeListener(_eventKeyJustPressedID);
 }
 
 indie::scenes::SaveState indie::scenes::NewGameScene::save(bool override, bool saveShouldBeKeeped)
@@ -94,10 +111,9 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(bool override, bool s
 
 indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
-    if (!_saveOnExit)
-        return SUCCESS;
     ECSWrapper ecs;
     std::string path(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
+    std::cout << "Saving " << saveName << std::endl;
 
     if (boost::filesystem::exists(path)) {
         if (override) {
@@ -115,6 +131,14 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &sa
             }
         });
     file << "</scene>" << std::endl;
+
+    std::cout << "Saving end" << std::endl;
+    std::cout << "Loading saving scene" << std::endl;
+    std::string name = saveName.substr(0, saveName.find(".xml"));
+    scenes::IScene *scene = indie::Parser::getInstance().loadSingleScene(name, saveName);
+    SceneManager::addSingleScene(name, scene);
+    std::cout << "Loading saving scene end" << std::endl;
+
     return SUCCESS;
 }
 

@@ -245,6 +245,14 @@ const std::vector<std::pair<std::string, indie::scenes::IScene *>> &indie::Parse
     return _scenes;
 }
 
+indie::scenes::IScene *indie::Parser::loadSingleScene(const std::string &name, const std::string &path)
+{
+    indie::scenes::IScene *scene =  new scenes::Scene(path);
+
+    _scenes.emplace_back(std::pair<std::string, scenes::IScene *>(name, scene));
+    return scene;
+}
+
 void indie::Parser::loadScene(const std::string &fileName)
 {
     ECSWrapper ecs;
