@@ -50,14 +50,14 @@ namespace indie {
                 static void tauntLogic(jf::components::ComponentHandler<indie::components::AIController> &component);
                 static void powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity);
-                static void searchLogic();
+                static void searchLogic(jf::components::ComponentHandler<indie::components::AIController> &component, jf::entities::EntityHandler &entity);
                 static void surviveLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                         jf::entities::EntityHandler &entity);
                 static void askNewTarget(jf::components::ComponentHandler<indie::components::AIController> &component,
                                           const indie::maths::Vector3D &target, jf::entities::EntityHandler entity);
                 static bool hasMoved(jf::entities::EntityHandler entity, 
                     jf::components::ComponentHandler<indie::components::AIController> component);
-                static bool checkNeedSubtarget(ai::AStar::Node &subtarget, 
+                static int checkNeedSubtarget(ai::AStar::Node &subtarget, 
                                                jf::components::ComponentHandler<indie::components::AIController> &component);
 
             private:
