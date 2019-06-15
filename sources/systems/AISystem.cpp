@@ -187,10 +187,8 @@ void indie::systems::AISystem::surviveLogic(jf::components::ComponentHandler<ind
         std::pair<bool, std::pair<int, int>> res = determineSafeCell(grid, entity);
         maths::Vector3D target(res.second.second == 0 ? 0 : res.second.second * 10, 0, res.second.first == 0 ? 0 : res.second.first * -1 * 10);
         if (res.first == true) {
-            std::cout << "well\n" << std::endl;
             askNewTarget(component, target, entity);
         } else {
-            std::cout << "not well\n" << std::endl;
             //Bombs
             if (!component->getIsTaunting())
             tauntLogic(component);
@@ -198,13 +196,35 @@ void indie::systems::AISystem::surviveLogic(jf::components::ComponentHandler<ind
     }
 }
 
+bool indie::systems::AISystem::checkNeedSubtarget(ai::AStar::Node &subtarget, jf::components::ComponentHandler<indie::components::AIController> &component)
+{
+    std::vector<ai::AStar::Node> path = component->getFullNodePath();
+    std::cout << "Checking sub path" << std::endl;
+    for (auto it = path.begin(); it != path.end(); ++it) {
+        std::cout << "Node " << it->pos.x << " " << it->pos.y << " " << it->hasCrate() << std::endl;
+        if (it->hasCrate() && it != path.begin()) {
+            subtarget = *(it - 1);
+            return (true);
+        } else if (it->hasCrate()) {
+            //1er == crate
+            return false;
+        }
+    }
+    return (false);
+}
+
 void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<indie::components::AIController> &component,
                                             jf::entities::EntityHandler &bonuses, jf::entities::EntityHandler &entity)
 {
-    component->setFullNodePath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
-ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition())));
-    if (component->getState() != component->getLastState() || !component->getHasTarget())
-        askNewTarget(component, bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
+    ai::AStar::Node subtarget;
+
+    if (component->getState() != component->getLastState() || !component->getHasTarget()) {
+        component->setFullNodePath(ai::stackPathToVectorPath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
+ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition()), true)));
+        bool check = checkNeedSubtarget(subtarget, component);
+        std::cout << "check : " << check << std::endl;
+        askNewTarget(component, (check == true) ? subtarget.toWorldPos() : bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
+    }
 }
 
 void indie::systems::AISystem::searchLogic()
@@ -230,7 +250,7 @@ std::vector<jf::entities::EntityHandler> &bombs)
         state = indie::components::AIController::POWERUP;
     /*else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 5000)
         state = indie::components::AIController::FOCUS;*/
-    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 10000)
+    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 100000000)
         state = indie::components::AIController::POWERUP;
     /*else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 10000)
         state = indie::components::AIController::FOCUS;
@@ -247,13 +267,6 @@ std::vector<jf::entities::EntityHandler> &bombs)
 bool indie::systems::AISystem::inDanger(indie::ai::AIView::AICellViewGrid &map, maths::Vector3D &playerPos)
 {
     indie::ai::AStar::Node::position pos = ai::get2DPositionFromWorldPos(playerPos);
-    //std::cout << pos.x << " " << pos.y << std::endl;
-    /*for (auto &i : map) {
-        for (auto &a: i) {
-            std::cout << a << " ";
-        }
-        std::cout << std::endl;
-    }*/
     if (map[pos.y][pos.x] & ai::AIView::AI_CELL_BLAST)
         return (true);
     return (false);

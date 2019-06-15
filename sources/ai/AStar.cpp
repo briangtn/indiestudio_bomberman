@@ -205,9 +205,7 @@ std::vector<indie::ai::AStar::Node> indie::ai::stackPathToVectorPath(std::stack<
 
 bool indie::ai::hasCrateInPath(const std::stack<indie::ai::AStar::Node> &path)
 {
-    //std::cout << "Checking for crates in path " << std::endl;
     for (auto &elem : stackPathToVectorPath(path)) {
-        //std::cout << elem.pos.x << " " << elem.pos.y << " has crate? " << std::boolalpha << elem.hasCrate() << std::endl;
         if (elem.hasCrate())
             return true;
     }

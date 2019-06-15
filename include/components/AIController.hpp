@@ -40,10 +40,10 @@ namespace indie {
                 void setNeedToUseBomb(bool assign);
                 void setLastState(state assign);
                 void setPreviousPos(std::pair<int, int>assign);
-                void setFullNodePath(std::stack<ai::AStar::Node> fullPath);
+                void setFullNodePath(std::vector<ai::AStar::Node> fullPath);
                 void setHasTarget(bool assign);
 
-                std::stack<ai::AStar::Node> getFullNodePath() const;
+                std::vector<ai::AStar::Node> getFullNodePath() const;
                 std::pair<int, int> getPreviousPos() const;
                 bool getIsTaunting() const;
                 bool getIsPlacingBomb() const;
@@ -53,6 +53,7 @@ namespace indie {
                 bool getNeedToTaunt() const;
                 bool getNeedToUseBomb() const;
                 bool getHasTarget() const;
+                maths::Vector3D getFinalTarget(std::vector<ai::AStar::Node> fullPath) const;
 
                 int getBombForce() const;
                 void setBombForce(int bombForce);
@@ -78,7 +79,7 @@ namespace indie {
                 bool _hasTarget;
                 state _state;
                 state _lastState;
-                std::stack<ai::AStar::Node> _fullNodePath;
+                std::vector<ai::AStar::Node> _fullNodePath;
 
                 int _bombForce;
                 int _maxBomb;
@@ -88,6 +89,7 @@ namespace indie {
                 float _movementSpeed;
 
                 jf::internal::ID _endAnimationListenerEventId;
+                jf::internal::ID _reachTargetListenerEventId;
         };
     }
 }

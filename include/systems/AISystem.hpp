@@ -57,6 +57,8 @@ namespace indie {
                                           const indie::maths::Vector3D &target, jf::entities::EntityHandler entity);
                 static bool hasMoved(jf::entities::EntityHandler entity, 
                     jf::components::ComponentHandler<indie::components::AIController> component);
+                static bool checkNeedSubtarget(ai::AStar::Node &subtarget, 
+                                               jf::components::ComponentHandler<indie::components::AIController> &component);
 
             private:
                 int _timePassed;
