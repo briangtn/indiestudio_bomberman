@@ -52,9 +52,21 @@ void indie::scenes::EndScene::onStart()
         return a.second < b.second;
     });
 
+    auto mainTextEntity = ecs.entityManager.createEntity("text");
+    auto textComponent = mainTextEntity->assignComponent<indie::components::Text>("WINNER");
+    auto transform = mainTextEntity->assignComponent<indie::components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(
+            {100.0f / 2.0f, -280.0f, 0},
+            {0, 0, 0},
+            {1280.0f / 2.0f, 720.0f, 0}
+    );
+    textComponent->setColor(irr::video::SColor(255, 0, 0, 0));
+    textComponent->setVerticalAlignement(components::Text::MIDDLE);
+    textComponent->setHorizontalAlignement(components::Text::CENTER);
+    mainTextEntity->assignComponent<indie::components::Font>("default_font");
+
     auto winnerEntity = ecs.entityManager.createEntity("Winner");
     winnerEntity->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(
-            {-9, -9, 5},
+            {-10, -9, 5},
             {0, 180, 0},
             {10, 10, 10}
     );
@@ -71,7 +83,7 @@ void indie::scenes::EndScene::onStart()
         auto textEntity = ecs.entityManager.createEntity("Player" + std::to_string(playerNumber) + "Score");
         auto textComponent = textEntity->assignComponent<indie::components::Text>(std::to_string(playerRanking) + "\t:\tPlayer " + std::to_string(playerNumber));
         auto transform = textEntity->assignComponent<indie::components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(
-                {1 * (1280.0f / 2.0f), i * (720.0f / divisor), 0},
+                {1280.0f / 2.0f, i * (720.0f / divisor), 0},
                 {0, 0, 0},
                 {1280.0f / 2.0f, 720.0f / divisor, 0}
         );
