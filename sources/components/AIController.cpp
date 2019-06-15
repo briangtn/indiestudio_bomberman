@@ -48,15 +48,15 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
             } else {
                 ECSWrapper ecs;
                 a->setHasTarget(false);
-                a->setHasBombWaitingToExplode(true);
-                ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(a->getEntity());
-                auto animator = a->getEntity()->getComponent<components::Animator>();
-
-                if (animator.isValid()) {
-                    animator->setCurrentAnimation("place_bomb");
-                    a->setIsPlacingBombs(true);
-                } else {
-                    a->setIsPlacingBombs(false);
+                if (ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(a->getEntity())) {
+                    a->setHasBombWaitingToExplode(true);
+                    auto animator = a->getEntity()->getComponent<components::Animator>();
+                    if (animator.isValid()) {
+                        animator->setCurrentAnimation("place_bomb");
+                        a->setIsPlacingBombs(true);
+                    } else {
+                        a->setIsPlacingBombs(false);
+                    }
                 }
             }
         }

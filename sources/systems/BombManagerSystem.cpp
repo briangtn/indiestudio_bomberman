@@ -46,9 +46,10 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
             if (indie::InputManager::IsKeyPressed(pc->getBombPlacementButton()) && !pc->isPlacingBomb()) {
                 auto animator = entity->getComponent<components::Animator>();
                 if (animator.isValid()) {
-                    pc->setIsPlacingBomb(true);
-                    createBomb(entity);
-                    animator->setCurrentAnimation(pc->getBombPlacementAnimation());
+                    if (createBomb(entity)) {
+                        pc->setIsPlacingBomb(true);
+                        animator->setCurrentAnimation(pc->getBombPlacementAnimation());
+                    }
                 }
             }
         }
@@ -58,12 +59,12 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     [&elapsedTimeAsSeconds, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
         if (bomb->getTimeBeforeExplode() <= 0) {
+            ecs.eventManager.emit<events::BombExplosionEvent>({bomb->getPlayerType()});
             if (pass == true) {
                 this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
                 this->handleCollide(bomb);                
                 this->playSoundExplosion(bomb->getBombType(), pass);
                 this->removeBombPlace(bomb->getPlayerType());
-                ecs.eventManager.emit(events::BombExplosionEvent({bomb->getPlayerType()}));
             }
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
@@ -86,7 +87,7 @@ void indie::systems::BombManagerSystem::onStop()
     
 }
 
-void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler playerEntity)
+bool indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler playerEntity)
 {
     ECSWrapper ecs;
 
@@ -106,10 +107,10 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
         bombForce = aiController->getBombForce();
         maxBomb = aiController->getMaxBomb();
     } else {
-        return;
+        return false;
     }
     if (!(getNumberBombPlace(ptype) < maxBomb && checkBombPlace(playerPos->getPosition()) == true))
-        return;
+        return false;
     auto bombEntity = ecs.entityManager.createEntity("bomb");
     auto componentPlaceBomb = ecs.entityManager.createEntity("soundPlaceBomb");
     auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bomb_placed_sound", components::SoundComponent::SoundType::EFFECT);
@@ -123,6 +124,7 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     addBombPlace(ptype);
+    return true;
 }
 
 void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)

@@ -214,8 +214,9 @@ void indie::systems::AISystem::surviveLogic(jf::components::ComponentHandler<ind
         if (res.first == true) {
             askNewTarget(component, target, entity);
         } else {
-            ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entity);
-            component->setIsPlacingBombs(true);
+            if (ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(entity)) {
+                component->setIsPlacingBombs(true);
+            }
             if (!component->getIsTaunting())
                 tauntLogic(component);
         }
