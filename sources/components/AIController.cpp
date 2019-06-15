@@ -40,13 +40,20 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
     });
     _reachTargetListenerEventId = ecs.eventManager.addListener<AIController, events::HasReachedTarget>(this, [](AIController *a, events::HasReachedTarget e){
         if (a->getEntity()->getID() == e.mtt->getEntity()->getID()) {
-            if (e.mtt->getTarget() == a->getFinalTarget(a->getFullNodePath())) {
+            if (e.mtt->getTarget() == a->getFinalTarget(a->getFullNodePath()) || a->getState() == SURVIVE) {
                 a->setHasTarget(false);
                 return;
             } else {
                 ECSWrapper ecs;
+                a->setHasTarget(false);
                 ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(a->getEntity());
-                a->setIsPlacingBombs(true);
+                auto animator = a->getEntity()->getComponent<components::Animator>();
+                if (animator.isValid()) {
+                    animator->setCurrentAnimation("place bomb");
+                    a->setIsPlacingBombs(true);
+                } else {
+                    a->setIsPlacingBombs(false);
+                }
             }
         }
     });

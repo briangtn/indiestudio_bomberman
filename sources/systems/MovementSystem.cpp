@@ -230,7 +230,7 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
         auto &mtt = std::get<0>(tuple);
         auto &tr = std::get<1>(tuple);
         auto &path = std::get<2>(tuple);
-        if (!path.empty() && mtt.isValid() && tr.isValid() && mtt->isFollowTarget()) {
+        if (!path.empty() && mtt.isValid() && tr.isValid() && mtt->isFollowTarget() && !mtt->hasReachedTarget()) {
             auto &nextNode = path.top();
 
             float speed = mtt->getSpeed();
@@ -243,9 +243,11 @@ void indie::systems::MovementSystem::updateMoveToTargetMovement(const std::chron
 
             if ((tr->getPosition() - nextNode.toWorldPos()).magnitudeSq() <= nodeValidatedInRadius * nodeValidatedInRadius) {
                 path.pop();
-            } else {
-                ECSWrapper ecs;
-                ecs.eventManager.emit(events::HasReachedTarget({mtt}));
+                if (path.empty()) {
+                    ECSWrapper ecs;
+                    mtt->setReachedTarget(true);
+                    ecs.eventManager.emit(events::HasReachedTarget({mtt}));
+                }
             }
         }
     }

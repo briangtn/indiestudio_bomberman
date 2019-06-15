@@ -120,9 +120,14 @@ indie::ai::AStar::findPath(
     std::list<Node *> _openSet;
     std::list<Node *> _closeSet;
 
+    startNode.walkable = true;
+    startNode.walkCost = 10;
     startNode.isStart = true;
     startNode.gCost = 0;
     endNode.isEnd = true;
+    if (!endNode.walkable) {
+        return std::stack<indie::ai::AStar::Node>();
+    }
     _openSet.push_front(&startNode);
     while (!_openSet.empty()) {
         _openSet.sort([](const Node *nodeA, const Node *nodeB) {

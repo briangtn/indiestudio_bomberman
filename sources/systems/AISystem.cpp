@@ -151,14 +151,16 @@ std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell
     int yMin = playerPos.y - 3 < 0 ? 0 : playerPos.y - 3;
     int yMax = playerPos.y + 3 > 14 ? 14 : playerPos.y + 3;
 
-    std::cout << "xMin " << xMin << " xMax " << xMax << " yMin " << yMin << " yMax " << yMax << std::endl;
     for (int i = yMin; i < yMax; i++) {
         for (int a = xMin; a < xMax; a++) {
             if (!(grid[i][a] & ai::AIView::AI_CELL_BLAST)) {
-                std::cout << "i " << i << " " << "a " << a << std::endl;
+                auto path = ai::AStar::findPath(grid, playerPos, {a, i});
+                if (path.empty()) {
+                    continue;
+                }
                 if (!(entity->getComponent<indie::components::BoxCollider>()->getLayer() & BREAKABLE_BLOCK_LAYER)) { //j'ai le wall pass
                     potentialSafeCell.emplace_back(i, a);
-                } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) && !(ai::hasCrateInPath(ai::AStar::findPath(grid, playerPos, {i, a})))) {
+                } else if (!(grid[i][a] & ai::AIView::AI_CELL_TYPE_BREAKABLE_WALL) && !(grid[i][a] & ai::AIView::AI_CELL_TYPE_UNBREAKABLE_WALL) && !(ai::hasCrateInPath(path))) {
                     potentialSafeCell.emplace_back(i, a);
                 }
             }
@@ -171,9 +173,6 @@ std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell
     std::sort(potentialSafeCell.begin(), potentialSafeCell.end(), [&playerPos](std::pair<int, int> safeA, std::pair<int, int> safeB){
         return std::pow(safeA.second - playerPos.x, 2) + std::pow(safeA.first - playerPos.y, 2) < std::pow(safeB.second - playerPos.x, 2) + std::pow(safeB.first - playerPos.y, 2);
     });
-    std::cout << "Sorted for " << playerPos.x << " " << playerPos.y << std::endl;
-    for (auto &cell : potentialSafeCell)
-        std::cout << cell.second << " " << cell.first << std::endl;
     res.second.first = potentialSafeCell[0].first;
     res.second.second = potentialSafeCell[0].second;
     return (res);
@@ -199,9 +198,7 @@ void indie::systems::AISystem::surviveLogic(jf::components::ComponentHandler<ind
 bool indie::systems::AISystem::checkNeedSubtarget(ai::AStar::Node &subtarget, jf::components::ComponentHandler<indie::components::AIController> &component)
 {
     std::vector<ai::AStar::Node> path = component->getFullNodePath();
-    std::cout << "Checking sub path" << std::endl;
     for (auto it = path.begin(); it != path.end(); ++it) {
-        std::cout << "Node " << it->pos.x << " " << it->pos.y << " " << it->hasCrate() << std::endl;
         if (it->hasCrate() && it != path.begin()) {
             subtarget = *(it - 1);
             return (true);
@@ -222,7 +219,6 @@ void indie::systems::AISystem::powerupLogic(jf::components::ComponentHandler<ind
         component->setFullNodePath(ai::stackPathToVectorPath(ai::AStar::findPath(ai::AIView::getViewGrid(), ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition()), 
 ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform>()->getPosition()), true)));
         bool check = checkNeedSubtarget(subtarget, component);
-        std::cout << "check : " << check << std::endl;
         askNewTarget(component, (check == true) ? subtarget.toWorldPos() : bonuses->getComponent<indie::components::Transform>()->getPosition(), entity);
     }
 }
