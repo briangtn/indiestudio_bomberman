@@ -123,10 +123,10 @@ void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneN
     if (!doesAnimationExist(_currentAnimation))
         throw exceptions::AnimatorException(_currentAnimation + " does not exist");
     auto &data = _animations.at(_currentAnimation);
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }
-    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
 }
 
 indie::components::Animator &indie::components::Animator::operator>>(std::ostream &file)
