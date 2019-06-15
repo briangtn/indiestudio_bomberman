@@ -7,7 +7,9 @@
 
 /* Created the 26/05/2019 at 11:34 by jfrabel */
 
+#include <iomanip>
 #include "Events.hpp"
+#include "events/IrrlichtAnimationEndEvent.hpp"
 #include "components/PlayerController.hpp"
 
 indie::components::PlayerController::PlayerController(jf::entities::Entity &entity)
@@ -19,7 +21,7 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _lockMovementY(true),
       _lockMovementZ(false),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f),
+      _movementSpeed(30.0f),
       _xRotationAxis(""),
       _yRotationAxis(""),
       _zRotationAxis(""),
@@ -32,16 +34,24 @@ indie::components::PlayerController::PlayerController(jf::entities::Entity &enti
       _idleAnimation("idle"),
       _walkingAnimation("walk"),
       _isTaunting(false),
-      _tauntDuration(0.8f),
-      _tauntTime(0.0f),
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
-      _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place_bomb"),
+      _bombForce(2),
+      _maxBomb(3),
+      _playerType(P1)
 {
+    ECSWrapper ecs;
+    _endAnimationListenerEventId = ecs.eventManager.addListener<PlayerController, events::IrrlichtAnimationEndEvent>(this, [](PlayerController *a, events::IrrlichtAnimationEndEvent e) {
+        if (a->getEntity()->getID() == e.entityId) {
+            if (e.animationName == a->_tauntAnimation)
+                a->setIsTaunting(false);
+            else if (e.animationName == a->_bombPlacementAnimation)
+                a->setIsPlacingBomb(false);
+        }
+    });
     EMIT_CREATE(PlayerController);
 }
 
@@ -56,7 +66,7 @@ indie::components::PlayerController::PlayerController(
       _lockMovementY(true),
       _lockMovementZ(false),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f),
+      _movementSpeed(30.0f),
       _xRotationAxis(""),
       _yRotationAxis(""),
       _zRotationAxis(""),
@@ -69,16 +79,24 @@ indie::components::PlayerController::PlayerController(
       _idleAnimation("idle"),
       _walkingAnimation("walk"),
       _isTaunting(false),
-      _tauntDuration(0.8f),
-      _tauntTime(0.0f),
       _tauntButton(settings.tauntButton),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
-      _bombPlacementTime(0.0f),
       _bombPlacementButton(settings.bombButton),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place_bomb"),
+      _bombForce(2),
+      _maxBomb(3),
+      _playerType(P1)
 {
+    ECSWrapper ecs;
+    _endAnimationListenerEventId = ecs.eventManager.addListener<PlayerController, events::IrrlichtAnimationEndEvent>(this, [](PlayerController *a, events::IrrlichtAnimationEndEvent e) {
+        if (a->getEntity()->getID() == e.entityId) {
+            if (e.animationName == a->_tauntAnimation)
+                a->setIsTaunting(false);
+            else if (e.animationName == a->_bombPlacementAnimation)
+                a->setIsPlacingBomb(false);
+        }
+    });
     EMIT_CREATE(PlayerController);
 }
 
@@ -94,7 +112,7 @@ indie::components::PlayerController::PlayerController(
       _lockMovementY(false),
       _lockMovementZ(false),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f),
+      _movementSpeed(30.0f),
       _xRotationAxis(""),
       _yRotationAxis(""),
       _zRotationAxis(""),
@@ -107,16 +125,24 @@ indie::components::PlayerController::PlayerController(
       _idleAnimation("idle"),
       _walkingAnimation("walk"),
       _isTaunting(false),
-      _tauntDuration(0.8f),
-      _tauntTime(0.0f),
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
-      _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place_bomb"),
+      _bombForce(2),
+      _maxBomb(3),
+      _playerType(P1)
 {
+    ECSWrapper ecs;
+    _endAnimationListenerEventId = ecs.eventManager.addListener<PlayerController, events::IrrlichtAnimationEndEvent>(this, [](PlayerController *a, events::IrrlichtAnimationEndEvent e) {
+        if (a->getEntity()->getID() == e.entityId) {
+            if (e.animationName == a->_tauntAnimation)
+                a->setIsTaunting(false);
+            else if (e.animationName == a->_bombPlacementAnimation)
+                a->setIsPlacingBomb(false);
+        }
+    });
     EMIT_CREATE(PlayerController);
 }
 
@@ -132,7 +158,7 @@ indie::components::PlayerController::PlayerController(
       _lockMovementY(lockY),
       _lockMovementZ(lockZ),
       _movementRelativeToCamera(true),
-      _movementSpeed(10.0f),
+      _movementSpeed(30.0f),
       _xRotationAxis(""),
       _yRotationAxis(""),
       _zRotationAxis(""),
@@ -145,22 +171,32 @@ indie::components::PlayerController::PlayerController(
       _idleAnimation("idle"),
       _walkingAnimation("walk"),
       _isTaunting(false),
-      _tauntDuration(0.8f),
-      _tauntTime(0.0f),
       _tauntButton(""),
       _tauntAnimation("taunt"),
       _isPlacingBomb(false),
-      _bombPlacementDuration(1.0f),
-      _bombPlacementTime(0.0f),
       _bombPlacementButton(""),
-      _bombPlacementAnimation("place bomb")
+      _bombPlacementAnimation("place_bomb"),
+      _bombForce(2),
+      _maxBomb(3),
+      _playerType(P1)
 {
+    ECSWrapper ecs;
+    _endAnimationListenerEventId = ecs.eventManager.addListener<PlayerController, events::IrrlichtAnimationEndEvent>(this, [](PlayerController *a, events::IrrlichtAnimationEndEvent e) {
+        if (a->getEntity()->getID() == e.entityId) {
+            if (e.animationName == a->_tauntAnimation)
+                a->setIsTaunting(false);
+            else if (e.animationName == a->_bombPlacementAnimation)
+                a->setIsPlacingBomb(false);
+        }
+    });
     EMIT_CREATE(PlayerController);
 }
 
 indie::components::PlayerController::~PlayerController()
 {
     EMIT_DELETE(PlayerController);
+    ECSWrapper ecs;
+    ecs.eventManager.removeListener(_endAnimationListenerEventId);
 }
 
 const std::string &indie::components::PlayerController::getXMovementAxis() const
@@ -362,16 +398,6 @@ void indie::components::PlayerController::setIsTaunting(bool isTaunting)
     _isTaunting = isTaunting;
 }
 
-float indie::components::PlayerController::getTauntTime() const
-{
-    return _tauntTime;
-}
-
-void indie::components::PlayerController::setTauntTime(float tauntTime)
-{
-    _tauntTime = tauntTime;
-}
-
 const std::string &indie::components::PlayerController::getTauntButton() const
 {
     return _tauntButton;
@@ -402,16 +428,6 @@ void indie::components::PlayerController::setIsPlacingBomb(bool isPlacingBomb)
     _isPlacingBomb = isPlacingBomb;
 }
 
-float indie::components::PlayerController::getBombPlacementTime() const
-{
-    return _bombPlacementTime;
-}
-
-void indie::components::PlayerController::setBombPlacementTime(float bombPlacementTime)
-{
-    _bombPlacementTime = bombPlacementTime;
-}
-
 const std::string &indie::components::PlayerController::getBombPlacementButton() const
 {
     return _bombPlacementButton;
@@ -432,22 +448,92 @@ void indie::components::PlayerController::setBombPlacementAnimation(const std::s
     _bombPlacementAnimation = bombPlacementAnimation;
 }
 
-float indie::components::PlayerController::getTauntDuration() const
+int indie::components::PlayerController::getBombForce() const
 {
-    return _tauntDuration;
+    return _bombForce;
 }
 
-void indie::components::PlayerController::setTauntDuration(float tauntDuration)
+void indie::components::PlayerController::setBombForce(int bombForce)
 {
-    _tauntDuration = tauntDuration;
+    _bombForce = bombForce;
 }
 
-float indie::components::PlayerController::getBombPlacementDuration() const
+int indie::components::PlayerController::getMaxBomb() const
 {
-    return _bombPlacementDuration;
+    return _maxBomb;
 }
 
-void indie::components::PlayerController::setBombPlacementDuration(float bombPlacementDuration)
+void indie::components::PlayerController::setMaxBomb(int maxBomb)
 {
-    _bombPlacementDuration = bombPlacementDuration;
+    _maxBomb = maxBomb;
+}
+
+indie::components::PlayerType indie::components::PlayerController::getPlayerType() const
+{
+    return _playerType;
+}
+
+void indie::components::PlayerController::setPlayerType(indie::components::PlayerType playerType)
+{
+    //std::cout << "PlayerController : " << playerType << std::endl;
+    _playerType = playerType;
+}
+
+indie::components::PlayerController &indie::components::PlayerController::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="PlayerController">)" << std::endl;
+    if (!_xMovementAxis.empty()) {
+        file << R"(            <argument name="xMove" value=")" << _xMovementAxis << R"("/>)" << std::endl;
+    }
+    if (!_yMovementAxis.empty()) {
+        file << R"(            <argument name="yMove" value=")" << _yMovementAxis << R"("/>)" << std::endl;
+    }
+    if (!_zMovementAxis.empty()) {
+        file << R"(            <argument name="zMove" value=")" << _zMovementAxis << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="lockXMove" value=")" << std::boolalpha << _lockMovementX << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockYMove" value=")" << std::boolalpha << _lockMovementY << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockZMove" value=")" << std::boolalpha << _lockMovementZ << R"("/>)" << std::endl;
+    file << R"(            <argument name="relativeMove" value=")" << std::boolalpha << _movementRelativeToCamera << R"("/>)" << std::endl;
+    file << R"(            <argument name="moveSpeed" value=")" << _movementSpeed << R"("/>)" << std::endl;
+    if (!_xRotationAxis.empty()) {
+        file << R"(            <argument name="xRotate" value=")" << _xRotationAxis << R"("/>)" << std::endl;
+    }
+    if (!_yRotationAxis.empty()) {
+        file << R"(            <argument name="yRotate" value=")" << _yRotationAxis << R"("/>)" << std::endl;
+    }
+    if (!_zRotationAxis.empty()) {
+        file << R"(            <argument name="zRotate" value=")" << _zRotationAxis << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="lockXRotate" value=")" << std::boolalpha << _lockRotationX << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockYRotate" value=")" << std::boolalpha << _lockRotationY << R"("/>)" << std::endl;
+    file << R"(            <argument name="lockZRotate" value=")" << std::boolalpha << _lockRotationZ << R"("/>)" << std::endl;
+    file << R"(            <argument name="lookForward" value=")" << std::boolalpha << _alwaysLookForward << R"("/>)" << std::endl;
+    file << R"(            <argument name="rotateSpeed" value=")" << _rotationSpeed << R"("/>)" << std::endl;
+    if (!_idleAnimation.empty()) {
+        file << R"(            <argument name="idleAnimation" value=")" << _idleAnimation << R"("/>)" << std::endl;
+    }
+    if (!_walkingAnimation.empty()) {
+        file << R"(            <argument name="walkingAnimation" value=")" << _walkingAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="isWalking" value=")" << std::boolalpha << _isWalking << R"("/>)" << std::endl;
+    file << R"(            <argument name="isTaunting" value=")" << std::boolalpha << _isTaunting << R"("/>)" << std::endl;
+    if (!_tauntButton.empty()) {
+        file << R"(            <argument name="tauntButton" value=")" << _tauntButton << R"("/>)" << std::endl;
+    }
+    if (!_tauntAnimation.empty()) {
+        file << R"(            <argument name="tauntAnimation" value=")" << _tauntAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="isPlacingBomb" value=")" << std::boolalpha << _isPlacingBomb << R"("/>)" << std::endl;
+    if (!_bombPlacementButton.empty()) {
+        file << R"(            <argument name="bombButton" value=")" << _bombPlacementButton << R"("/>)" << std::endl;
+    }
+    if (!_bombPlacementAnimation.empty()) {
+        file << R"(            <argument name="bombAnimation" value=")" << _bombPlacementAnimation << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="bombForce" value=")" << _bombForce << R"("/>)" << std::endl;
+    file << R"(            <argument name="maxBomb" value=")" << _maxBomb << R"("/>)" << std::endl;
+    file << R"(            <argument name="playerType" value=")" << _playerType << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

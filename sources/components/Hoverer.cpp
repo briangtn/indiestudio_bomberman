@@ -7,6 +7,7 @@
 
 /* Created the 24/05/2019 at 14:28 by jfrabel */
 
+#include <iomanip>
 #include "Events.hpp"
 #include "components/Hoverer.hpp"
 
@@ -55,4 +56,14 @@ void indie::components::Hoverer::setAdvancement(const indie::maths::Vector3D &ad
 const indie::maths::Vector3D &indie::components::Hoverer::getAdvancement() const
 {
     return _advancement;
+}
+
+indie::components::Hoverer &indie::components::Hoverer::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Hoverer">)" << std::endl;
+    file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
+    file << R"(            <argument name="amplitude" value=")" << _amplitude << R"("/>)" << std::endl;
+    file << R"(            <argument name="advancement" value=")" << _advancement << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

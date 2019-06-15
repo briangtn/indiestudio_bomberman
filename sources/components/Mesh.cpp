@@ -5,12 +5,14 @@
 ** Mesh
 */
 
+#include <iomanip>
 #include "Entity.hpp"
 #include "components/Mesh.hpp"
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
 #include "exceptions/MeshExceptions.hpp"
+#include "assets_manager/AssetsManager.hpp"
 
 indie::components::Mesh::Mesh(jf::entities::Entity &entity, const std::string filename)
     : Component(entity), 
@@ -47,7 +49,7 @@ bool indie::components::Mesh::linkFilenameToMesh()
     irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
     if (sceneManager == nullptr)
         throw exceptions::MeshExceptions("No scene Manager available");
-    _mesh = sceneManager->getMesh(_meshFilename.c_str());
+    _mesh = sceneManager->getMesh(AssetsManager::getAsset(_meshFilename).c_str());
     if (_mesh == nullptr)
         throw exceptions::MeshExceptions("Mesh creation failed");
     return true;
@@ -84,7 +86,7 @@ void indie::components::Mesh::setMaterialTexture(const std::string &filename)
         throw exceptions::MeshExceptions("No scene manager available");
     if (filename.c_str() == nullptr)
         throw exceptions::MeshExceptions("No path for texture available");
-    _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(filename.c_str()));
+    _node->setMaterialTexture(0, sceneManager->getVideoDriver()->getTexture(AssetsManager::getAsset(filename).c_str()));
 }
 
 void indie::components::Mesh::setMaterialType(irr::video::E_MATERIAL_TYPE type)
@@ -110,7 +112,7 @@ bool indie::components::Mesh::applyChanges()
         irr::scene::ISceneManager *sceneManager = ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().getSceneManager();
         if (sceneManager == nullptr)
             throw exceptions::MeshExceptions("no scene manager available");
-        _mesh = sceneManager->getMesh(_meshFilename.c_str());
+        _mesh = sceneManager->getMesh(AssetsManager::getAsset(_meshFilename).c_str());
         if (_mesh == nullptr)
             throw exceptions::MeshExceptions("Mesh creation failed");
         _shouldMeshChange = false;
@@ -153,4 +155,12 @@ void indie::components::Mesh::changeVisibility(bool shouldBeSeen)
 irr::scene::IAnimatedMeshSceneNode *indie::components::Mesh::getAnimatedMeshNode()
 {
     return _node;
+}
+
+indie::components::Mesh &indie::components::Mesh::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Mesh">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _meshFilename << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

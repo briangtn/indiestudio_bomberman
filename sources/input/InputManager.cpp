@@ -30,7 +30,6 @@ jf::internal::ID indie::InputManager::eventControlleKeyInputID;
 std::map<std::string, irr::EKEY_CODE> indie::InputManager::nameToKey;
 std::map<std::string, irr::u16> indie::InputManager::nameToControllerKey;
 
-
 void indie::InputManager::CreateAxis(const std::string &name, indie::KeyAxis axis)
 {
     ECSWrapper ecs;
@@ -55,7 +54,7 @@ void indie::InputManager::CreateAxis(const std::string &name, indie::JoystickAxi
     joystickAxes.emplace(name, axis);
     joysticksStates.emplace(name, 0.0f);
 
-    RegisterJoystickInputInputEvent();
+    RegisterJoystickInputEvent();
 }
 
 void indie::InputManager::CreateAxis(const std::string &name, indie::ControllerKeyAxis axis)
@@ -144,8 +143,9 @@ bool indie::InputManager::IsKeyPressed(irr::u8 controllerId, irr::u8 keyId)
 void indie::InputManager::RegisterKeyInputEvent()
 {
     ECSWrapper ecs;
-    if (!eventKeyInputID.isValid())
-        eventKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a, events::IrrlichtKeyInputEvent e){
+    if (!eventKeyInputID.isValid()) {
+        eventKeyInputID = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [](void *a,
+            events::IrrlichtKeyInputEvent e) {
             ECSWrapper ecs;
 
             for (auto &key : InputManager::keysStates) {
@@ -157,9 +157,10 @@ void indie::InputManager::RegisterKeyInputEvent()
                 }
             }
         });
+    }
 }
 
-void indie::InputManager::RegisterJoystickInputInputEvent()
+void indie::InputManager::RegisterJoystickInputEvent()
 {
     ECSWrapper ecs;
 
@@ -241,4 +242,15 @@ void indie::InputManager::RegisterKey(const std::string &name, irr::u8 controlle
 {
     RegisterKey(controllerId, keyId);
     MapKey(name, controllerId, keyId);
+}
+
+void indie::InputManager::UnmapKey(const std::string &name)
+{
+    if (nameToControllerKey.find(name) != nameToControllerKey.end()) {
+        nameToControllerKey.erase(name);
+    } else if (nameToKey.find(name) != nameToKey.end()) {
+        nameToKey.erase(name);
+    } else {
+        throw KeyNotFoundException(name);
+    }
 }

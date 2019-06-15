@@ -15,6 +15,8 @@
 #include <string>
 #include <map>
 
+#define RESOURCES_PACK_PATH "./resources/resources_packs/"
+
 namespace indie {
 
     class AssetsManager {
@@ -29,14 +31,17 @@ namespace indie {
         AssetsManager(AssetsManager &&other) = delete;
 
     public:
-        int addTexturePack(const std::string &texturePackName, const std::string &path);
-        int loadTexturePack(const std::string &texturePackName);
+        int addResourcesPack(const std::string &texturePackName, const std::string &path);
+        int loadResourcesPack(const std::string &texturePackName);
 
+        void fetchResourcesPacks();
+
+        std::map<std::string, std::string> getResourcesPacks() const;
         std::map<std::string, std::string> getAssets() const;
-        static const std::string &getAsset(const std::string &asset);
+        static std::string getAsset(const std::string &asset);
 
     private:
-        std::map<std::string, std::string> _texturePacks;
+        std::map<std::string, std::string> _resourcesPacks;
         std::map<std::string, std::string> _currentAssets;
 
     public:

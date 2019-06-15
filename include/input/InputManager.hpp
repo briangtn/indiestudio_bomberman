@@ -41,6 +41,9 @@ namespace indie {
 
     class InputManager {
     public:
+        static void RegisterKeyInputEvent();
+        static void RegisterJoystickInputEvent();
+        static void RegisterControllerKeyInputEvent();
         static void CreateAxis(const std::string &name, KeyAxis);
         static void CreateAxis(const std::string &name, JoystickAxis);
         static void CreateAxis(const std::string &name, ControllerKeyAxis);
@@ -67,7 +70,7 @@ namespace indie {
 
         static void MapKey(const std::string &name, irr::EKEY_CODE key);
         static void MapKey(const std::string &name, irr::u8 controllerId, irr::u8 keyId);
-
+        static void UnmapKey(const std::string &name);
 
         static bool IsKeyPressed(irr::EKEY_CODE key);
         static bool IsKeyPressed(irr::u8 controllerId, irr::u8 keyId);
@@ -83,48 +86,58 @@ namespace indie {
         }
 
         template<typename A>
-        static void DeleteAxis(const std::string &name)
+        static void DeleteAxis(const std::string &name, bool checkBeforeDelete = false)
         {
             const std::type_info &ti = typeid(A);
 
-            if (ti == typeid(KeyAxis)) {
-                DeleteAxis<KeyAxis>(keyAxes, name);
-            } else if (ti == typeid(JoystickAxis)) {
-                DeleteAxis<JoystickAxis>(joystickAxes, name);
-            } else if (ti == typeid(ControllerKeyAxis)) {
-                DeleteAxis<ControllerKeyAxis>(controllerKeyAxes, name);
-            } else {
-                throw InvalidAxisType(ti.name());
+            try {
+                if (ti == typeid(KeyAxis)) {
+                    DeleteAxis<KeyAxis>(keyAxes, name);
+                } else if (ti == typeid(JoystickAxis)) {
+                    if (joystickAxes.find(name) == joystickAxes.end())
+                        throw AxisNotFoundException(name);
+                    joysticksStates.erase(name);
+                    joystickAxes.erase(name);
+                } else if (ti == typeid(ControllerKeyAxis)) {
+                    auto find = controllerKeyAxes.find(name);
+                    if (find == controllerKeyAxes.end())
+                        throw AxisNotFoundException(name);
+                    controllerKeyStates.erase((find->second.id << 8) + find->second.positiveKey);
+                    controllerKeyStates.erase((find->second.id << 8) + find->second.negativeKey);
+                    controllerKeyAxes.erase(name);
+                } else {
+                    throw InvalidAxisType(ti.name());
+                }
+            } catch(AxisNotFoundException e) {
+                if (!checkBeforeDelete)
+                    throw AxisNotFoundException(e.getInputName());
             }
         }
 
         template<typename A, typename B, typename... Others>
-        static void DeleteAxis(const std::string &name)
+        static void DeleteAxis(const std::string &name, bool checkBeforeDelete = false)
         {
-            DeleteAxis<A>(name);
-            DeleteAxis<B, Others...>(name);
+            DeleteAxis<A>(name, checkBeforeDelete);
+            DeleteAxis<B, Others...>(name, checkBeforeDelete);
         }
 
         template<typename A>
-        static void EditAxis(const std::string &name, A axis)
+        static void EditAxis(const std::string &name, A axis, bool checkBeforeDelete = false)
         {
-            DeleteAxis<A>(name);
+            DeleteAxis<A>(name, checkBeforeDelete);
             CreateAxis<A>(name, axis);
         }
 
         template<typename A, typename B, typename... Others>
-        static void EditAxis(const std::string &name, A axis, B nextAxis, Others... others)
+        static void EditAxis(const std::string &name, A axis, B nextAxis, Others... others, bool checkBeforeDelete = false)
         {
-            DeleteAxis<A, B, Others...>(name);
+            DeleteAxis<A, B, Others...>(name, checkBeforeDelete);
             CreateAxis<A, B, Others...>(name, axis, nextAxis, others...);
         }
 
         static float GetAxis(const std::string &name);
 
     private:
-        static void RegisterKeyInputEvent();
-        static void RegisterJoystickInputInputEvent();
-        static void RegisterControllerKeyInputEvent();
 
         template<typename A>
         static bool isValidAxisTypeId()

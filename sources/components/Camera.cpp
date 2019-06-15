@@ -5,6 +5,7 @@
 ** Camera.cpp
 */
 
+#include <iomanip>
 #include "ECSWrapper.hpp"
 #include "Events.hpp"
 #include "events/IrrlichtClosingWindowEvent.hpp"
@@ -78,4 +79,12 @@ float indie::components::Camera::getFOV() const
 irr::scene::ICameraSceneNode *indie::components::Camera::getCameraNode()
 {
     return _cameraNode;
+}
+
+indie::components::Camera &indie::components::Camera::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Camera">)" << std::endl;
+    file << R"(            <argument name="FOV" value=")" << _FOV << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
 }

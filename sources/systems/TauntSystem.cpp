@@ -12,6 +12,7 @@
 #include "ECSWrapper.hpp"
 #include "systems/TauntSystem.hpp"
 #include "components/PlayerController.hpp"
+#include "components/AIController.hpp"
 
 void indie::systems::TauntSystem::onAwake()
 {
@@ -30,21 +31,24 @@ void indie::systems::TauntSystem::onUpdate(const std::chrono::nanoseconds &elaps
     ecs.entityManager.applyToEach<components::PlayerController>(
         [elapsedTimeAsSecond](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::PlayerController> pc) {
 
-            if (pc->isTaunting()) {
-                pc->setTauntTime(pc->getTauntTime() - elapsedTimeAsSecond);
-                if (pc->getTauntTime() <= 0.0f) {
-                    pc->setTauntTime(0.0f);
-                    pc->setIsTaunting(false);
-                }
-            }
-
-            if (indie::InputManager::IsKeyPressed("taunt")) {
-                pc->setIsTaunting(true);
-                pc->setTauntTime(pc->getTauntDuration());
-                auto animator = pc->getEntity()->getComponent<components::Animator>();
+            if (!pc->getTauntButton().empty() && indie::InputManager::IsKeyPressed(pc->getTauntButton())) {
+                auto animator = entity->getComponent<components::Animator>();
                 if (animator.isValid()) {
+                    pc->setIsTaunting(true);
                     animator->setCurrentAnimation(pc->getTauntAnimation());
                 }
+            }
+        }
+    );
+    ecs.entityManager.applyToEach<components::AIController>(
+        [](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::AIController> ai) {
+            if (ai->getNeedToTaunt()) {
+                auto animator = entity->getComponent<components::Animator>();
+                if (animator.isValid()) {
+                    animator->setCurrentAnimation("taunt"); // DOUBT TO DO METHOD AND ADDED ARGUMENT TO PARSER
+                    ai->setIsTaunting(true);
+                }
+                ai->setNeedToTaunt(false);
             }
         }
     );

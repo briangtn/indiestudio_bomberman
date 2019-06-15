@@ -51,6 +51,8 @@ namespace indie {
                               irr::video::E_MATERIAL_TYPE materialType = irr::video::EMT_SOLID);
             ~Material() override;
 
+            Material &operator>>(std::ostream &file);
+
             irr::video::E_MATERIAL_TYPE getMaterialType() const;
             void setMaterialType(irr::video::E_MATERIAL_TYPE type);
 
@@ -75,6 +77,9 @@ namespace indie {
             bool _materialTextureChanged;
             std::map<irr::video::E_MATERIAL_FLAG, bool> _materialFlags;
             bool _materialFlagsChanged;
+
+            static const std::map<irr::video::E_MATERIAL_TYPE, std::string> materialTypes;
+            static const std::map<irr::video::E_MATERIAL_FLAG, std::string> materialFlags;
         };
     }
 }

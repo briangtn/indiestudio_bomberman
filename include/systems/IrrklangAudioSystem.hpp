@@ -44,8 +44,14 @@ namespace indie {
             void setSoundsVolume(float volume, bool onlyEnabled = true);
             void setSoundsVolume(float volume, components::SoundComponent::SoundType soundType, bool onlyEnabled = true);
 
+            void setEffectVolume(float volume);
+            float getEffectVolume() const;
+            void setMusicVolume(float volume);
+            float getMusicVolume() const;
         private:
             irrklang::ISoundEngine *_engine;
+            float _effectVolume;
+            float _musicVolume;
         };
     }
 }

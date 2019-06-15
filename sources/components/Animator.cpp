@@ -10,6 +10,7 @@
 #include <components/Mesh.hpp>
 #include "Events.hpp"
 #include "components/Animator.hpp"
+#include "events/IrrlichtAnimationEndEvent.hpp"
 #include "exceptions/AnimatorException.hpp"
 
 indie::components::Animator::Animator(jf::entities::Entity &entity)
@@ -54,7 +55,7 @@ indie::components::Animator::~Animator()
     EMIT_DELETE(Animator);
     auto mesh = getEntity()->getComponent<components::Mesh>();
     if (mesh.isValid() && mesh->getAnimatedMeshNode() != nullptr) {
-        mesh->getAnimatedMeshNode()->setAnimationEndCallback(nullptr);
+        mesh->getAnimatedMeshNode()->setAnimationEndCallback();
     }
 }
 
@@ -117,10 +118,39 @@ void indie::components::Animator::resetAnimationChanged()
 
 void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneNode *node)
 {
+    ECSWrapper ecs;
+
     if (!doesAnimationExist(_currentAnimation))
         throw exceptions::AnimatorException(_currentAnimation + " does not exist");
     auto &data = _animations.at(_currentAnimation);
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
+}
+
+indie::components::Animator &indie::components::Animator::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Animator">)" << std::endl;
+    file << R"(            <argument name="currentAnimation" value=")" << _currentAnimation << R"("/>)" << std::endl;
+    for (auto &it : _animations) {
+        file << it;
+    }
+    file << "        </component>" << std::endl;
+    return *this;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, const std::pair<std::string, indie::components::Animator::Animation> &pair)
+{
+    file << R"(            <animation name=")" << pair.first << R"(">)" << std::endl;
+    file << R"(                <argument name="start" value=")" << pair.second.start << R"("/>)" << std::endl;
+    file << R"(                <argument name="end" value=")" << pair.second.end << R"("/>)" << std::endl;
+    file << R"(                <argument name="speed" value=")" << pair.second.speed << R"("/>)" << std::endl;
+    file << R"(                <argument name="loop" value=")" << std::boolalpha << pair.second.loop << R"("/>)" << std::endl;
+    if (!pair.second.loop) {
+        file << R"(                <argument name="transition" value=")" << pair.second.transition << R"("/>)" << std::endl;
+    }
+    file << "            </animation>" << std::endl;
+    return file;
 }

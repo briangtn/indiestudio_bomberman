@@ -1,0 +1,116 @@
+/*
+** EPITECH PROJECT, 2019
+** indiestudio
+** File description:
+** Bomb
+*/
+
+#ifndef BOMB_HPP_
+#define BOMB_HPP_
+
+#include <iostream>
+#include <irrlicht.h>
+#include "Component.hpp"
+#include "ComponentCreatedEvent.hpp"
+#include "ECSWrapper.hpp"
+#include "systems/IrrlichtManagerSystem.hpp"
+
+namespace indie {
+    namespace components {
+
+            /* enum for each type of bomb */
+
+            enum BombType : uint8_t {
+                NORMAL,
+                FIRE,
+                WATER,
+                ELECTRIC,
+                LOVE
+            };
+
+            /* enum for each type of player */
+
+            enum PlayerType : uint8_t {
+                P1 = 1,
+                P2 = 2,
+                P3 = 3,
+                P4 = 4
+            };
+
+        class Bomb : public jf::components::Component {
+        public:
+
+            /* Bomb Constructor */
+
+            Bomb(jf::entities::Entity &entity, const int &strength,\
+            const float &timeBeforeExplode, BombType bomb, PlayerType player);
+
+            /* Bomb Destructor */
+
+            ~Bomb();
+
+
+            Bomb &operator>>(std::ostream &file);
+
+            /* Set & Get Strength */
+
+            int getStrength() const;
+            void setStrength(const int &newStrength);
+
+            /* Set & Get TimeBeforeExplose */
+
+            float getTimeBeforeExplode() const;
+            void setTimeBeforeExplode(const float &newTimeBeforeExplode);
+
+            /* Set & Get BombType */
+
+            BombType getBombType() const;
+            void setBombType(BombType newBombType);
+
+            /* Set & Get TexturePath */
+
+            std::string getTexturePath() const;
+            void setTexturePath(const std::string &newTexturePath);
+
+            /* Set & Get TextureMesh */
+
+            std::string getTextureMesh() const;
+            void setTextureMesh(const std::string &newMeshPath);
+
+            /* Set & Get InitialPosition Bomb */
+
+            void setInitialPosition(const indie::maths::Vector3D &vectPos);
+            indie::maths::Vector3D getInitialPosition() const;
+
+            /* Set & Get PlayerType */
+
+            void setPlayerType(const PlayerType &player);
+            PlayerType getPlayerType() const;
+
+        protected:
+        private:
+            int _strength;
+            float _timeBeforeExplode;
+            int _bombID;
+            BombType _bombType;
+            PlayerType _player;
+            std::string _meshPath;
+            std::string _texturePath;
+            static const std::map<int, std::pair<std::string, std::string>> _pathTextureBomb;
+            indie::maths::Vector3D _vectPos;
+        };
+    }
+}
+
+#else
+
+namespace indie {
+    namespace components {
+        enum BombType : uint8_t;
+        enum PlayerType : uint8_t;
+        class Bomb;
+    }
+}
+
+
+#endif /* !BOMB_HPP_ */

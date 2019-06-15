@@ -11,6 +11,7 @@
 #define INDIESTUDIO_PLAYERCONTROLLER_HPP
 
 #include "Component.hpp"
+#include "Bomb.hpp"
 
 namespace indie {
 
@@ -31,6 +32,8 @@ namespace indie {
             PlayerController(jf::entities::Entity &entity, const std::string &xAxis, const std::string &yAxis, const std::string &zAxis);
             PlayerController(jf::entities::Entity &entity, const std::string &xAxis, const std::string &yAxis, const std::string &zAxis, bool lockX, bool lockY, bool lockZ);
             ~PlayerController() override;
+
+            PlayerController &operator>>(std::ostream &file);
 
         public:
             const std::string &getXMovementAxis() const;
@@ -84,9 +87,6 @@ namespace indie {
             bool isTaunting() const;
             void setIsTaunting(bool isTaunting);
 
-            float getTauntTime() const;
-            void setTauntTime(float tauntTime);
-
             const std::string &getTauntButton() const;
             void setTauntButton(const std::string &tauntButton);
 
@@ -96,20 +96,20 @@ namespace indie {
             bool isPlacingBomb() const;
             void setIsPlacingBomb(bool isPlacingBomb);
 
-            float getBombPlacementTime() const;
-            void setBombPlacementTime(float bombPlacementTime);
-
             const std::string &getBombPlacementButton() const;
             void setBombPlacementButton(const std::string &bombPlacementButton);
 
             const std::string &getBombPlacementAnimation() const;
             void setBombPlacementAnimation(const std::string &bombPlacementAnimation);
 
-            float getTauntDuration() const;
-            void setTauntDuration(float tauntDuration);
+            int getBombForce() const;
+            void setBombForce(int bombForce);
 
-            float getBombPlacementDuration() const;
-            void setBombPlacementDuration(float bombPlacementDuration);
+            int getMaxBomb() const;
+            void setMaxBomb(int maxBomb);
+
+            PlayerType getPlayerType() const;
+            void setPlayerType(PlayerType playerType);
 
         private:
             std::string _xMovementAxis;
@@ -141,16 +141,18 @@ namespace indie {
             std::string _walkingAnimation;
 
             bool _isTaunting;
-            float _tauntDuration;
-            float _tauntTime;
             std::string _tauntButton;
             std::string _tauntAnimation;
 
             bool _isPlacingBomb;
-            float _bombPlacementDuration;
-            float _bombPlacementTime;
             std::string _bombPlacementButton;
             std::string _bombPlacementAnimation;
+
+            int _bombForce;
+            int _maxBomb;
+            PlayerType _playerType;
+
+            jf::internal::ID _endAnimationListenerEventId;
         };
     }
 }
