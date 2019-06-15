@@ -27,6 +27,11 @@ void indie::scenes::EndScene::onStart()
     cameraEntity->assignComponent<indie::components::Camera>();
     auto cameraTransform = cameraEntity->assignComponent<indie::components::Transform, maths::Vector3D>({0, 0, -20});
 
+    auto soundEntity = ecs.entityManager.createEntity("endSceneMusic");
+    auto sound = soundEntity->assignComponent<indie::components::SoundComponent>("music_result", components::SoundComponent::MUSIC);
+    sound->setIsLooped(true);
+    sound->setIsPaused(false);
+
     auto backgroundEntity = ecs.entityManager.createEntity("background");
     backgroundEntity->assignComponent<indie::components::Image>("default_menu_background");
     auto backgroundTransform = backgroundEntity->assignComponent<indie::components::Transform>();
