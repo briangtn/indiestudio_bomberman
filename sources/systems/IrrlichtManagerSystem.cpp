@@ -119,11 +119,11 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
         drawImage(entity, tr, image);
     });
 
+    _sceneManager->drawAll();
+
     ecs.entityManager.applyToEach<components::Transform, components::Text>(&drawText);
     ecs.entityManager.applyToEach<components::Transform, components::Button>(&drawButton);
 
-    _sceneManager->drawAll();
-    _guiEnvironment->drawAll();
 
     _driver->endScene();
 }
@@ -589,6 +589,7 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
         }
         buttonNode->setOverrideFont(font->getFontNode());
     }
+    buttonNode->draw();
 }
 
 void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler entity,
@@ -624,6 +625,7 @@ void indie::systems::IrrlichtManagerSystem::drawText(jf::entities::EntityHandler
         }
         textNode->setOverrideFont(font->getFontNode());
     }
+    textNode->draw();
 }
 
 void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandler entity,
@@ -657,6 +659,7 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
     if (image->getImageNode() != nullptr) {
         image->getImageNode()->setID(image->getId());
         image->getImageNode()->setVisible(image->isVisible());
+        image->getImageNode()->draw();
     }
 }
 

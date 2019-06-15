@@ -10,6 +10,7 @@
 #ifndef INDIESTUDIO_ENDSCENE_HPP
 #define INDIESTUDIO_ENDSCENE_HPP
 
+#include <vector>
 #include "IScene.hpp"
 
 namespace indie {
@@ -22,6 +23,9 @@ namespace indie {
 
             SaveState save(bool override, bool saveShouldBeKeeped) override;
             SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped) override;
+
+            int getWinner(std::vector<std::pair<int, int>> &results) const;
+            const std::string &getMaterial(int winnerId) const;
         };
     }
 }
