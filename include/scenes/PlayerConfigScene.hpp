@@ -41,7 +41,7 @@ namespace indie {
 
             static void InitControllers();
             static void UpdateConfigController();
-            static void Load(std::string callbackScene = "test", bool humans = false);
+            static void Load(std::string callbackScene = "newGameScene", bool humans = false);
         private:
             static void from(PlayerControllerType controllerType, int id);
             static void to(PlayerControllerType controllerType, int id);

@@ -58,12 +58,18 @@ namespace indie {
                                           const std::string &fileName, unsigned int &line);
         static void createIrrklangAudio(irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line);
+        static void createLive(irr::io::IXMLReader *xmlReader,
+                                        const std::string &fileName, unsigned int &line);
         static void createMovement(irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createTaunt(irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
+        static void createAI(irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
+        static void createAIController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createAnimator(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createBomb(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -82,15 +88,23 @@ namespace indie {
                                   const std::string &fileName, unsigned int &line);
         static void createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line);
+        static void createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                 const std::string &fileName, unsigned int &line);
         static void createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                   const std::string &fileName, unsigned int &line);
         static void createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
+        static void createLeaderBoard(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                      const std::string &fileName, unsigned int &line);
         static void createMaterial(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createMesh(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                const std::string &fileName, unsigned int &line);
+        static void createMoveToTarget(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                       const std::string &fileName, unsigned int &line);
         static void createParticle(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                                   const std::string &fileName, unsigned int &line);
+        static void createPlayerAlive(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
         static void createPlayerController(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                            const std::string &fileName, unsigned int &line);
