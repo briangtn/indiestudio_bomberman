@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <iomanip>
 #include "components/MoveToTarget.hpp"
 #include "components/Bomb.hpp"
 #include "components/BoxCollider.hpp"
@@ -171,9 +172,9 @@ std::pair<bool, std::pair<int, int>> indie::systems::AISystem::determineSafeCell
     ai::AStar::Node::position playerPos = ai::get2DPositionFromWorldPos(entity->getComponent<indie::components::Transform>()->getPosition());
 
     int xMin = playerPos.x - 4 < 0 ? 0 : playerPos.x - 4;
-    int xMax = playerPos.x + 4 > 14 ? 14 : playerPos.x + 4;
+    int xMax = playerPos.x + 4 > 15 ? 15 : playerPos.x + 4;
     int yMin = playerPos.y - 4 < 0 ? 0 : playerPos.y - 4;
-    int yMax = playerPos.y + 4 > 14 ? 14 : playerPos.y + 4;
+    int yMax = playerPos.y + 4 > 15 ? 15 : playerPos.y + 4;
 
     for (int i = yMin; i < yMax; i++) {
         for (int a = xMin; a < xMax; a++) {
