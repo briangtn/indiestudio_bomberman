@@ -45,6 +45,7 @@ int runBomberman()
     }
 
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowCaption("Indie Studio - Bomberman");
     indie::scenes::PlayerConfigScene::InitControllers();
 
     auto &assetsManager = indie::AssetsManager::getInstance();
