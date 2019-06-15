@@ -19,6 +19,7 @@
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "scenes/SceneManager.hpp"
 #include "scenes/ControllerConfigScene.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 
 std::vector<indie::scenes::PlayerSettings> indie::scenes::PlayerConfigScene::playersSettings = {
     {INPUT_EXIST, Controller("")},
@@ -31,6 +32,7 @@ std::map<indie::scenes::PlayerControllerType, std::string> indie::scenes::Player
     {indie::scenes::INPUT_EXIST, "input_exist_icon"},
     {indie::scenes::INPUT_CONFIG, "input_config_icon"},
     {indie::scenes::AI, "ai_icon"},
+    {indie::scenes::NONE, "none_icon"}
 };
 
 std::map<std::string, indie::Controller> indie::scenes::PlayerConfigScene::controllers;
@@ -71,26 +73,46 @@ void indie::scenes::PlayerConfigScene::onStart()
     cameraEntity->assignComponent<indie::components::Camera>();
     auto cameraTransform = cameraEntity->assignComponent<indie::components::Transform>();
 
+    auto soundEntity = ecs.entityManager.createEntity("playerSelectMusic");
+    auto sound = soundEntity->assignComponent<indie::components::SoundComponent>("music_player_select", components::SoundComponent::MUSIC);
+    sound->setIsLooped(true);
+    sound->setIsPaused(false);
+
     auto buttonStartEntity = ecs.entityManager.createEntity("buttonStart");
-    auto buttonStartComponent = buttonStartEntity->assignComponent<indie::components::Button>("Start", 3);
+    auto buttonStartComponent = buttonStartEntity->assignComponent<indie::components::Button>("", 3);
     auto buttonStartTransform = buttonStartEntity->assignComponent<indie::components::Transform>();
-    buttonStartTransform->setPosition({0, 0, 100});
-    buttonStartTransform->setScale({100, 30, 0});
+    buttonStartTransform->setPosition({(1280 - 200) / 2, (720 - 200) / 2, 100});
+    buttonStartTransform->setScale({200, 200, 0});
+    buttonStartComponent->setTexturePath("play_button");
+    buttonStartComponent->setUseAlpha(true);
+    buttonStartComponent->setDrawBorder(false);
+    buttonStartComponent->setVisible(false);
 
     buttonStartComponent->setOnClicked([](components::Button *btn){
-        for (auto setting : playersSettings) {
-            if (!setting.isValid)
-                return;
-        }
         int i = 1;
         for (auto setting : playersSettings) {
             std::string iStr = std::to_string(i);
 
-            if (setting.controllerType != AI)
+            if (setting.controllerType != AI && setting.controllerType != NONE)
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        indie::scenes::SceneManager::safeChangeScene("test");
+        indie::scenes::SceneManager::safeChangeScene("newGameScene");
+    });
+
+    auto buttonReloadEntity = ecs.entityManager.createEntity("buttonReload");
+    auto buttonReloadComponent = buttonReloadEntity->assignComponent<indie::components::Button>("", 4);
+    auto buttonReloadTransform = buttonReloadEntity->assignComponent<indie::components::Transform>();
+    buttonReloadTransform->setPosition({(1280 - 128), 0, 100});
+    buttonReloadTransform->setScale({128, 128, 0});
+    buttonReloadComponent->setTexturePath("reload_button");
+    buttonReloadComponent->setUseAlpha(true);
+    buttonReloadComponent->setDrawBorder(false);
+
+    buttonReloadComponent->setOnClicked([](components::Button *button) {
+        ECSWrapper ecs;
+
+        ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>().reloadJoysticks();
     });
 
     for (unsigned int i = 1; i <= 4; i++)
@@ -105,7 +127,11 @@ void indie::scenes::PlayerConfigScene::onStart()
 
 void indie::scenes::PlayerConfigScene::onStop()
 {
+    ECSWrapper ecs;
 
+    for (auto &setting : playersSettings) {
+        removeListeners(setting);
+    }
 }
 
 void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
@@ -169,7 +195,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
         switch (playersSettings[id - 1].controllerType) {
             case INPUT_EXIST:
                 from(INPUT_EXIST, id);
-                to(AI, id);
+                to(NONE, id);
                 break;
             case INPUT_CONFIG:
                 from(INPUT_CONFIG, id);
@@ -179,9 +205,16 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
                 from(AI, id);
                 to(INPUT_CONFIG, id);
                 break;
+            case NONE:
+                from(NONE, id);
+                to(AI, id);
+                break;
         }
         if (valid)
             setValid(false, id);
+        else
+            updatePlayButton();
+        removeListeners(playersSettings[id - 1]);
     });
 
     rightButtonComponent->setOnClicked([id](components::Button *btn){
@@ -197,11 +230,18 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
                 break;
             case AI:
                 from(AI, id);
+                to(NONE, id);
+                break;
+            case NONE:
+                from(NONE, id);
                 to(INPUT_EXIST, id);
                 break;
         }
         if (valid)
             setValid(false, id);
+        else
+            updatePlayButton();
+        removeListeners(playersSettings[id - 1]);
     });
 
     detectControllerButtonComponent->setOnClicked([id](components::Button *btn) {
@@ -222,10 +262,7 @@ void indie::scenes::PlayerConfigScene::from(indie::scenes::PlayerControllerType 
     if (controllerType == INPUT_EXIST) {
         auto buttonEntity = ecs.entityManager.getEntityByName("detectControllerButton" + idString);
         auto buttonComponent = buttonEntity->getComponent<components::Button>();
-        if (playersSettings[id - 1].eventJoystickId.isValid())
-            ecs.eventManager.removeListener(playersSettings[id - 1].eventJoystickId);
-        if (playersSettings[id - 1].eventKeyboardId.isValid())
-            ecs.eventManager.removeListener(playersSettings[id - 1].eventKeyboardId);
+        removeListeners(playersSettings[id - 1]);
         buttonComponent->setVisible(false);
     } else if (controllerType == INPUT_CONFIG) {
         auto buttonEntity = ecs.entityManager.getEntityByName("configControllerButton" + idString);
@@ -271,16 +308,14 @@ void indie::scenes::PlayerConfigScene::setValid(bool valid, int id)
     imageComponent->reload();
     imageComponent->setVisible(valid);
     settings.isValid = valid;
-    if (settings.eventJoystickId.isValid())
-        ecs.eventManager.removeListener(settings.eventJoystickId);
-    if (settings.eventKeyboardId.isValid())
-        ecs.eventManager.removeListener(settings.eventKeyboardId);
+    updatePlayButton();
 }
 
 void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
 {
     ECSWrapper ecs;
 
+    removeListeners(playersSettings[id - 1]);
     auto eventId = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [id](void *a, events::IrrlichtKeyInputEvent e){
         auto controller = controllers.find("IndieDefaultKeyboard");
         if (controller == controllers.end()) {
@@ -288,6 +323,7 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
         }
         indie::scenes::PlayerConfigScene::playersSettings[id - 1].controller = controller->second;
         indie::scenes::PlayerConfigScene::setValid(true, id);
+        removeListeners(playersSettings[id - 1]);
     });
     playersSettings[id - 1].eventKeyboardId = eventId;
     eventId = ecs.eventManager.addListener<void, events::IrrlichtJoystickEvent>(nullptr, [id](void *a, events::IrrlichtJoystickEvent e) {
@@ -303,6 +339,7 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
                         controller.second.setControllerId(e.data.Joystick);
                         indie::scenes::PlayerConfigScene::playersSettings[id - 1].controller = controller.second;
                         setValid(true, id);
+                        removeListeners(playersSettings[id - 1]);
                         return;
                     }
                 }
@@ -334,4 +371,32 @@ indie::scenes::SaveState
 indie::scenes::PlayerConfigScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
     return SUCCESS;
+}
+
+void indie::scenes::PlayerConfigScene::updatePlayButton()
+{
+    ECSWrapper ecs;
+
+    auto buttonEntity = ecs.entityManager.getEntityByName("buttonStart");
+    auto buttonComponent = buttonEntity->getComponent<components::Button>();
+    int noneCount = 0;
+    for (auto &playerSetting : playersSettings) {
+        if (playerSetting.controllerType == NONE)
+            noneCount++;
+        if ((!playerSetting.isValid && playerSetting.controllerType != NONE) || noneCount > 2) {
+            buttonComponent->setVisible(false);
+            return;
+        }
+    }
+    buttonComponent->setVisible(true);
+}
+
+void indie::scenes::PlayerConfigScene::removeListeners(indie::scenes::PlayerSettings &settings)
+{
+    ECSWrapper ecs;
+
+    if (settings.eventKeyboardId.isValid())
+        ecs.eventManager.removeListener(settings.eventKeyboardId);
+    if (settings.eventJoystickId.isValid())
+        ecs.eventManager.removeListener(settings.eventJoystickId);
 }

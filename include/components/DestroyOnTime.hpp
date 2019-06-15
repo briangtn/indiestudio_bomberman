@@ -22,6 +22,8 @@ namespace indie {
                 DestroyOnTime(jf::entities::Entity &entity, float time = 5.0f);
                 ~DestroyOnTime();
 
+                DestroyOnTime &operator>>(std::ostream &file);
+
                 /* Set and Get TimeBeforeDestroy */
 
                 float getTimeBeforeDestroy() const;

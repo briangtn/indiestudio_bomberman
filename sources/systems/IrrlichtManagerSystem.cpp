@@ -63,7 +63,7 @@ indie::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
 void indie::systems::IrrlichtManagerSystem::onAwake()
 {
     ECSWrapper ecs;
-    ecs.eventManager.addListener<IrrlichtManagerSystem, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_P>>(this, [](IrrlichtManagerSystem *ms, auto e) {
+    ecs.eventManager.addListener<IrrlichtManagerSystem, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_ESCAPE>>(this, [](IrrlichtManagerSystem *ms, auto e) {
         ms->_device->closeDevice();
     });
 }
@@ -101,6 +101,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
 
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
+        ecs.entityManager.applyToEach<components::MoveToTarget>(&drawMoveToTargetGizmos);
     }
 
     //ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
@@ -524,6 +525,26 @@ void indie::systems::IrrlichtManagerSystem::drawBoxColliderGizmos(jf::entities::
     }
 }
 
+void indie::systems::IrrlichtManagerSystem::drawMoveToTargetGizmos(
+    jf::entities::EntityHandler entity,
+    jf::components::ComponentHandler<indie::components::MoveToTarget> mtt)
+{
+    auto &target = mtt->getTarget();
+    auto position = entity->getComponent<components::Transform>()->getPosition();
+
+    irr::core::vector3df irrPos(position.x, position.y, position.z);
+    irr::core::vector3df irrTarget(target.x, target.y, target.z);
+
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    driver->draw3DLine(irrPos, irrTarget, (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
+    constexpr float boxSize = 1;
+    driver->draw3DBox(
+        irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
+        (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
+}
+
 void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
 {
     _drawGizmos = value;
@@ -560,6 +581,8 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
     buttonNode->setRelativePosition(rect);
     buttonNode->setID(button->getId());
     buttonNode->setVisible(button->isVisible());
+    buttonNode->setUseAlphaChannel(button->isUseAlpha());
+    buttonNode->setDrawBorder(button->isDrawBorder());
     if (button->getTextureNode() != nullptr)
         buttonNode->setImage(button->getTextureNode());
     if (font.isValid()) {

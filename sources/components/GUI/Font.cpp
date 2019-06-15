@@ -49,3 +49,11 @@ bool indie::components::Font::isInit() const
 {
     return _fontNode != nullptr;
 }
+
+indie::components::Font &indie::components::Font::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Font">)" << std::endl;
+    file << R"(            <argument name="fileName" value=")" << _path << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
+}

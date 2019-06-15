@@ -12,6 +12,7 @@
 #include "events/IrrlichtClosingWindowEvent.hpp"
 #include "components/GUI/GuiBase.hpp"
 #include "components/GUI/Text.hpp"
+#include "components/ComponentParticle.hpp"
 
 indie::components::Text::Text(
         jf::entities::Entity &entity,
@@ -114,3 +115,39 @@ void indie::components::Text::setBackgroundColor(const irr::video::SColor &backg
     _backgroundColor = backgroundColor;
 }
 
+indie::components::Text &indie::components::Text::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Text">)" << std::endl;
+    file << R"(            <argument name="text" value=")" << _text << R"("/>)" << std::endl;
+    file << R"(            <argument name="horizontalAlignement" value=")" << _horizontalAlignement << R"("/>)" << std::endl;
+    file << R"(            <argument name="verticalAlignement" value=")" << _verticalAlignement << R"("/>)" << std::endl;
+    file << R"(            <argument name="color" value=")" << _color << R"("/>)" << std::endl;
+    file << R"(            <argument name="backgroundColor" value=")" << _backgroundColor << R"("/>)" << std::endl;
+    file << R"(            <argument name="id" value=")" << _id << R"("/>)" << std::endl;
+    file << "        </component>" << std::endl;
+    return *this;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, indie::components::Text::HorizontalAlignement alignement)
+{
+    if (alignement == Text::LEFT) {
+        file << "LEFT";
+    } else if (alignement == Text::RIGHT) {
+        file << "RIGHT";
+    } else {
+        file << "CENTER";
+    }
+    return file;
+}
+
+std::ostream &indie::components::operator<<(std::ostream &file, indie::components::Text::VerticalAlignement alignement)
+{
+    if (alignement == Text::TOP) {
+        file << "TOP";
+    } else if (alignement == Text::BOTTOM) {
+        file << "BOTTOM";
+    } else {
+        file << "CENTER";
+    }
+    return file;
+}

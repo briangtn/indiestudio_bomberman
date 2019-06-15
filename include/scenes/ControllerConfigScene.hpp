@@ -34,7 +34,7 @@ namespace indie {
             static Step step;
             static std::vector<jf::internal::ID> listeners;
             static std::vector<irr::u16> keysPressed;
-            static std::vector<irr::u16> joysticksActivated;
+            static std::map<irr::u16, bool> joysticksActivated;
 
             SaveState save(bool override, bool saveShouldBeKeeped) override;
             SaveState save(const std::string &saveName, bool override, bool saveShouldBeKeeped);
@@ -54,7 +54,6 @@ namespace indie {
             static void end();
             static void removeListeners();
             static void setInfoText(const std::string &text);
-
 
         private:
         };

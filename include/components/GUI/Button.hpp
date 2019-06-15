@@ -35,6 +35,8 @@ namespace indie {
                     const std::string &texturePath = "");
             ~Button();
 
+            Button &operator>>(std::ostream &file);
+
             const std::string &getText() const;
             void setText(const std::string &text);
 
@@ -53,6 +55,12 @@ namespace indie {
             onHoverFuncPtr getOnHovered() const;
             void setOnHovered(onHoverFuncPtr func);
 
+            bool isUseAlpha() const;
+            void setUseAlpha(bool useAlpha);
+
+            bool isDrawBorder() const;
+            void setDrawBorder(bool drawBorder);
+
             bool isInit() const;
             bool isTextureNeedInit() const;
 
@@ -64,6 +72,8 @@ namespace indie {
             jf::internal::ID _eventCloseID;
             onClickedFuncPtr _onClicked;
             onHoverFuncPtr _onHovered;
+            bool _useAlpha;
+            bool _drawBorder;
         };
     };
 };

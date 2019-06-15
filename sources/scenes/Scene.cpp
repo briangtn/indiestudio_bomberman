@@ -7,10 +7,10 @@
 
 /* Created the 27/05/2019 at 15:27 by jbulteau */
 
+#include <iostream>
 #include <regex>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
 #include "scenes/Scene.hpp"
@@ -22,6 +22,10 @@
 #include "components/Animator.hpp"
 #include "systems/IrrlichtManagerSystem.hpp"
 #include "map/Map.hpp"
+#include "ai/AiView.hpp"
+#include "components/BonusSpawner.hpp"
+#include "events/AskingForBonusSpawnEvent.hpp"
+#include "ai/AStar.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
@@ -30,6 +34,10 @@
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
 #include "components/Rotator.hpp"
+#include "components/LeaderBoard.hpp"
+#include "components/AIController.hpp"
+#include "components/DynamicCamera.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::scenes::Scene::Scene(const std::string &fileName)
     : _fileName(fileName), _listeners()
@@ -244,7 +252,10 @@ void indie::scenes::Scene::onStart()
 
 void indie::scenes::Scene::onStop()
 {
-    save(false, false);
+
+    if (_fileName != "mainMenu.xml") {
+        save(false, false);
+    }
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
@@ -332,6 +343,26 @@ std::ostream &indie::operator<<(std::ostream &file, jf::entities::EntityHandler 
     }
     if (entity->hasComponent<components::Transform>()) {
         components::Transform &component = *(entity->getComponent<components::Transform>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::LeaderBoard>()) {
+        components::LeaderBoard &component = *(entity->getComponent<components::LeaderBoard>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::AIController>()) {
+        components::AIController &component = *(entity->getComponent<components::AIController>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::DynamicCamera>()) {
+        components::DynamicCamera &component = *(entity->getComponent<components::DynamicCamera>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::PlayerAlive>()) {
+        components::PlayerAlive &component = *(entity->getComponent<components::PlayerAlive>().get());
+        component >> file;
+    }
+    if (entity->hasComponent<components::MoveToTarget>()) {
+        components::MoveToTarget &component = *(entity->getComponent<components::MoveToTarget>().get());
         component >> file;
     }
     file << "    </entity>" << std::endl;

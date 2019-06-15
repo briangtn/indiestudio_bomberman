@@ -6,6 +6,10 @@
 */
 
 #include "systems/BombManagerSystem.hpp"
+#include "components/AIController.hpp"
+#include "input/InputManager.hpp"
+#include "exceptions/BombException.hpp"
+#include "components/PlayerAlive.hpp"
 
 indie::systems::BombManagerSystem::BombManagerSystem()
 {
@@ -33,11 +37,35 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     ECSWrapper ecs;
     std::vector<jf::internal::ID> toDelete;
     static bool pass = true;
+    float elapsedTimeAsSeconds = elapsedTime.count() / 1000000000.0f;
+
+    ecs.entityManager.applyToEach<components::PlayerController>(
+        [&, elapsedTimeAsSeconds](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::PlayerController> pc) {
+
+            if (pc->isPlacingBomb()) {
+                pc->setBombPlacementTime(pc->getBombPlacementTime() - elapsedTimeAsSeconds);
+                if (pc->getBombPlacementTime() <= 0.0f) {
+                    pc->setBombPlacementTime(0.0f);
+                    pc->setIsPlacingBomb(false);
+                }
+            }
+
+            if (indie::InputManager::IsKeyPressed(pc->getBombPlacementButton()) && !pc->isPlacingBomb()) {
+                pc->setIsPlacingBomb(true);
+                createBomb(entity);
+                pc->setBombPlacementTime(pc->getBombPlacementDuration());
+                auto animator = entity->getComponent<components::Animator>();
+                if (animator.isValid()) {
+                    animator->setCurrentAnimation(pc->getBombPlacementAnimation());
+                }
+            }
+        }
+    );
 
     ecs.entityManager.applyToEach<components::Bomb>(
-    [elapsedTime, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
+    [&elapsedTimeAsSeconds, &toDelete, this](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::Bomb> bomb) {
         ECSWrapper ecs;
-        if (bomb->getTimeBeforeExplose() <= 0) {
+        if (bomb->getTimeBeforeExplode() <= 0) {
             if (pass == true) {
                 this->displayParticle(bomb->getBombType(), indie::maths::Vector3D(bomb->getEntity()->getComponent<indie::components::Transform>()->getPosition()));
                 this->handleCollide(bomb);                
@@ -47,7 +75,7 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
             toDelete.emplace_back(bomb->getEntity()->getID());
         } else {
             this->shakeBomb(bomb);
-            bomb->setTimeBeforeExplose(bomb->getTimeBeforeExplose() - elapsedTime.count() / 1000000000.0f);
+            bomb->setTimeBeforeExplode(bomb->getTimeBeforeExplode() - elapsedTimeAsSeconds);
         }
         });
     pass = true;
@@ -70,19 +98,38 @@ void indie::systems::BombManagerSystem::createBomb(jf::entities::EntityHandler p
     ECSWrapper ecs;
 
     auto playerController = playerEntity->getComponent<indie::components::PlayerController>();
+    auto aiController = playerEntity->getComponent<indie::components::AIController>();
     auto playerPos = playerEntity->getComponent<indie::components::Transform>();
-    if (!(getNumberBombPlace(playerController->getPlayerType()) < playerController->getMaxBomb() && checkBombPlace(playerPos->getPosition()) == true))
+    components::PlayerType ptype;
+    int bombForce;
+    int maxBomb;
+
+    if (playerController.isValid()) {
+        ptype = playerController->getPlayerType();
+        bombForce = playerController->getBombForce();
+        maxBomb = playerController->getMaxBomb();
+    } else if (aiController.isValid()) {
+        ptype = aiController->getPlayerType();
+        bombForce = aiController->getBombForce();
+        maxBomb = aiController->getMaxBomb();
+    } else {
+        return;
+    }
+    if (!(getNumberBombPlace(ptype) < maxBomb && checkBombPlace(playerPos->getPosition()) == true))
         return;
     auto bombEntity = ecs.entityManager.createEntity("bomb");
+    auto componentPlaceBomb = ecs.entityManager.createEntity("soundPlaceBomb");
+    auto placeBombSound = componentPlaceBomb->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("bomb_placed_sound", components::SoundComponent::SoundType::EFFECT);
+    componentPlaceBomb->assignComponent<components::DestroyOnTime, float>(1);
+    placeBombSound->setIsPaused(false);
     auto bombTr = bombEntity->assignComponent<components::Transform, maths::Vector3D>({(std::floor((playerPos->getPosition().x - 10.0f / 2.0f) / 10.0f) * 10 + 10), playerPos->getPosition().y, (std::floor((playerPos->getPosition().z - 10.0f / 2.0f) / 10.0f) * 10 + 10)});
     bombTr->setScale({8, 8, 8});
-    std::cout << "bombe position = " << " x = " << bombTr->getPosition().x << " y = " << bombTr->getPosition().y << " z = " << bombTr->getPosition().z << std::endl;
-    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(playerController->getBombForce(), 50, indie::components::NORMAL, playerController->getPlayerType());
+    auto bombComponent = bombEntity->assignComponent<components::Bomb, int, float, components::BombType, components::PlayerType>(bombForce, 3, indie::components::NORMAL, ptype);
     auto bombMesh = bombEntity->assignComponent<components::Mesh, std::string>(bombComponent->getTextureMesh());
     auto bombMat = bombEntity->assignComponent<components::Material, std::string>(bombComponent->getTexturePath());
     bombEntity->assignComponent<indie::components::BoxCollider, indie::maths::Vector3D, indie::maths::Vector3D>({0.5f, 0.5f, 0.5f}, {0, 0, 0}, indie::BOMB_LAYER);
     bombMat->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    addBombPlace(playerController->getPlayerType());
+    addBombPlace(ptype);
 }
 
 void indie::systems::BombManagerSystem::displayParticle(indie::components::BombType typeBomb, indie::maths::Vector3D vect)
@@ -96,7 +143,7 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->setEmitterSize(irr::core::aabbox3d<irr::f32>(-6, -7, -8, 6, 7, 8));
         normalParticle->setInitialDirection(irr::core::vector3df(0.010f,0.04f,0.010f));
         normalParticle->setEmitRate(std::make_pair(10, 9));
-        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 0, 0, 0), irr::video::SColor(0, 255, 90, 0)));
+        normalParticle->setDarkBrightColor(std::make_pair(irr::video::SColor(0, 255, 90, 0), irr::video::SColor(0, 255, 90, 0)));
         normalParticle->setMinMaxAge(std::make_pair(15, 15));
         normalParticle->setAngle(0);
         normalParticle->setMinMaxSize(std::make_pair(irr::core::dimension2df(7.0f, 7.0f), irr::core::dimension2df(1.0f, 1.0f)));
@@ -152,9 +199,8 @@ void indie::systems::BombManagerSystem::displayParticle(indie::components::BombT
         normalParticle->initParticle();
         normalParticle->setPosition(irr::core::vector3df(vect.x, vect.y, vect.z));
     }
-    else {
-        std::cout << "throw error : unknown type bomb" << std::endl;
-    }
+    else
+        throw indie::exceptions::BombException("Unknown Type Bomb.", "indie::systems::BombManagerSystem::DisplayParticle");
 }
 
 void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::BombType typeBomb, bool &pass)
@@ -177,14 +223,13 @@ void indie::systems::BombManagerSystem::playSoundExplosion(indie::components::Bo
     else if (typeBomb == 4) {
         soundPath = "bomb_sexy_sound";
     }
-    else {
-        //TODO CREATE EXCEPTION
-        std::cout << "throw error : unknown type bomb" << std::endl;
-    }
+    else
+        throw indie::exceptions::BombException("Unknow Type Bomb.", "indie::systems::BombManagerSystem::playSoundExplosion");
     if (soundPath == "")
-        return; // TODO THROW EXCEPTION
+        throw indie::exceptions::BombException("Unknow sound Path.", "indie::systems::BombManagerSystem::playSoundExplosion");
     auto soundBomb = componentMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>(soundPath, components::SoundComponent::SoundType::EFFECT);
     soundBomb->setIsPaused(false);
+    componentMusic->assignComponent<components::DestroyOnTime>();
 }
 
 void indie::systems::BombManagerSystem::setNumberBombPlace(const int &newNumberBombPlace,const indie::components::PlayerType &newPlayerType)
@@ -216,27 +261,19 @@ void indie::systems::BombManagerSystem::removeBombPlace(indie::components::Playe
 
 void indie::systems::BombManagerSystem::shakeBomb(jf::components::ComponentHandler<indie::components::Bomb> bomb)
 {
-    ECSWrapper ecs;
-    int time = 0;
 
-    auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
-    time = bomb->getTimeBeforeExplose();
-    if (time % 5 == 0 && time > 15)
-        bombTr->setScale({7, 7, 7});
-    else if (time > 15)
-        bombTr->setScale({8, 8, 8});
-    if (time <= 15 && time % 2 == 0)
-        bombTr->setScale({7, 7, 7});
-    else if (time <= 15)
-        bombTr->setScale({8, 8, 8});
 }
 
 void indie::systems::BombManagerSystem::handleCollide(jf::components::ComponentHandler<indie::components::Bomb> bomb)
 {
+    ECSWrapper ecs;
     auto bombTr = bomb->getEntity()->getComponent<indie::components::Transform>();
     indie::maths::Vector3D initialVect = {bombTr->getPosition().x, bombTr->getPosition().y, bombTr->getPosition().z};
     indie::maths::Vector3D vect = initialVect;
 
+    /* check pos bomb side */
+
+    checkIsCollide(initialVect);
 
     /* check in right side */
     for (int i = 0 ; i < bomb->getStrength() ; ++i) {
@@ -308,10 +345,12 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
     auto entitiesWithCollider = ecs.entityManager.getEntitiesWith<components::BoxCollider>();
 
     indie::maths::Vector3D positionHitBox = {vect.x, vect.y, vect.z};
-    indie::maths::Vector3D scaleHitBox = {0, 0, 0};
+    indie::maths::Vector3D scaleHitBox = {3, 3, 3};
     indie::maths::Vector3D rotationHitBox = {0, 0, 0};
 
     indie::maths::OBB hitBoxOBB(positionHitBox, scaleHitBox, indie::maths::Matrix3::Rotation(rotationHitBox.x, rotationHitBox.y, rotationHitBox.z));
+
+    int ret = 0;
 
     for (auto &entity : entitiesWithCollider) {
 
@@ -332,24 +371,36 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
         indie::maths::OBB obb(position + collider->getOffset(), scale * collider->getSize(), maths::Matrix3::Rotation(rotation.x, rotation.y, rotation.z));
 
         if (obb.collides(hitBoxOBB)) {
-            if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER)) || ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))) {
-                return 1;
+            if ((collider->getLayer() & UNBREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~UNBREAKABLE_BLOCK_LAYER))
+                ret = ret != 1 ? 1 : ret;
+            else if (((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))) {
+                collider->getEntity()->getComponent<indie::components::Bomb>()->setTimeBeforeExplode(0);
+                ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & BREAKABLE_BLOCK_LAYER) && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER)) {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
-                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({vect, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
-                return 2;
-            }
-            else if ((collider->getLayer() & PLAYER_LAYER)) {
-                std::cout << "PLAYER DEAD !!" << entity->getName() << std::endl; // TODO KILL PLAYER
-                return 0;
-            }
-            else {
+                ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({position, components::BonusSpawner::BONUS_SPAWNER_T_RANDOM, components::BONUS_T_NB});
+                auto componentBoxMusic = ecs.entityManager.createEntity("soundBox");
+                auto BoxSound = componentBoxMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("crate_break_sound", components::SoundComponent::SoundType::EFFECT);
+                BoxSound->setIsPaused(false);
+                componentBoxMusic->assignComponent<components::DestroyOnTime, float>(5);
+                ret = ret == 0 ? 2 : ret;
+            } else if ((collider->getLayer() & PLAYER_LAYER)) {
+                auto componentDeathMusic = ecs.entityManager.createEntity("soundDeath");
+                auto DeathSound = componentDeathMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("player_die_sound", components::SoundComponent::SoundType::EFFECT);
+                DeathSound->setIsPaused(false);
+                componentDeathMusic->assignComponent<components::DestroyOnTime, float>(3);
+                auto playerLiveComponent = entity->getComponent<components::PlayerAlive>();
+                if (playerLiveComponent.isValid()) {
+                    playerLiveComponent->setLives(playerLiveComponent->getLives() - 1);
+                } else {
+                    std::cerr << "Player " << entity->getName() << " was hit by a bomb but has no component PlayerAlive" << std::endl;
+                }
+            } else {
                 ecs.entityManager.safeDeleteEntity(entity->getID());
-                return 0;
             }
         }
     }
-    return 0;
+    return ret;
 }
 
 bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D vect)
@@ -384,6 +435,8 @@ bool indie::systems::BombManagerSystem::checkBombPlace(indie::maths::Vector3D ve
 
         if (obb.collides(hitBoxOBB)) {
             if ((collider->getLayer() & BOMB_LAYER) && !(collider->getLayer() & ~BOMB_LAYER))
+                return false;
+            else if (collider->getLayer() & BREAKABLE_BLOCK_LAYER && !(collider->getLayer() & ~BREAKABLE_BLOCK_LAYER))
                 return false;
         }
     }

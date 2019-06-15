@@ -10,8 +10,8 @@
     </entity>
     <entity name="logo">
         <component type="Transform">
-            <argument name="position" value="250, -40, 0"/>
-            <argument name="scale" value="1051, 50, 0"/>
+            <argument name="position" value="250, -40, 10"/>
+            <argument name="scale" value="1051, 50, -10"/>
         </component>
         <component type="Image">
             <argument name="fileName" value="logo"/>
@@ -66,6 +66,14 @@
         </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+    <entity name="music">
+        <component type="Sound">
+            <argument name="fileName" value="music_title"/>
+            <argument name="type" value="MUSIC"/>
+            <argument name="playLooped" value="true"/>
+            <argument name="startPaused" value="false"/>
         </component>
     </entity>
 </scene>

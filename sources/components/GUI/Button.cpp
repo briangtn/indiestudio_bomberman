@@ -23,7 +23,9 @@ indie::components::Button::Button(
         _textureNode(nullptr),
         _texturePath(texturePath),
         _onClicked(nullptr),
-        _onHovered(nullptr)
+        _onHovered(nullptr),
+        _useAlpha(false),
+        _drawBorder(true)
 {
     ECSWrapper ecs;
 
@@ -116,4 +118,36 @@ onHoverFuncPtr indie::components::Button::getOnHovered() const
 void indie::components::Button::setOnHovered(onHoverFuncPtr func)
 {
     _onHovered = func;
+}
+
+bool indie::components::Button::isUseAlpha() const
+{
+    return _useAlpha;
+}
+
+void indie::components::Button::setUseAlpha(bool useAlpha)
+{
+    _useAlpha = useAlpha;
+}
+
+bool indie::components::Button::isDrawBorder() const
+{
+    return _drawBorder;
+}
+
+void indie::components::Button::setDrawBorder(bool drawBorder)
+{
+    _drawBorder = drawBorder;
+}
+
+indie::components::Button &indie::components::Button::operator>>(std::ostream &file)
+{
+    file << R"(        <component type="Button">)" << std::endl;
+    file << R"(            <argument name="text" value=")" << _text << R"("/>)" << std::endl;
+    file << R"(            <argument name="id" value=")" << _id << R"("/>)" << std::endl;
+    if (!_texturePath.empty()) {
+        file << R"(            <argument name="textureFileName" value=")" << _texturePath << R"("/>)" << std::endl;
+    }
+    file << "        </component>" << std::endl;
+    return *this;
 }

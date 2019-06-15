@@ -41,6 +41,8 @@ namespace indie {
                     int _id = -1);
             ~Text();
 
+            Text &operator>>(std::ostream &file);
+
             const std::string &getText() const;
             void setText(const std::string &text);
 
@@ -70,6 +72,9 @@ namespace indie {
             VerticalAlignement _verticalAlignement;
             jf::internal::ID _eventCloseID;
         };
+
+        std::ostream &operator<<(std::ostream &file, Text::HorizontalAlignement alignement);
+        std::ostream &operator<<(std::ostream &file, Text::VerticalAlignement alignement);
     }
 }
 

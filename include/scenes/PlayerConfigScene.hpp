@@ -19,7 +19,8 @@ namespace indie {
         enum PlayerControllerType : int {
             INPUT_EXIST = 0,
             INPUT_CONFIG = 1,
-            AI = 2
+            AI = 2,
+            NONE = 3,
         };
 
         struct PlayerSettings {
@@ -43,6 +44,8 @@ namespace indie {
             static void to(PlayerControllerType controllerType, int id);
             static void setValid(bool valid, int id);
             static void onWaitForInput(int id);
+            static void updatePlayButton();
+            static void removeListeners(PlayerSettings &settings);
 
         public:
             void onStart() override;
