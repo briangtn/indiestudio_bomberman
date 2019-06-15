@@ -42,15 +42,29 @@ void indie::scenes::NewGameScene::onStart()
 {
     indie::Map::generateMap(mapWidth, mapHeight, 421, false);
     ECSWrapper ecs;
-    ecs.systemManager.getSystem<systems::MovementSystem>().setMapSize({static_cast<float>(mapWidth), static_cast<float>(mapHeight)});
-    auto p1 = spawnBlack();
-    assignSpecificComponents(p1, PlayerConfigScene::playersSettings[0].controllerType);
-    auto p2 = spawnBlue();
-    assignSpecificComponents(p2, PlayerConfigScene::playersSettings[1].controllerType);
-    auto p3 = spawnWhite();
-    assignSpecificComponents(p3, PlayerConfigScene::playersSettings[2].controllerType);
-    auto p4 = spawnYellow();
-    assignSpecificComponents(p4, PlayerConfigScene::playersSettings[3].controllerType);
+    ecs.systemManager.getSystem<systems::MovementSystem>().setMapSize(
+        {static_cast<float>(mapWidth), static_cast<float>(mapHeight)});
+
+    for (int i = 0; i < 4; i++) {
+        if (PlayerConfigScene::playersSettings[i].controllerType == NONE)
+            continue;
+        jf::entities::EntityHandler p;
+        switch (i) {
+            case 0:
+                p = spawnBlack();
+                break;
+            case 1:
+                p = spawnBlue();
+                break;
+            case 2:
+                p = spawnWhite();
+                break;
+            case 3:
+                p = spawnYellow();
+                break;
+        }
+        assignSpecificComponents(p, PlayerConfigScene::playersSettings[i].controllerType);
+    }
     spawnCamera();
     auto entity = ecs.entityManager.createEntity("sound");
     auto component = entity->assignComponent<components::SoundComponent>("music_battle", components::SoundComponent::MUSIC);

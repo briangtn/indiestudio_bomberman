@@ -89,15 +89,11 @@ void indie::scenes::PlayerConfigScene::onStart()
     buttonStartComponent->setVisible(false);
 
     buttonStartComponent->setOnClicked([](components::Button *btn){
-        for (auto setting : playersSettings) {
-            if (!setting.isValid)
-                return;
-        }
         int i = 1;
         for (auto setting : playersSettings) {
             std::string iStr = std::to_string(i);
 
-            if (setting.controllerType != AI)
+            if (setting.controllerType != AI && setting.controllerType != NONE)
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
