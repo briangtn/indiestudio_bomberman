@@ -91,14 +91,14 @@ void indie::scenes::Scene::onStart()
         loadSaveButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             auto transform = button->getEntity()->getComponent<indie::components::Transform>();
             if (isHovered) {
-                button->setTexturePath("button_new_game_hovered");
+                button->setTexturePath("button_load_game_hovered");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x - 10,
                     transform->getPosition().y,
                     transform->getPosition().z
                 }));
             } else {
-                button->setTexturePath("button_new_game");
+                button->setTexturePath("button_load_game");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x + 10,
                     transform->getPosition().y,

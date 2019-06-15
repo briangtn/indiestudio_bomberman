@@ -108,6 +108,8 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["button_exit_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_exit_hovered.png";
     _currentAssets["button_new_game"] = _texturePacks[texturePackName] + "textures/gui/button_new_game.png";
     _currentAssets["button_new_game_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_new_game_hovered.png";
+    _currentAssets["button_load_game"] = _texturePacks[texturePackName] + "textures/gui/button_load_game.png";
+    _currentAssets["button_load_game_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_load_game_hovered.png";
     _currentAssets["button_settings"] = _texturePacks[texturePackName] + "textures/gui/button_settings.png";
     _currentAssets["button_settings_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_settings_hovered.png";
     _currentAssets["play_button"] = _texturePacks[texturePackName] + "textures/gui/play_button.png";
