@@ -11,7 +11,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::components::PlayerAlive::PlayerAlive(jf::entities::Entity &entity, int lives)
-    : Component(entity), _lives(lives)
+    : Component(entity), _lives(lives), _markedAsDead(false)
 {
     EMIT_CREATE(PlayerAlive);
 }

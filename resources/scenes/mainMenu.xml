@@ -8,47 +8,58 @@
         <component type="Camera">
         </component>
     </entity>
+    <entity name="logo">
+        <component type="Transform">
+            <argument name="position" value="250, -40, 10"/>
+            <argument name="scale" value="1051, 50, -10"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="logo"/>
+            <argument name="alphaChannel" value="true"/>
+        </component>
+    </entity>
     <entity name="backgroundImage">
         <component type="Transform">
-            <argument name="position" value="0,0,0"/>
+            <argument name="position" value="0, 0,0"/>
         </component>
         <component type="Image">
             <argument name="fileName" value="default_menu_background"/>
         </component>
     </entity>
-
-    <entity name="music">
-        <component type="Sound">
-            <argument name="fileName" value="music_title"/>
-            <argument name="type" value="MUSIC"/>
-            <argument name="playLooped" value="true"/>
-            <argument name="startPaused" value="false"/>
-        </component>
-    </entity>
-
-    <entity name="mainText">
+    <entity name="startButton">
         <component type="Transform">
-            <argument name="position" value="0,0,0"/>
-            <argument name="scale" value="1280,720,0"/>
+            <argument name="position" value="365,300,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="1308,75,0"/>
         </component>
-        <component type="Text">
-            <argument name="text" value="THE BOMBERMAN"/>
-            <argument name="color" value="255, 255, 0, 0"/>
-            <argument name="horizontalAlignement" value="CENTER"/>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_new_game"/>
+            <argument name="id" value="1"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
         </component>
     </entity>
-    <entity name="startButton">
+    <entity name="loadSaveButton">
         <component type="Transform">
-            <argument name="position" value="365,270,0"/> <!-- (720 / 2) - 80 - 10 -->
-            <argument name="scale" value="500,80,0"/>
+            <argument name="position" value="365,400,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="Start game"/>
-            <argument name="textureFileName" value="default_button_texture"/>
-            <argument name="id" value="1"/>
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_new_game"/>
+            <argument name="id" value="2"/>
+        </component>
+    </entity>
+    <entity name="settingsButton">
+        <component type="Transform">
+            <argument name="position" value="365,500,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="1308,75,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_settings"/>
+            <argument name="id" value="3"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
@@ -56,16 +67,24 @@
     </entity>
     <entity name="closeButton">
         <component type="Transform">
-            <argument name="position" value="365,370,0"/> <!-- (720 / 2) + 10 -->
-            <argument name="scale" value="500,80,0"/>
+            <argument name="position" value="365,600,0"/> <!-- (720 / 2) + 10 -->
+            <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="Close window"/>
-            <argument name="textureFileName" value="default_button_texture"/>
-            <argument name="id" value="2"/>
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_exit"/>
+            <argument name="id" value="4"/>
         </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
+        </component>
+    </entity>
+    <entity name="music">
+        <component type="Sound">
+            <argument name="fileName" value="music_title"/>
+            <argument name="type" value="MUSIC"/>
+            <argument name="playLooped" value="true"/>
+            <argument name="startPaused" value="false"/>
         </component>
     </entity>
 </scene>

@@ -43,20 +43,11 @@ void indie::systems::BombManagerSystem::onUpdate(const std::chrono::nanoseconds 
     ecs.entityManager.applyToEach<components::PlayerController>(
         [&, elapsedTimeAsSeconds](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::PlayerController> pc) {
 
-            if (pc->isPlacingBomb()) {
-                pc->setBombPlacementTime(pc->getBombPlacementTime() - elapsedTimeAsSeconds);
-                if (pc->getBombPlacementTime() <= 0.0f) {
-                    pc->setBombPlacementTime(0.0f);
-                    pc->setIsPlacingBomb(false);
-                }
-            }
-
             if (indie::InputManager::IsKeyPressed(pc->getBombPlacementButton()) && !pc->isPlacingBomb()) {
-                pc->setIsPlacingBomb(true);
-                createBomb(entity);
-                pc->setBombPlacementTime(pc->getBombPlacementDuration());
                 auto animator = entity->getComponent<components::Animator>();
                 if (animator.isValid()) {
+                    pc->setIsPlacingBomb(true);
+                    createBomb(entity);
                     animator->setCurrentAnimation(pc->getBombPlacementAnimation());
                 }
             }
