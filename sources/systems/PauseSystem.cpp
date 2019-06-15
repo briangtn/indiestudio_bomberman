@@ -7,6 +7,7 @@
 
 /* Created the 15/06/2019 at 18:04 by brian */
 
+#include "components/GUI/Font.hpp"
 #include "ECSWrapper.hpp"
 #include "input/InputManager.hpp"
 #include "systems/MovementSystem.hpp"
@@ -55,8 +56,10 @@ void indie::systems::PauseSystem::onStart()
     auto backToGameButtonEntity = ecs.entityManager.createEntity("backToGameButton");
     auto backToGameButtonComponent = backToGameButtonEntity->assignComponent<components::Button>("Back to game", 1);
     auto backToGameButtonTransform = backToGameButtonEntity->assignComponent<components::Transform>();
+    auto backToGameFont = backToGameButtonEntity->assignComponent<components::Font>("default_font");
     backToGameButtonTransform->setPosition(startPos);
     backToGameButtonTransform->setScale(buttonSize);
+    backToGameButtonComponent->setTexturePath("button_default");
 
     backToGameButtonComponent->setOnClicked([](components::Button *self) {
         ECSWrapper ecs;
@@ -66,8 +69,10 @@ void indie::systems::PauseSystem::onStart()
     auto saveEntity = ecs.entityManager.createEntity("saveButton");
     auto saveComponent = saveEntity->assignComponent<components::Button>("Save and quit", 2);
     auto saveTransform = saveEntity->assignComponent<components::Transform>();
+    auto saveFont = saveEntity->assignComponent<components::Font>("default_font");
     saveTransform->setPosition({startPos.x, startPos.y + buttonSize.y + gapSize, 0});
     saveTransform->setScale(buttonSize);
+    saveComponent->setTexturePath("button_default");
 
     saveComponent->setOnClicked([](components::Button *self) {
         ECSWrapper ecs;
@@ -82,8 +87,10 @@ void indie::systems::PauseSystem::onStart()
     auto quitEntity = ecs.entityManager.createEntity("quitButton");
     auto quitComponent = quitEntity->assignComponent<components::Button>("Quit without saving", 3);
     auto quitTransform = quitEntity->assignComponent<components::Transform>();
+    auto quitFont = quitEntity->assignComponent<components::Font>("default_font");
     quitTransform->setPosition({startPos.x, startPos.y + buttonSize.y * 2 + gapSize * 2, 0});
     quitTransform->setScale(buttonSize);
+    quitComponent->setTexturePath("button_default");
 
     quitComponent->setOnClicked([](components::Button *self){
         ECSWrapper ecs;
