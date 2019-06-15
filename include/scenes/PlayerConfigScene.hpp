@@ -36,9 +36,12 @@ namespace indie {
             static std::vector<PlayerSettings> playersSettings;
             static std::map<PlayerControllerType, std::string> controllerTypeImages;
             static std::map<std::string, Controller> controllers;
+            static std::string sceneToLoad;
+            static bool onlyHumans;
 
             static void InitControllers();
             static void UpdateConfigController();
+            static void Load(std::string callbackScene = "test", bool humans = false);
         private:
             static void from(PlayerControllerType controllerType, int id);
             static void to(PlayerControllerType controllerType, int id);

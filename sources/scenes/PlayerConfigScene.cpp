@@ -35,6 +35,24 @@ std::map<indie::scenes::PlayerControllerType, std::string> indie::scenes::Player
 };
 
 std::map<std::string, indie::Controller> indie::scenes::PlayerConfigScene::controllers;
+std::string indie::scenes::PlayerConfigScene::sceneToLoad = "test";
+bool indie::scenes::PlayerConfigScene::onlyHumans = false;
+
+
+void indie::scenes::PlayerConfigScene::Load(std::string callbackScene, bool humans)
+{
+    sceneToLoad = callbackScene;
+    onlyHumans = humans;
+    if (onlyHumans) {
+        playersSettings = {
+            {INPUT_EXIST, controllers.at("IndieDefaultKeyboard"), true},
+            {INPUT_EXIST, controllers.at("IndieDefaultKeyboard"), true},
+            {INPUT_EXIST, controllers.at("IndieDefaultKeyboard"), true},
+            {INPUT_EXIST, controllers.at("IndieDefaultKeyboard"), true},
+        };
+    }
+    SceneManager::safeChangeScene("playerConfig");
+}
 
 void indie::scenes::PlayerConfigScene::InitControllers()
 {
@@ -81,6 +99,7 @@ void indie::scenes::PlayerConfigScene::onStart()
     buttonStartComponent->setUseAlpha(true);
     buttonStartComponent->setDrawBorder(false);
     buttonStartComponent->setVisible(false);
+    updatePlayButton();
 
     buttonStartComponent->setOnClicked([](components::Button *btn){
         for (auto setting : playersSettings) {
@@ -95,7 +114,7 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        indie::scenes::SceneManager::safeChangeScene("test");
+        indie::scenes::SceneManager::safeChangeScene(sceneToLoad);
     });
 
     auto buttonReloadEntity = ecs.entityManager.createEntity("buttonReload");
@@ -193,7 +212,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
         switch (playersSettings[id - 1].controllerType) {
             case INPUT_EXIST:
                 from(INPUT_EXIST, id);
-                to(NONE, id);
+                to((onlyHumans ? INPUT_CONFIG : NONE), id);
                 break;
             case INPUT_CONFIG:
                 from(INPUT_CONFIG, id);
@@ -224,7 +243,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
                 break;
             case INPUT_CONFIG:
                 from(INPUT_CONFIG, id);
-                to(AI, id);
+                to((onlyHumans ? INPUT_EXIST : AI), id);
                 break;
             case AI:
                 from(AI, id);
