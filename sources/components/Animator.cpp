@@ -123,6 +123,7 @@ void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneN
     if (!doesAnimationExist(_currentAnimation))
         throw exceptions::AnimatorException(_currentAnimation + " does not exist");
     auto &data = _animations.at(_currentAnimation);
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }

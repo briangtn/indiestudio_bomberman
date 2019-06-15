@@ -25,7 +25,6 @@
 #include "components/PlayerController.hpp"
 #include "systems/BonusSystem.hpp"
 #include "events/AskingForBonusSpawnEvent.hpp"
-#include <unistd.h>
 
 namespace indie {
     namespace systems {

@@ -137,6 +137,7 @@ indie::Parser::Parser()
         {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
         {(L"Image"), &createImage},
+        {(L"LeaderBoard"), &createLeaderBoard},
         {(L"Particle"), &createParticle},
         {(L"PlayerAlive"), &createPlayerAlive},
         {(L"PlayerController"), &createPlayerController},
@@ -1043,15 +1044,11 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
             {"walkingAnimation", ""},
             {"isWalking",        ""},
             {"isTaunting",       ""},
-            {"tauntTime",        ""},
             {"tauntButton",      ""},
             {"tauntAnimation",   ""},
-            {"tauntDuration",    ""},
             {"isPlacingBomb",    ""},
-            {"bombTime",         ""},
             {"bombButton",       ""},
             {"bombAnimation",    ""},
-            {"bombDuration",     ""},
             {"bombForce",        ""},
             {"maxBomb",          ""},
             {"playerType",       ""}
@@ -1118,32 +1115,20 @@ void indie::Parser::createPlayerController(jf::entities::EntityHandler &entity, 
     if (!args["isTaunting"].empty()) {
         component->setIsTaunting(getBool(args["isTaunting"], fileName, line));
     }
-    if (!args["tauntTime"].empty()) {
-        component->setTauntTime(std::stof(args["tauntTime"]));
-    }
     if (!args["tauntButton"].empty()) {
         component->setTauntButton(args["tauntButton"]);
     }
     if (!args["tauntAnimation"].empty()) {
         component->setTauntAnimation(args["tauntAnimation"]);
     }
-    if (!args["tauntDuration"].empty()) {
-        component->setTauntDuration(std::stof(args["tauntDuration"]));
-    }
     if (!args["isPlacingBomb"].empty()) {
         component->setIsPlacingBomb(getBool(args["isPlacingBomb"], fileName, line));
-    }
-    if (!args["bombTime"].empty()) {
-        component->setBombPlacementTime(std::stof(args["bombTime"]));
     }
     if (!args["bombButton"].empty()) {
         component->setBombPlacementButton(args["bombButton"]);
     }
     if (!args["bombAnimation"].empty()) {
         component->setBombPlacementAnimation(args["bombAnimation"]);
-    }
-    if (!args["bombDuration"].empty()) {
-        component->setBombPlacementDuration(std::stof(args["bombDuration"]));
     }
     if (!args["bombForce"].empty()) {
         component->setBombForce(std::stoi(args["bombForce"]));

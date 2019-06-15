@@ -46,7 +46,7 @@ target_link_libraries(bomberman
 		Boost::filesystem
 		)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -iquote ${PROJECT_SOURCE_DIR}/lib/jfecs/include -iquote ${PROJECT_SOURCE_DIR}/include")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${PROJECT_SOURCE_DIR}/lib/jfecs/include -I ${PROJECT_SOURCE_DIR}/include")
 if (UNIX)
 	target_link_libraries(bomberman GL Xxf86vm Xext X11 Xcursor)
 endif (UNIX)

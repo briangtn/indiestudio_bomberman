@@ -17,6 +17,8 @@
 #include "scenes/ControllerConfigScene.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "scenes/SceneManager.hpp"
+#include "scenes/EndScene.hpp"
+#include "scenes/LoadSaveScene.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -43,6 +45,7 @@ int runBomberman()
     }
 
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
+    ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowCaption("Indie Studio - Bomberman");
     indie::scenes::PlayerConfigScene::InitControllers();
 
     auto &assetsManager = indie::AssetsManager::getInstance();
@@ -54,6 +57,8 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
+    indie::scenes::SceneManager::addSingleScene("endScene", new indie::scenes::EndScene());
+    indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {
@@ -63,12 +68,6 @@ int runBomberman()
     });
 
     indie::scenes::SceneManager::changeScene("mainMenu");
-
-    auto id = ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_R>>(nullptr, [](void *null, auto e) {
-        if (e.wasPressed)
-            indie::scenes::SceneManager::changeScene("mainMenu");
-    });
-    listeners.push_back(id);
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
         ECSWrapper ecs;
