@@ -16,7 +16,7 @@
 
 indie::AssetsManager::AssetsManager()
     :   _currentAssets(),
-        _texturePacks()
+        _resourcesPacks()
 {
 
 }
@@ -28,110 +28,120 @@ indie::AssetsManager &indie::AssetsManager::getInstance()
     return instance;
 }
 
-int indie::AssetsManager::addTexturePack(const std::string &texturePackName, const std::string &path)
+int indie::AssetsManager::addResourcesPack(const std::string &texturePackName, const std::string &path)
 {
     boost::filesystem::path fp(path);
 
     if (boost::filesystem::is_directory(fp))
-        _texturePacks.emplace(texturePackName, path);
+        _resourcesPacks.emplace(texturePackName, path);
     else
         throw indie::exceptions::AssetsManagerExceptions("Texture pack doesn't exist : " + texturePackName);
     return 0;
 }
 
-int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
+void indie::AssetsManager::fetchResourcesPacks()
 {
-    if (_texturePacks.find(texturePackName) == _texturePacks.end())
+    for (const auto & entry : boost::filesystem::directory_iterator(RESOURCES_PACK_PATH)) {
+        std::string nativePath = entry.path().native();
+        std::string fullPath = entry.path().native() + "/";
+        std::string resourcePackName = nativePath.erase(0, std::string(RESOURCES_PACK_PATH).length());
+        addResourcesPack(resourcePackName, fullPath);
+    }
+}
+
+int indie::AssetsManager::loadResourcesPack(const std::string &texturePackName)
+{
+    if (_resourcesPacks.find(texturePackName) == _resourcesPacks.end())
         throw indie::exceptions::AssetsManagerExceptions(texturePackName + " texture pack can't be loaded");
 
     _currentAssets.empty();
-    _currentAssets["player_model"] = _texturePacks[texturePackName] + "models/player.b3d";
-    _currentAssets["player_texture_black"] = _texturePacks[texturePackName] + "textures/players/black.png";
-    _currentAssets["player_texture_blue"] = _texturePacks[texturePackName] + "textures/players/blue.png";
-    _currentAssets["player_texture_pink"] = _texturePacks[texturePackName] + "textures/players/pink.png";
-    _currentAssets["player_texture_red"] = _texturePacks[texturePackName] + "textures/players/red.png";
-    _currentAssets["player_texture_white"] = _texturePacks[texturePackName] + "textures/players/white.png";
-    _currentAssets["player_texture_yellow"] = _texturePacks[texturePackName] + "textures/players/yellow.png";
-    _currentAssets["player_die_sound"] = _texturePacks[texturePackName] + "sounds/players/player_die.ogg";
+    _currentAssets["player_model"] = _resourcesPacks[texturePackName] + "models/player.b3d";
+    _currentAssets["player_texture_black"] = _resourcesPacks[texturePackName] + "textures/players/black.png";
+    _currentAssets["player_texture_blue"] = _resourcesPacks[texturePackName] + "textures/players/blue.png";
+    _currentAssets["player_texture_pink"] = _resourcesPacks[texturePackName] + "textures/players/pink.png";
+    _currentAssets["player_texture_red"] = _resourcesPacks[texturePackName] + "textures/players/red.png";
+    _currentAssets["player_texture_white"] = _resourcesPacks[texturePackName] + "textures/players/white.png";
+    _currentAssets["player_texture_yellow"] = _resourcesPacks[texturePackName] + "textures/players/yellow.png";
+    _currentAssets["player_die_sound"] = _resourcesPacks[texturePackName] + "sounds/players/player_die.ogg";
 
-    _currentAssets["unbreakable_wall_model"] = _texturePacks[texturePackName] + "models/unbreakable_wall.obj";
-    _currentAssets["unbreakable_wall_texture"] = _texturePacks[texturePackName] + "textures/unbreakable_wall.png";
-    _currentAssets["breakable_wall_model"] = _texturePacks[texturePackName] + "models/breakable_wall.obj";
-    _currentAssets["breakable_wall_texture"] = _texturePacks[texturePackName] + "textures/breakable_wall.png";
-    _currentAssets["floor_model"] = _texturePacks[texturePackName] + "models/floor.obj";
-    _currentAssets["floor_texture"] = _texturePacks[texturePackName] + "textures/floor.png";
+    _currentAssets["unbreakable_wall_model"] = _resourcesPacks[texturePackName] + "models/unbreakable_wall.obj";
+    _currentAssets["unbreakable_wall_texture"] = _resourcesPacks[texturePackName] + "textures/unbreakable_wall.png";
+    _currentAssets["breakable_wall_model"] = _resourcesPacks[texturePackName] + "models/breakable_wall.obj";
+    _currentAssets["breakable_wall_texture"] = _resourcesPacks[texturePackName] + "textures/breakable_wall.png";
+    _currentAssets["floor_model"] = _resourcesPacks[texturePackName] + "models/floor.obj";
+    _currentAssets["floor_texture"] = _resourcesPacks[texturePackName] + "textures/floor.png";
 
-    _currentAssets["bomb_placed_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_placed.ogg";
+    _currentAssets["bomb_placed_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_placed.ogg";
 
-    _currentAssets["bomb_normal_model"] = _texturePacks[texturePackName] + "models/bombs/bomb_normal.b3d";
-    _currentAssets["bomb_normal_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_normal.png";
-    _currentAssets["bomb_normal_particle_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_normal_particle.png";
-    _currentAssets["bomb_normal_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_normal.ogg";
+    _currentAssets["bomb_normal_model"] = _resourcesPacks[texturePackName] + "models/bombs/bomb_normal.b3d";
+    _currentAssets["bomb_normal_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_normal.png";
+    _currentAssets["bomb_normal_particle_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_normal_particle.png";
+    _currentAssets["bomb_normal_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_normal.ogg";
 
-    _currentAssets["bomb_plasma_model"] = _texturePacks[texturePackName] + "models/bombs/bomb_plasma.b3d";
-    _currentAssets["bomb_plasma_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_plasma.png";
-    _currentAssets["bomb_plasma_particle_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_plasma_particle.png";
-    _currentAssets["bomb_plasma_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_plasma.ogg";
+    _currentAssets["bomb_plasma_model"] = _resourcesPacks[texturePackName] + "models/bombs/bomb_plasma.b3d";
+    _currentAssets["bomb_plasma_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_plasma.png";
+    _currentAssets["bomb_plasma_particle_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_plasma_particle.png";
+    _currentAssets["bomb_plasma_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_plasma.ogg";
 
-    _currentAssets["bomb_sexy_model"] = _texturePacks[texturePackName] + "models/bombs/bomb_sexy.b3d";
-    _currentAssets["bomb_sexy_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_sexy.png";
-    _currentAssets["bomb_sexy_particle_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_sexy_particle.png";
-    _currentAssets["bomb_sexy_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_sexy.ogg";
+    _currentAssets["bomb_sexy_model"] = _resourcesPacks[texturePackName] + "models/bombs/bomb_sexy.b3d";
+    _currentAssets["bomb_sexy_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_sexy.png";
+    _currentAssets["bomb_sexy_particle_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_sexy_particle.png";
+    _currentAssets["bomb_sexy_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_sexy.ogg";
 
-    _currentAssets["bomb_water_model"] = _texturePacks[texturePackName] + "models/bombs/bomb_water.b3d";
-    _currentAssets["bomb_water_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_water.png";
-    _currentAssets["bomb_water_particle_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_water_particle.png";
-    _currentAssets["bomb_water_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_water.ogg";
+    _currentAssets["bomb_water_model"] = _resourcesPacks[texturePackName] + "models/bombs/bomb_water.b3d";
+    _currentAssets["bomb_water_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_water.png";
+    _currentAssets["bomb_water_particle_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_water_particle.png";
+    _currentAssets["bomb_water_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_water.ogg";
 
-    _currentAssets["bomb_fire_model"] = _texturePacks[texturePackName] + "models/bombs/bomb_fire.b3d";
-    _currentAssets["bomb_fire_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_fire.png";
-    _currentAssets["bomb_fire_particle_texture"] = _texturePacks[texturePackName] + "textures/bombs/bomb_fire_particle.png";
-    _currentAssets["bomb_fire_sound"] = _texturePacks[texturePackName] + "sounds/bombs/bomb_fire.ogg";
+    _currentAssets["bomb_fire_model"] = _resourcesPacks[texturePackName] + "models/bombs/bomb_fire.b3d";
+    _currentAssets["bomb_fire_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_fire.png";
+    _currentAssets["bomb_fire_particle_texture"] = _resourcesPacks[texturePackName] + "textures/bombs/bomb_fire_particle.png";
+    _currentAssets["bomb_fire_sound"] = _resourcesPacks[texturePackName] + "sounds/bombs/bomb_fire.ogg";
 
-    _currentAssets["bonus_bombup_sound"] = _texturePacks[texturePackName] + "sounds/bonus/bonus_bombup.ogg";
-    _currentAssets["bonus_fireup_sound"] = _texturePacks[texturePackName] + "sounds/bonus/bonus_fireup.ogg";
-    _currentAssets["bonus_speedup_sound"] = _texturePacks[texturePackName] + "sounds/bonus/bonus_speedup.ogg";
-    _currentAssets["bonus_wallpass_sound"] = _texturePacks[texturePackName] + "sounds/bonus/bonus_wallpass.ogg";
+    _currentAssets["bonus_bombup_sound"] = _resourcesPacks[texturePackName] + "sounds/bonus/bonus_bombup.ogg";
+    _currentAssets["bonus_fireup_sound"] = _resourcesPacks[texturePackName] + "sounds/bonus/bonus_fireup.ogg";
+    _currentAssets["bonus_speedup_sound"] = _resourcesPacks[texturePackName] + "sounds/bonus/bonus_speedup.ogg";
+    _currentAssets["bonus_wallpass_sound"] = _resourcesPacks[texturePackName] + "sounds/bonus/bonus_wallpass.ogg";
 
-    _currentAssets["crate_break_sound"] = _texturePacks[texturePackName] + "sounds/crates/crate_break.ogg";
+    _currentAssets["crate_break_sound"] = _resourcesPacks[texturePackName] + "sounds/crates/crate_break.ogg";
 
-    _currentAssets["default_menu_background"] = _texturePacks[texturePackName] + "textures/gui/default_menu_background.png";
-    _currentAssets["default_font"] = _texturePacks[texturePackName] + "fonts/default_font.xml";
-    _currentAssets["default_button_texture"] = _texturePacks[texturePackName] + "textures/gui/default_button.png";
-    _currentAssets["default_particle_texture"] = _texturePacks[texturePackName] + "textures/default_particle.png";
-    _currentAssets["ai_icon"] = _texturePacks[texturePackName] + "textures/gui/ai_icon.png";
-    _currentAssets["input_config_icon"] = _texturePacks[texturePackName] + "textures/gui/input_config_icon.png";
-    _currentAssets["input_exist_icon"] = _texturePacks[texturePackName] + "textures/gui/input_exist_icon.png";
-    _currentAssets["none_icon"] = _texturePacks[texturePackName] + "textures/gui/none_icon.png";
-    _currentAssets["valid_selection_icon"] = _texturePacks[texturePackName] + "textures/gui/valid_selection_icon.png";
-    _currentAssets["button_exit"] = _texturePacks[texturePackName] + "textures/gui/button_exit.png";
-    _currentAssets["button_exit_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_exit_hovered.png";
-    _currentAssets["button_new_game"] = _texturePacks[texturePackName] + "textures/gui/button_new_game.png";
-    _currentAssets["button_new_game_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_new_game_hovered.png";
-    _currentAssets["button_load_game"] = _texturePacks[texturePackName] + "textures/gui/button_load_game.png";
-    _currentAssets["button_load_game_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_load_game_hovered.png";
-    _currentAssets["button_settings"] = _texturePacks[texturePackName] + "textures/gui/button_settings.png";
-    _currentAssets["button_settings_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_settings_hovered.png";
-    _currentAssets["play_button"] = _texturePacks[texturePackName] + "textures/gui/play_button.png";
-    _currentAssets["reload_button"] = _texturePacks[texturePackName] + "textures/gui/reload_button.png";
-    _currentAssets["button_volume_down"] = _texturePacks[texturePackName] + "textures/gui/button_volume_down.png";
-    _currentAssets["button_volume_up"] = _texturePacks[texturePackName] + "textures/gui/button_volume_up.png";
-    _currentAssets["button_back_to_menu"] = _texturePacks[texturePackName] + "textures/gui/button_back_to_menu.png";
-    _currentAssets["button_back_to_menu_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_back_to_menu_hovered.png";
-    _currentAssets["logo"] = _texturePacks[texturePackName] + "textures/gui/logo.png";
+    _currentAssets["default_menu_background"] = _resourcesPacks[texturePackName] + "textures/gui/default_menu_background.png";
+    _currentAssets["default_font"] = _resourcesPacks[texturePackName] + "fonts/default_font.xml";
+    _currentAssets["default_button_texture"] = _resourcesPacks[texturePackName] + "textures/gui/default_button.png";
+    _currentAssets["default_particle_texture"] = _resourcesPacks[texturePackName] + "textures/default_particle.png";
+    _currentAssets["ai_icon"] = _resourcesPacks[texturePackName] + "textures/gui/ai_icon.png";
+    _currentAssets["input_config_icon"] = _resourcesPacks[texturePackName] + "textures/gui/input_config_icon.png";
+    _currentAssets["input_exist_icon"] = _resourcesPacks[texturePackName] + "textures/gui/input_exist_icon.png";
+    _currentAssets["none_icon"] = _resourcesPacks[texturePackName] + "textures/gui/none_icon.png";
+    _currentAssets["valid_selection_icon"] = _resourcesPacks[texturePackName] + "textures/gui/valid_selection_icon.png";
+    _currentAssets["button_exit"] = _resourcesPacks[texturePackName] + "textures/gui/button_exit.png";
+    _currentAssets["button_exit_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_exit_hovered.png";
+    _currentAssets["button_new_game"] = _resourcesPacks[texturePackName] + "textures/gui/button_new_game.png";
+    _currentAssets["button_new_game_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_new_game_hovered.png";
+    _currentAssets["button_load_game"] = _resourcesPacks[texturePackName] + "textures/gui/button_load_game.png";
+    _currentAssets["button_load_game_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_load_game_hovered.png";
+    _currentAssets["button_settings"] = _resourcesPacks[texturePackName] + "textures/gui/button_settings.png";
+    _currentAssets["button_settings_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_settings_hovered.png";
+    _currentAssets["play_button"] = _resourcesPacks[texturePackName] + "textures/gui/play_button.png";
+    _currentAssets["reload_button"] = _resourcesPacks[texturePackName] + "textures/gui/reload_button.png";
+    _currentAssets["button_volume_down"] = _resourcesPacks[texturePackName] + "textures/gui/button_volume_down.png";
+    _currentAssets["button_volume_up"] = _resourcesPacks[texturePackName] + "textures/gui/button_volume_up.png";
+    _currentAssets["button_back_to_menu"] = _resourcesPacks[texturePackName] + "textures/gui/button_back_to_menu.png";
+    _currentAssets["button_back_to_menu_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_back_to_menu_hovered.png";
+    _currentAssets["logo"] = _resourcesPacks[texturePackName] + "textures/gui/logo.png";
 
 
-    _currentAssets["item_bombup_model"] = _texturePacks[texturePackName] + "models/items/item_bombup.b3d";
-    _currentAssets["item_fireup_model"] = _texturePacks[texturePackName] + "models/items/item_fireup.b3d";
-    _currentAssets["item_speedup_model"] = _texturePacks[texturePackName] + "models/items/item_speedup.b3d";
-    _currentAssets["item_wallpass_model"] = _texturePacks[texturePackName] + "models/items/item_wallpass.b3d";
-    _currentAssets["items_texture"] = _texturePacks[texturePackName] + "textures/items.png";
+    _currentAssets["item_bombup_model"] = _resourcesPacks[texturePackName] + "models/items/item_bombup.b3d";
+    _currentAssets["item_fireup_model"] = _resourcesPacks[texturePackName] + "models/items/item_fireup.b3d";
+    _currentAssets["item_speedup_model"] = _resourcesPacks[texturePackName] + "models/items/item_speedup.b3d";
+    _currentAssets["item_wallpass_model"] = _resourcesPacks[texturePackName] + "models/items/item_wallpass.b3d";
+    _currentAssets["items_texture"] = _resourcesPacks[texturePackName] + "textures/items.png";
 
-    _currentAssets["music_battle"] = _texturePacks[texturePackName] + "musics/music_battle.ogg";
-    _currentAssets["music_player_select"] = _texturePacks[texturePackName] + "musics/music_player_select.ogg";
-    _currentAssets["music_result"] = _texturePacks[texturePackName] + "musics/music_result.ogg";
-    _currentAssets["music_title"] = _texturePacks[texturePackName] + "musics/music_title.ogg";
-    _currentAssets["music_win"] = _texturePacks[texturePackName] + "musics/music_win.ogg";
+    _currentAssets["music_battle"] = _resourcesPacks[texturePackName] + "musics/music_battle.ogg";
+    _currentAssets["music_player_select"] = _resourcesPacks[texturePackName] + "musics/music_player_select.ogg";
+    _currentAssets["music_result"] = _resourcesPacks[texturePackName] + "musics/music_result.ogg";
+    _currentAssets["music_title"] = _resourcesPacks[texturePackName] + "musics/music_title.ogg";
+    _currentAssets["music_win"] = _resourcesPacks[texturePackName] + "musics/music_win.ogg";
 
     return (0);
 }
@@ -149,4 +159,9 @@ std::map<std::string, std::string> indie::AssetsManager::getAssets() const
 const std::string &indie::AssetsManager::operator[](const std::string &asset)
 {
     return _currentAssets[asset];
+}
+
+std::map<std::string, std::string> indie::AssetsManager::getResourcesPacks() const
+{
+    return _resourcesPacks;
 }

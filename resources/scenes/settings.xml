@@ -18,11 +18,22 @@
             <argument name="textureFileName" value="button_back_to_menu"/>
             <argument name="id" value="1"/>
         </component>
+    </entity>
+
+    <entity name="resourcesPacksButton">
+        <component type="Transform">
+            <argument name="position" value="400,640,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="367,75,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_back_to_menu"/>
+            <argument name="id" value="5"/>
+        </component>
         <component type="Font">
             <argument name="fileName" value="default_font"/>
         </component>
     </entity>
-
     <entity name="effectVolumeUpButton">
         <component type="Transform">
             <argument name="position" value="725,400,0"/> <!-- (720 / 2) - 80 - 10 -->
