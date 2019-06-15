@@ -7,6 +7,7 @@
 
 /* Created the 15/06/2019 at 00:26 by brian */
 
+#include <regex>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "scenes/LoadSaveScene.hpp"
@@ -57,7 +58,9 @@ void indie::scenes::LoadSaveScene::onStart()
         while (name.find("/") != std::string::npos) {
             name = name.substr(name.find("/") + 1);
         }
-        saves.push_back(name);
+        std::regex regex(".*\\.xml$");
+        if (std::regex_match(name, regex))
+            saves.push_back(name);
     }
     page = 0;
 
@@ -117,7 +120,7 @@ void indie::scenes::LoadSaveScene::createButtons(unsigned int page, std::vector<
 
         std::string name = saves[i];
         buttonComponent->setOnClicked([name](components::Button *btn) {
-            indie::scenes::PlayerConfigScene::Load(name.substr(0, name.find(".")), true);
+            indie::scenes::PlayerConfigScene::Load(name.substr(0, name.find(".xml")), true);
         });
     }
 }

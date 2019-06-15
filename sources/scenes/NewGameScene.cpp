@@ -46,9 +46,7 @@ void indie::scenes::NewGameScene::onStart()
 {
     std::random_device rd;
     std::uniform_int_distribution<int> dist(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-    auto seed = dist(rd);
-    std::cout << "Seed: " << seed << std::endl;
-    indie::Map::generateMap(mapWidth, mapHeight, -2097377204, false);
+    indie::Map::generateMap(mapWidth, mapHeight, dist(rd), false);
     ECSWrapper ecs;
     ecs.systemManager.getSystem<systems::MovementSystem>().setMapSize(
         {static_cast<float>(mapWidth), static_cast<float>(mapHeight)});
@@ -119,8 +117,6 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(bool override, bool s
 
 indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
-    if (!_saveOnExit)
-        return SUCCESS;
     ECSWrapper ecs;
     std::string path(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
 
