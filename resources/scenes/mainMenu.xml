@@ -32,7 +32,7 @@
             <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="."/>
+            <argument name="text" value=" " trimmed="false"/>
             <argument name="textureFileName" value="button_new_game"/>
             <argument name="id" value="1"/>
         </component>
@@ -46,7 +46,7 @@
             <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="."/>
+            <argument name="text" value=" " trimmed="false"/>
             <argument name="textureFileName" value="button_new_game"/>
             <argument name="id" value="2"/>
         </component>
@@ -57,7 +57,7 @@
             <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="."/>
+            <argument name="text" value=" " trimmed="false"/>
             <argument name="textureFileName" value="button_settings"/>
             <argument name="id" value="3"/>
         </component>
@@ -71,7 +71,7 @@
             <argument name="scale" value="1308,75,0"/>
         </component>
         <component type="Button">
-            <argument name="text" value="."/>
+            <argument name="text" value=" " trimmed="false"/>
             <argument name="textureFileName" value="button_exit"/>
             <argument name="id" value="4"/>
         </component>

@@ -110,7 +110,7 @@
             <argument name="textureFileName" value="path/to/background"/>
         </component>
         <component type="Text">
-            <argument name="text" value="I'm a text"/>
+            <argument name="text" value="I'm a text" trimmed="false"/>
             <argument name="horizontalAlignement" value="CENTER"/>
             <argument name="verticalAlignement" value="BOTTOM"/>
             <argument name="color" value="255,255,0,0"/>
