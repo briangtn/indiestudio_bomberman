@@ -11,7 +11,7 @@
 #include "components/MoveToTarget.hpp"
 
 indie::components::MoveToTarget::MoveToTarget(jf::entities::Entity &entity)
-    : Component(entity), _target(), _followTarget(false)
+    : Component(entity), _target(), _followTarget(false), _reachedTarget(true)
 {
     EMIT_CREATE(MoveToTarget);
 }
@@ -29,6 +29,7 @@ const indie::maths::Vector3D &indie::components::MoveToTarget::getTarget() const
 void indie::components::MoveToTarget::setTarget(const indie::maths::Vector3D &target)
 {
     _target = target;
+    _reachedTarget = false;
 }
 
 bool indie::components::MoveToTarget::isFollowTarget() const
@@ -51,11 +52,23 @@ void indie::components::MoveToTarget::setSpeed(float speed)
     _speed = speed;
 }
 
+bool indie::components::MoveToTarget::hasReachedTarget() const
+{
+    return _reachedTarget;
+}
+
+void indie::components::MoveToTarget::setReachedTarget(bool reachedTarget)
+{
+    _reachedTarget = reachedTarget;
+}
+
+
 indie::components::MoveToTarget &indie::components::MoveToTarget::operator>>(std::ostream &file)
 {
     file << R"(        <component type="MoveToTarget">)" << std::endl;
     file << R"(            <argument name="target" value=")" << _target << R"("/>)" << std::endl;
     file << R"(            <argument name="followTarget" value=")" << std::boolalpha << _followTarget << R"("/>)" << std::endl;
+    file << R"(            <argument name="reachedTarget" value=")" << std::boolalpha << _reachedTarget << R"("/>)" << std::endl;
     file << R"(            <argument name="speed" value=")" << _speed << R"("/>)" << std::endl;
     file << R"(        </component>)" << std::endl;
     return *this;

@@ -16,8 +16,9 @@
 #include <fstream>
 #include <random>
 #include <boost/filesystem/operations.hpp>
-#include <events/IrrlichtKeyJustChangedEvent.hpp>
-#include "scenes/SceneManager.hpp"
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
+#include "systems/PauseSystem.hpp"
+#include "events/AskingForSaveEvent.hpp"
 #include "ECSWrapper.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "parser/Parser.hpp"
@@ -36,7 +37,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(true), _saveName("default.xml"), _eventKeyJustPressedID()
+    : _saveOnExit(true), _saveName("default.xml"), _pauseButtonEventID(), _saveEventID()
 {
 
 }
@@ -76,15 +77,20 @@ void indie::scenes::NewGameScene::onStart()
     component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 
-    InputManager::RegisterKey(irr::KEY_KEY_Y);
-    _eventKeyJustPressedID = ecs.eventManager.addListener<NewGameScene, indie::events::IrrlichtKeyJustChangedEvent>(this, [](NewGameScene *self, events::IrrlichtKeyJustChangedEvent e){
-        if (e.pressed && e.keyCode == irr::KEY_KEY_Y) {
-            ECSWrapper ecs;
+    InputManager::RegisterKey(irr::KEY_ESCAPE);
+    _pauseButtonEventID = ecs.eventManager.addListener<void, events::IrrlichtKeyJustChangedEvent>(nullptr, [](void *, events::IrrlichtKeyJustChangedEvent e) {
+        ECSWrapper ecs;
 
-            self->save(true, true);
-            ecs.systemManager.getSystem<systems::LiveSystem>().endGame();
-            SceneManager::safeChangeScene("mainMenu");
+        if (e.keyCode == irr::KEY_ESCAPE && e.pressed) {
+            if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::RUNNING) {
+                ecs.systemManager.stopSystem<systems::PauseSystem>();
+            } else if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::STOPPED || ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::NOT_STARTED) {
+                ecs.systemManager.startSystem<systems::PauseSystem>();
+            }
         }
+    });
+    _saveEventID = ecs.eventManager.addListener<NewGameScene, events::AskingForSaveEvent>(this, [](NewGameScene *self, events::AskingForSaveEvent e){
+        self->save(true, true);
     });
 }
 
@@ -93,9 +99,9 @@ void indie::scenes::NewGameScene::onStop()
     ECSWrapper ecs;
 
     if (_saveOnExit)
-        save(true, true);
-    if (_eventKeyJustPressedID.isValid())
-        ecs.eventManager.removeListener(_eventKeyJustPressedID);
+        save(_saveName, true, true);
+    ecs.eventManager.removeListener(_pauseButtonEventID);
+    ecs.eventManager.removeListener(_saveEventID);
 }
 
 indie::scenes::SaveState indie::scenes::NewGameScene::save(bool override, bool saveShouldBeKeeped)
@@ -113,7 +119,6 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &sa
 {
     ECSWrapper ecs;
     std::string path(std::string(SAVES_FOLDER_PATH) + "/" + saveName);
-    std::cout << "Saving " << saveName << std::endl;
 
     if (boost::filesystem::exists(path)) {
         if (override) {
@@ -131,14 +136,6 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &sa
             }
         });
     file << "</scene>" << std::endl;
-
-    std::cout << "Saving end" << std::endl;
-    std::cout << "Loading saving scene" << std::endl;
-    std::string name = saveName.substr(0, saveName.find(".xml"));
-    scenes::IScene *scene = indie::Parser::getInstance().loadSingleScene(name, saveName);
-    SceneManager::addSingleScene(name, scene);
-    std::cout << "Loading saving scene end" << std::endl;
-
     return SUCCESS;
 }
 
@@ -238,10 +235,17 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
 void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityHandler entity,
                                                            indie::scenes::PlayerControllerType type)
 {
+
+    std::map<std::string, components::PlayerType> map = {
+        {"player1", components::P1},
+        {"player2", components::P2},
+        {"player3", components::P3},
+        {"player4", components::P4},
+    };
     if (type == AI) {
-        entity->assignComponent<components::AIController>();
+        auto ai = entity->assignComponent<components::AIController>();
+        ai->setPlayerType(map[entity->getName()]);
         auto mtt = entity->assignComponent<components::MoveToTarget>();
-        mtt->setTarget(entity->getComponent<components::Transform>()->getPosition());
     } else {
         auto pc = entity->assignComponent<components::PlayerController, components::PlayerController::PlayerControllerSettings>({
             entity->getName() + "xAxis",
@@ -249,12 +253,6 @@ void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityH
             entity->getName() + "taunt",
             entity->getName() + "bomb",
         });
-        std::map<std::string, components::PlayerType> map = {
-            {"player1", components::P1},
-            {"player2", components::P2},
-            {"player3", components::P3},
-            {"player4", components::P4},
-        };
         pc->setPlayerType(map[entity->getName()]);
     }
 }

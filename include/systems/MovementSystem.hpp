@@ -51,7 +51,7 @@ namespace indie {
 
         private:
             static constexpr float recomputeCacheDeltaTime = 0.5f;
-            static constexpr float nodeValidatedInRadius = 2.0f;
+            static constexpr float nodeValidatedInRadius = 1.5f;
 
         private:
             maths::Vector2D _mapSize;

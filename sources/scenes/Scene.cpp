@@ -157,12 +157,16 @@ void indie::scenes::Scene::onStart()
         std::stringstream effectVolumeStringStream;
         std::stringstream musicVolumeStringStream;
         auto backToMenuButton = ecs.entityManager.getEntitiesByName("backToMenuButton")[0]->getComponent<indie::components::Button>();
+        auto resourcesPacksButton = ecs.entityManager.getEntitiesByName("resourcesPacksButton")[0]->getComponent<indie::components::Button>();
 
         musicVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
         effectVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
         ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
         ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
 
+        resourcesPacksButton->setOnClicked([](indie::components::Button *button) {
+            indie::scenes::SceneManager::safeChangeScene("resourcesPacksScene");
+        });
         backToMenuButton->setOnClicked([](indie::components::Button *button) {
             indie::scenes::SceneManager::safeChangeScene("mainMenu");
         });

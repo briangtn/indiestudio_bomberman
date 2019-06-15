@@ -110,7 +110,7 @@ jf::entities::EntityHandler indie::systems::BonusSystem::spawnNewPowerUp(
     ECSWrapper ecs;
     auto newPowerUp = ecs.entityManager.createEntity("powerUp");
     newPowerUp->assignComponent<components::Transform, maths::Vector3D, maths::Vector3D, maths::Vector3D>(pos, {0, 0, 0}, scale);
-    newPowerUp->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.5, 0.5, 0.5}, {0, 0, 0}, 0);
+    newPowerUp->assignComponent<components::BoxCollider, maths::Vector3D, maths::Vector3D, uint64_t>({0.3, 0.3, 0.3}, {0, 0, 0}, 0);
     newPowerUp->assignComponent<components::Rotator, maths::Vector3D>({0, 45, 0});
     newPowerUp->assignComponent<components::Hoverer, maths::Vector3D, maths::Vector3D>({0, 0.75, 0}, {0, 0.25f * scale.y, 0});
     newPowerUp->assignComponent<components::BonusEffector, components::BonusType>(bonusType);

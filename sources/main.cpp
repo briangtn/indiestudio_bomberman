@@ -9,6 +9,7 @@
 
 #include <typeinfo>
 #include <iostream>
+#include "systems/PauseSystem.hpp"
 #include "systems/TauntSystem.hpp"
 #include "systems/BonusSystem.hpp"
 #include "ECSWrapper.hpp"
@@ -16,6 +17,7 @@
 #include "scenes/PlayerConfigScene.hpp"
 #include "scenes/ControllerConfigScene.hpp"
 #include "scenes/NewGameScene.hpp"
+#include "scenes/ResourcesPackScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "scenes/EndScene.hpp"
 #include "scenes/LoadSaveScene.hpp"
@@ -44,14 +46,14 @@ int runBomberman()
         throw jf::SystemNotFoundException("A critical system is missing: IrrlichtManagerSystem", "main");
     }
 
+    ecs.systemManager.addSystem<indie::systems::PauseSystem>();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowCaption("Indie Studio - Bomberman");
     indie::scenes::PlayerConfigScene::InitControllers();
 
     auto &assetsManager = indie::AssetsManager::getInstance();
-    assetsManager.addTexturePack("default", "resources/resources_packs/default/");
-    assetsManager.addTexturePack("minecraft", "resources/resources_packs/minecraft/");
-    assetsManager.loadTexturePack("minecraft");
+    assetsManager.fetchResourcesPacks();
+    assetsManager.loadResourcesPack("default");
 
     indie::Parser::getInstance().loadScenes(SAVES_FOLDER_PATH);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
@@ -61,6 +63,7 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
     indie::scenes::SceneManager::addSingleScene("endScene", new indie::scenes::EndScene());
     indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
+    indie::scenes::SceneManager::addSingleScene("resourcesPacksScene", new indie::scenes::ResourcesPacksScene());
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {

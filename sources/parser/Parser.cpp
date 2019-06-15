@@ -922,9 +922,10 @@ void indie::Parser::createMoveToTarget(jf::entities::EntityHandler &entity, irr:
                                        const std::string &fileName, unsigned int &line)
 {
     std::map<std::string, std::string> args = {
-        {"target",       ""},
-        {"followTarget", ""},
-        {"speed",        ""}
+        {"target",        ""},
+        {"followTarget",  ""},
+        {"reachedTarget", ""},
+        {"speed",         ""}
     };
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createMoveToTarget");
     auto component = entity->assignComponent<components::MoveToTarget>();
@@ -934,6 +935,9 @@ void indie::Parser::createMoveToTarget(jf::entities::EntityHandler &entity, irr:
     }
     if (!args["followTarget"].empty()) {
         component->setFollowTarget(getBool(args["followTarget"], fileName, line));
+    }
+    if (!args["reachedTarget"].empty()) {
+        component->setReachedTarget(getBool(args["reachedTarget"], fileName, line));
     }
     if (!args["speed"].empty()) {
         component->setSpeed(std::atof(args["speed"].c_str()));

@@ -38,8 +38,6 @@ void indie::scenes::StaticTestScene::onStart()
     cameraTr->setRotation({75, 0, 0});
     cameraEntity->assignComponent<indie::components::Camera>();
 
-    indie::AssetsManager::getInstance().addTexturePack("Minecraft", "../test_assets/lol");
-
     auto playerEntity = ecs.entityManager.createEntity("player");
     auto playerTr = playerEntity->assignComponent<indie::components::Transform>();
     playerTr->setScale({8, 8, 8});
