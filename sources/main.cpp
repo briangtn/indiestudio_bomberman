@@ -50,6 +50,7 @@ int runBomberman()
 
     auto &assetsManager = indie::AssetsManager::getInstance();
     assetsManager.addTexturePack("default", "resources/resources_packs/default/");
+    assetsManager.addTexturePack("minecraft", "resources/resources_packs/minecraft/");
     assetsManager.loadTexturePack("default");
 
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
