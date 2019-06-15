@@ -33,6 +33,8 @@
 #include "components/Hoverer.hpp"
 #include "components/PlayerController.hpp"
 #include "components/Rotator.hpp"
+#include "scenes/PlayerConfigScene.hpp"
+#include "exceptions/ParserExceptions.hpp"
 #include "components/LeaderBoard.hpp"
 #include "components/AIController.hpp"
 #include "components/DynamicCamera.hpp"
@@ -45,18 +47,44 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 
 void indie::scenes::Scene::onStart()
 {
-    Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
+    try {
+        Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
+    } catch (indie::exceptions::ParserDeviceException e){
+        Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + _fileName);
+    }
     ECSWrapper ecs;
 
     if (_fileName == "mainMenu.xml") {
         auto startButton = ecs.entityManager.getEntitiesByName("startButton")[0]->getComponent<indie::components::Button>();
+        auto loadSaveButton = ecs.entityManager.getEntitiesByName("loadSaveButton")[0]->getComponent<indie::components::Button>();
         auto settingsButton = ecs.entityManager.getEntitiesByName("settingsButton")[0]->getComponent<indie::components::Button>();
         auto exitButton = ecs.entityManager.getEntitiesByName("closeButton")[0]->getComponent<indie::components::Button>();
 
         startButton->setOnClicked([](indie::components::Button *button){
-            indie::scenes::SceneManager::safeChangeScene("playerConfig");
+            indie::scenes::PlayerConfigScene::Load();
         });
         startButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
+            auto transform = button->getEntity()->getComponent<indie::components::Transform>();
+            if (isHovered) {
+                button->setTexturePath("button_new_game_hovered");
+                transform->setPosition(indie::maths::Vector3D({
+                    transform->getPosition().x - 10,
+                    transform->getPosition().y,
+                    transform->getPosition().z
+                }));
+            } else {
+                button->setTexturePath("button_new_game");
+                transform->setPosition(indie::maths::Vector3D({
+                    transform->getPosition().x + 10,
+                    transform->getPosition().y,
+                    transform->getPosition().z
+                }));
+            }
+        });
+        loadSaveButton->setOnClicked([](indie::components::Button *button) {
+            SceneManager::safeChangeScene("loadSave");
+        });
+        loadSaveButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             auto transform = button->getEntity()->getComponent<indie::components::Transform>();
             if (isHovered) {
                 button->setTexturePath("button_new_game_hovered");
@@ -123,10 +151,6 @@ void indie::scenes::Scene::onStart()
 
 void indie::scenes::Scene::onStop()
 {
-
-    if (_fileName != "mainMenu.xml") {
-        save(false, false);
-    }
     ECSWrapper ecs;
     for (auto &id : _listeners)
         ecs.eventManager.removeListener(id);
