@@ -17,6 +17,7 @@
 #include "scenes/ControllerConfigScene.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "scenes/SceneManager.hpp"
+#include "scenes/LoadSaveScene.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -49,11 +50,12 @@ int runBomberman()
     assetsManager.addTexturePack("default", "resources/resources_packs/default/");
     assetsManager.loadTexturePack("default");
 
-    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
-
+    indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH);
+    indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SAVES_FOLDER_PATH));
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
+    indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {

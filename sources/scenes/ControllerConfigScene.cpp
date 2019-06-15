@@ -25,7 +25,7 @@ indie::Controller indie::scenes::ControllerConfigScene::controller("");
 indie::scenes::ControllerConfigScene::Step indie::scenes::ControllerConfigScene::step = UP;
 std::vector<jf::internal::ID> indie::scenes::ControllerConfigScene::listeners;
 std::vector<irr::u16> indie::scenes::ControllerConfigScene::keysPressed;
-std::vector<irr::u16> indie::scenes::ControllerConfigScene::joysticksActivated;
+std::map<irr::u16, bool> indie::scenes::ControllerConfigScene::joysticksActivated;
 
 void indie::scenes::ControllerConfigScene::onStart()
 {
@@ -60,7 +60,7 @@ void indie::scenes::ControllerConfigScene::up()
     ECSWrapper ecs;
     step = UP;
 
-    setInfoText("Waiting for pressing up key or moving up/down axis");
+    setInfoText("Waiting for pressing up key or moving axis to the top");
     auto eventId = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [&](void *a, events::IrrlichtKeyInputEvent e){
         if (e.wasReleased && step == UP)
             down(e.keyCode);
@@ -82,13 +82,13 @@ void indie::scenes::ControllerConfigScene::up()
         }
         for (unsigned short i = 0; i < e.data.NUMBER_OF_AXES; i++) {
             irr::u16 toSearch = (e.data.Joystick << 8) + i;
-            auto finded = std::find(joysticksActivated.begin(), joysticksActivated.end(), toSearch);
-            if ((e.data.Axis[i] >= 30000 || e.data.Axis[i] <= -30000) && finded == joysticksActivated.end()) {
-                joysticksActivated.push_back(toSearch);
+            auto finded = joysticksActivated.find(toSearch);
+            if ((e.data.Axis[i] >= 20000 || e.data.Axis[i] <= -20000) && finded == joysticksActivated.end()) {
+                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -20000);
                 return;
-            } else if ((e.data.Axis[i] <= 20000 && e.data.Axis[i] >= -20000) && finded != joysticksActivated.end()) {
+            } else if ((e.data.Axis[i] <= 15000 && e.data.Axis[i] >= -15000) && finded != joysticksActivated.end()) {
+                controller.addAxis<JoystickAxis>("zAxis", {e.data.Joystick, i, finded->second});
                 joysticksActivated.erase(finded);
-                controller.addAxis<JoystickAxis>("zAxis", {e.data.Joystick, i, true});
                 left();
             }
         }
@@ -146,7 +146,7 @@ void indie::scenes::ControllerConfigScene::left()
     ECSWrapper ecs;
     step = LEFT;
 
-    setInfoText("Waiting for pressing left key or moving left/right axis");
+    setInfoText("Waiting for pressing left key or moving axis to the right");
     auto eventId = ecs.eventManager.addListener<void, events::IrrlichtKeyInputEvent>(nullptr, [&](void *a, events::IrrlichtKeyInputEvent e){
         if (step != LEFT)
             return;
@@ -170,13 +170,13 @@ void indie::scenes::ControllerConfigScene::left()
         }
         for (unsigned short i = 0; i < e.data.NUMBER_OF_AXES; i++) {
             irr::u16 toSearch = (e.data.Joystick << 8) + i;
-            auto finded = std::find(joysticksActivated.begin(), joysticksActivated.end(), toSearch);
-            if ((e.data.Axis[i] >= 30000 || e.data.Axis[i] <= -30000) && finded == joysticksActivated.end()) {
-                joysticksActivated.push_back(toSearch);
+            auto finded = joysticksActivated.find(toSearch);
+            if ((e.data.Axis[i] >= 20000 || e.data.Axis[i] <= -20000) && finded == joysticksActivated.end()) {
+                joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -20000);
                 return;
-            } else if ((e.data.Axis[i] <= 20000 && e.data.Axis[i] >= -20000) && finded != joysticksActivated.end()) {
+            } else if ((e.data.Axis[i] <= 15000 && e.data.Axis[i] >= -15000) && finded != joysticksActivated.end()) {
                 joysticksActivated.erase(finded);
-                controller.addAxis<JoystickAxis>("xAxis", {e.data.Joystick, i});
+                controller.addAxis<JoystickAxis>("xAxis", {e.data.Joystick, finded->second});
                 taunt();
             }
         }

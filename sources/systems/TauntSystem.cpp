@@ -31,19 +31,10 @@ void indie::systems::TauntSystem::onUpdate(const std::chrono::nanoseconds &elaps
     ecs.entityManager.applyToEach<components::PlayerController>(
         [elapsedTimeAsSecond](jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::PlayerController> pc) {
 
-            if (pc->isTaunting()) {
-                pc->setTauntTime(pc->getTauntTime() - elapsedTimeAsSecond);
-                if (pc->getTauntTime() <= 0.0f) {
-                    pc->setTauntTime(0.0f);
-                    pc->setIsTaunting(false);
-                }
-            }
-
             if (!pc->getTauntButton().empty() && indie::InputManager::IsKeyPressed(pc->getTauntButton())) {
-                pc->setIsTaunting(true);
-                pc->setTauntTime(pc->getTauntDuration());
                 auto animator = entity->getComponent<components::Animator>();
                 if (animator.isValid()) {
+                    pc->setIsTaunting(true);
                     animator->setCurrentAnimation(pc->getTauntAnimation());
                 }
             }
