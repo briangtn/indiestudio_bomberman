@@ -79,19 +79,18 @@ void indie::scenes::EndScene::onStart()
     constexpr float buttonMargin = 15.0f;
 
     auto buttonRestartEntity = ecs.entityManager.createEntity("buttonRestart");
-    auto buttonRestartComponent = buttonRestartEntity->assignComponent<indie::components::Button>("Restart");
+    auto buttonRestartComponent = buttonRestartEntity->assignComponent<indie::components::Button>("Restart", 5);
     buttonRestartEntity->assignComponent<indie::components::Font>("default_font");
     auto buttonRestartTransform = buttonRestartEntity->assignComponent<indie::components::Transform>();
     buttonRestartTransform->setPosition({2 * (1280.0f / 4.0f) + buttonMargin, nbPlayers * (720.0f / divisor) + buttonMargin, 100});
     buttonRestartTransform->setScale({1280.0f / 4.0f - buttonMargin * 2, 720.0f / divisor - buttonMargin * 2, 0});
 
     buttonRestartComponent->setOnClicked([](components::Button *btn){
-        std::cout << "we should restart with same settings" << std::endl;
-        //indie::scenes::SceneManager::safeChangeScene("newGameScene");
+        indie::scenes::SceneManager::safeChangeScene("newGameScene");
     });
 
     auto buttonMenuEntity = ecs.entityManager.createEntity("buttonMenu");
-    auto buttonMenuComponent = buttonMenuEntity->assignComponent<indie::components::Button>("Menu");
+    auto buttonMenuComponent = buttonMenuEntity->assignComponent<indie::components::Button>("Menu", 6);
     buttonMenuEntity->assignComponent<indie::components::Font>("default_font");
     auto buttonMenuTransform = buttonMenuEntity->assignComponent<indie::components::Transform>();
     buttonMenuTransform->setPosition({3 * (1280.0f / 4.0f) + buttonMargin, nbPlayers * (720.0f / divisor) + buttonMargin, 100});
