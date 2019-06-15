@@ -15,6 +15,7 @@
 #include "scenes/SceneManager.hpp"
 #include "assets_manager/AssetsManager.hpp"
 #include "components/Transform.hpp"
+#include "components/GUI/Font.hpp"
 #include "components/GUI/Button.hpp"
 
 int indie::scenes::ResourcesPacksScene::_page = 0;
@@ -31,10 +32,10 @@ void indie::scenes::ResourcesPacksScene::onStart()
     backgroundTransform->setPosition({0, 0, -1});
 
     auto backToMenuButton = ecs.entityManager.createEntity("backToMenuButton");
-    backToMenuButton->assignComponent<indie::components::Button>("", 99, "button_back_to_menu");
+    backToMenuButton->assignComponent<indie::components::Button>("", 99, "button_back");
     auto backToMenuButtonTransform = backToMenuButton->assignComponent<indie::components::Transform>();
     backToMenuButtonTransform->setPosition({10, 640, 0});
-    backToMenuButtonTransform->setScale({367,75,0});
+    backToMenuButtonTransform->setScale({212,75,0});
 
     backToMenuButton->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
         indie::scenes::SceneManager::safeChangeScene("settings");
@@ -42,9 +43,9 @@ void indie::scenes::ResourcesPacksScene::onStart()
 
     backToMenuButton->getComponent<indie::components::Button>()->setOnHovered([](indie::components::Button *button, bool isHovered) {
         if (isHovered)
-            button->setTexturePath("button_back_to_menu_hovered");
+            button->setTexturePath("button_back_hovered");
         else
-            button->setTexturePath("button_back_to_menu");
+            button->setTexturePath("button_back");
     });
 
     assetsManager.fetchResourcesPacks();
@@ -58,6 +59,10 @@ void indie::scenes::ResourcesPacksScene::onStart()
     auto leftPageEntity = ecs.entityManager.createEntity("leftPageButton");
     auto leftPageButton = leftPageEntity->assignComponent<components::Button>("<", 1);
     auto leftPageTransform = leftPageEntity->assignComponent<components::Transform>();
+    auto leftPageFont = leftPageEntity->assignComponent<components::Font>("default_font");
+
+    leftPageFont->setPath("default_font");
+    leftPageButton->setTexturePath("button_default");
     leftPageTransform->setScale({50, 50, 0});
     leftPageTransform->setPosition({1130, 620, 0});
 
@@ -72,6 +77,10 @@ void indie::scenes::ResourcesPacksScene::onStart()
     auto rightPageEntity = ecs.entityManager.createEntity("rightPageButton");
     auto rightPageButton = rightPageEntity->assignComponent<components::Button>(">", 2);
     auto rightPageTransform = rightPageEntity->assignComponent<components::Transform>();
+    auto rightPageFont = rightPageEntity->assignComponent<components::Font>("default_font");
+
+    rightPageFont->setPath("default_font");
+    rightPageButton->setTexturePath("button_default");
     rightPageTransform->setScale({50, 50, 0});
     rightPageTransform->setPosition({1190, 620, 0});
 
@@ -89,17 +98,23 @@ void indie::scenes::ResourcesPacksScene::createButtons(unsigned int page, std::v
     ECSWrapper ecs;
 
     for (int i = page * 10; i < (page * 10) + 10 && i < saves.size(); i++) {
+        std::string name = saves[i];
+        name[0] = toupper(name[0]);
         auto buttonEntity = ecs.entityManager.createEntity("button" + std::to_string(i % 10));
-        auto buttonComponent = buttonEntity->assignComponent<components::Button>(saves[i], 100 + (i % 10));
+        auto buttonComponent = buttonEntity->assignComponent<components::Button>(name, 100 + (i % 10));
         auto transformComponent = buttonEntity->assignComponent<components::Transform>();
+        auto buttonFont = buttonEntity->assignComponent<components::Font>("default_font");
+
+        buttonFont->setPath("default_font");
+        buttonComponent->setTexturePath("button_default");
         transformComponent->setScale({1200, 50, 0});
         transformComponent->setPosition({40, 10.0f + ((i % 10) * 60.0f), 0});
 
-        std::string name = saves[i];
         buttonComponent->setOnClicked([name](components::Button *btn) {
             indie::AssetsManager &assetsManager = indie::AssetsManager::getInstance();
 
             assetsManager.loadResourcesPack(name);
+            indie::scenes::SceneManager::safeChangeScene("resourcesPacksScene");
         });
     }
 }
