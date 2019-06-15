@@ -102,6 +102,7 @@ void indie::systems::IrrlichtManagerSystem::onUpdate(const std::chrono::nanoseco
     if (_drawGizmos) {
         ecs.entityManager.applyToEach<components::BoxCollider>(&drawBoxColliderGizmos);
         ecs.entityManager.applyToEach<components::MoveToTarget>(&drawMoveToTargetGizmos);
+        ecs.entityManager.applyToEach<components::AIController>(&drawAIControllerGizmos);
     }
 
     //ecs.entityManager.applyToEach<components::Transform, components::Image>(&drawImage);
@@ -545,6 +546,28 @@ void indie::systems::IrrlichtManagerSystem::drawMoveToTargetGizmos(
         (mtt->isFollowTarget() ? irr::video::SColor(255, 255, 0, 0) : irr::video::SColor(255, 0, 0, 255)));
 }
 
+void indie::systems::IrrlichtManagerSystem::drawAIControllerGizmos(
+    jf::entities::EntityHandler entity,
+    jf::components::ComponentHandler<components::AIController> aic)
+{
+    if (aic->getFullNodePath().empty())
+        return;
+    auto target = aic->getFinalTarget(aic->getFullNodePath());
+    auto position = entity->getComponent<components::Transform>()->getPosition();
+
+    irr::core::vector3df irrPos(position.x, position.y, position.z);
+    irr::core::vector3df irrTarget(target.x, target.y, target.z);
+
+    ECSWrapper ecs;
+    auto driver = ecs.systemManager.getSystem<IrrlichtManagerSystem>().getVideoDriver();
+
+    driver->draw3DLine(irrPos, irrTarget, irr::video::SColor(255, 255, 255, 0));
+    constexpr float boxSize = 1;
+    driver->draw3DBox(
+        irr::core::aabbox3df(irrTarget.X - boxSize, irrTarget.Y - boxSize, irrTarget.Z - boxSize, irrTarget.X + boxSize, irrTarget.Y + boxSize, irrTarget.Z + boxSize),
+        irr::video::SColor(255, 255, 255, 0));
+}
+
 void indie::systems::IrrlichtManagerSystem::drawGizmos(bool value)
 {
     _drawGizmos = value;
@@ -664,7 +687,6 @@ void indie::systems::IrrlichtManagerSystem::drawImage(jf::entities::EntityHandle
         image->getImageNode()->draw();
     }
 }
-
 
 bool indie::systems::IrrlichtManagerSystem::IrrlichtEventReceiver::OnEvent(const irr::SEvent &event)
 {

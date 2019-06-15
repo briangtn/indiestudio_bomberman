@@ -12,8 +12,7 @@
 
 #include <irrlicht.h>
 #include <string>
-#include <components/BoxCollider.hpp>
-
+#include "components/BoxCollider.hpp"
 #include "System.hpp"
 #include "components/ComponentParticle.hpp"
 #include "components/Transform.hpp"
@@ -26,9 +25,9 @@
 #include "components/GUI/Button.hpp"
 #include "components/GUI/Text.hpp"
 #include "components/GUI/Image.hpp"
-#include "components/Bomb.hpp"
 #include "components/SoundComponent.hpp"
 #include "components/MoveToTarget.hpp"
+#include "components/AIController.hpp"
 
 namespace indie {
 
@@ -119,6 +118,7 @@ namespace indie {
 
             static void drawBoxColliderGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::BoxCollider> collider);
             static void drawMoveToTargetGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::MoveToTarget> mtt);
+            static void drawAIControllerGizmos(jf::entities::EntityHandler entity, jf::components::ComponentHandler<components::AIController> aic);
 
         private:
             static void drawButton(
