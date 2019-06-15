@@ -52,6 +52,7 @@ int runBomberman()
     assetsManager.addTexturePack("default", "resources/resources_packs/default/");
     assetsManager.loadTexturePack("default");
 
+    indie::Parser::getInstance().loadScenes(SAVES_FOLDER_PATH);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
