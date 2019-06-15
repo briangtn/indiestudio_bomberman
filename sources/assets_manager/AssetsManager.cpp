@@ -96,7 +96,7 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["crate_break_sound"] = _texturePacks[texturePackName] + "sounds/crates/crate_break.ogg";
 
     _currentAssets["default_menu_background"] = _texturePacks[texturePackName] + "textures/gui/default_menu_background.png";
-    _currentAssets["default_font"] = _texturePacks[texturePackName] + "fonts/default_font.png";
+    _currentAssets["default_font"] = _texturePacks[texturePackName] + "fonts/default_font.xml";
     _currentAssets["default_button_texture"] = _texturePacks[texturePackName] + "textures/gui/default_button.png";
     _currentAssets["default_particle_texture"] = _texturePacks[texturePackName] + "textures/default_particle.png";
     _currentAssets["ai_icon"] = _texturePacks[texturePackName] + "textures/gui/ai_icon.png";
@@ -112,6 +112,10 @@ int indie::AssetsManager::loadTexturePack(const std::string &texturePackName)
     _currentAssets["button_settings_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_settings_hovered.png";
     _currentAssets["play_button"] = _texturePacks[texturePackName] + "textures/gui/play_button.png";
     _currentAssets["reload_button"] = _texturePacks[texturePackName] + "textures/gui/reload_button.png";
+    _currentAssets["button_volume_down"] = _texturePacks[texturePackName] + "textures/gui/button_volume_down.png";
+    _currentAssets["button_volume_up"] = _texturePacks[texturePackName] + "textures/gui/button_volume_up.png";
+    _currentAssets["button_back_to_menu"] = _texturePacks[texturePackName] + "textures/gui/button_back_to_menu.png";
+    _currentAssets["button_back_to_menu_hovered"] = _texturePacks[texturePackName] + "textures/gui/button_back_to_menu_hovered.png";
     _currentAssets["logo"] = _texturePacks[texturePackName] + "textures/gui/logo.png";
 
 
