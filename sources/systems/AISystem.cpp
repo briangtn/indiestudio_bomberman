@@ -307,13 +307,13 @@ std::vector<jf::entities::EntityHandler> &bombs)
 
     if (!bombs.empty() && inDanger(map, playerPos))
         state = indie::components::AIController::SURVIVE;
-    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 5000)
+    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 4000)
         state = indie::components::AIController::POWERUP;
-    else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 5000)
+    else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 4000)
         state = indie::components::AIController::FOCUS;
-    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 1000000)
+    else if (!bonuses.empty() && (bonuses.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 7000)
         state = indie::components::AIController::POWERUP;
-    else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 1000000)
+    else if (!players.empty() && (players.front()->getComponent<components::Transform>()->getPosition() - playerPos).magnitudeSq() < 7000)
         state = indie::components::AIController::FOCUS;
     else
         state = indie::components::AIController::SEARCH;
@@ -333,20 +333,20 @@ void indie::systems::AISystem::randomHandling(indie::components::AIController::s
 std::vector<jf::entities::EntityHandler> bonuses, 
 std::vector<jf::entities::EntityHandler> players)
 {
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::random_device rd;
+    std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(1, 100);
     int number = dis(gen);
 
     std::cout << "number : " << number << std::endl;
     if (number == 42)
         state = indie::components::AIController::TAUNT;
-    else if (state == indie::components::AIController::SURVIVE && number <= 3) {
+    else if (state == indie::components::AIController::SURVIVE && number <= 7) {
         if (!bonuses.empty())
             state = indie::components::AIController::POWERUP;
         else
             state = indie::components::AIController::SEARCH;
-    } else if (state == indie::components::AIController::POWERUP && number <= 10) {
+    } else if (state == indie::components::AIController::POWERUP && number <= 12) {
         if (!players.empty())
             state = indie::components::AIController::FOCUS;
     }
