@@ -82,15 +82,11 @@
             <argument name="walkingAnimation" value="animationName"/>
             <argument name="isWalking" value="true"/>
             <argument name="isTaunting" value="false"/>
-            <argument name="tauntTime" value="3.5"/>
             <argument name="tauntButton" value="buttonName"/>
             <argument name="tauntAnimation" value="animationName"/>
-            <argument name="tauntDuration" value="3.0"/>
             <argument name="isPlacingBomb" value="false"/>
-            <argument name="bombTime" value="1.3"/>
             <argument name="bombButton" value="buttonName"/>
             <argument name="bombAnimation" value="animationName"/>
-            <argument name="bombDuration" value="2.0"/>
             <argument name="bombForce" value="1"/>
             <argument name="maxBomb" value="10"/>
             <argument name="playerType" value="1"/>

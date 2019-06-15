@@ -18,6 +18,7 @@
 #include "scenes/NewGameScene.hpp"
 #include "scenes/SceneManager.hpp"
 #include "scenes/EndScene.hpp"
+#include "scenes/LoadSaveScene.hpp"
 #include "events/IrrlichtKeyInputEvent.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -56,6 +57,7 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());
     indie::scenes::SceneManager::addSingleScene("endScene", new indie::scenes::EndScene());
+    indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
 
     ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
         if (e.wasPressed) {

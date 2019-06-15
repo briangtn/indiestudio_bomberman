@@ -581,6 +581,8 @@ void indie::systems::IrrlichtManagerSystem::drawButton(jf::entities::EntityHandl
     buttonNode->setRelativePosition(rect);
     buttonNode->setID(button->getId());
     buttonNode->setVisible(button->isVisible());
+    buttonNode->setUseAlphaChannel(button->isUseAlpha());
+    buttonNode->setDrawBorder(button->isDrawBorder());
     if (button->getTextureNode() != nullptr)
         buttonNode->setImage(button->getTextureNode());
     if (font.isValid()) {
