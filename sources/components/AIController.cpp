@@ -7,7 +7,10 @@
 
 #include "ECSWrapper.hpp"
 #include "events/IrrlichtAnimationEndEvent.hpp"
+#include "events/HasReachedTarget.hpp"
 #include "components/AIController.hpp"
+#include "systems/BombManagerSystem.hpp"
+#include "events/BombExplosionEvent.hpp"
 
 indie::components::AIController::AIController(jf::entities::Entity &entity)
     : Component(entity), 
@@ -21,6 +24,7 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
       _state(UNKNOWN),
       _lastState(UNKNOWN),
       _fullNodePath(),
+      _hasBombWaitingToExplode(false),
       _movementSpeed(30),
       _bombForce(2),
       _maxBomb(3),
@@ -32,9 +36,35 @@ indie::components::AIController::AIController(jf::entities::Entity &entity)
         if (a->getEntity()->getID() == e.entityId) {
             if (e.animationName == "taunt")
                 a->setIsTaunting(false);
-            else if (e.animationName == "place bomb")
+            else if (e.animationName == "place_bomb")
                 a->setIsPlacingBombs(false);
         }      
+    });
+    _reachTargetListenerEventId = ecs.eventManager.addListener<AIController, events::HasReachedTarget>(this, [](AIController *a, events::HasReachedTarget e){
+        if (a->getEntity()->getID() == e.mtt->getEntity()->getID()) {
+            if ((a->getHasTarget() && e.mtt->getTarget() == a->getFinalTarget(a->getFullNodePath())) || a->getState() == SURVIVE) {
+                a->setHasTarget(false);
+                return;
+            } else {
+                ECSWrapper ecs;
+                a->setHasTarget(false);
+                if (ecs.systemManager.getSystem<indie::systems::BombManagerSystem>().createBomb(a->getEntity())) {
+                    a->setHasBombWaitingToExplode(true);
+                    auto animator = a->getEntity()->getComponent<components::Animator>();
+                    if (animator.isValid()) {
+                        animator->setCurrentAnimation("place_bomb");
+                        a->setIsPlacingBombs(true);
+                    } else {
+                        a->setIsPlacingBombs(false);
+                    }
+                }
+            }
+        }
+    });
+    _bombExplosion = ecs.eventManager.addListener<AIController, events::BombExplosionEvent>(this, [](AIController *a, events::BombExplosionEvent e){
+        if (e.pType == a->getPlayerType()) {
+            a->setHasBombWaitingToExplode(false);
+        }
     });
     EMIT_CREATE(AIController);
 }
@@ -44,6 +74,20 @@ indie::components::AIController::~AIController()
     EMIT_DELETE(AIController);
     ECSWrapper ecs;
     ecs.eventManager.removeListener(_endAnimationListenerEventId);
+    ecs.eventManager.removeListener(_reachTargetListenerEventId);
+    ecs.eventManager.removeListener(_bombExplosion);
+}
+
+indie::maths::Vector3D indie::components::AIController::getFinalTarget(std::vector<ai::AStar::Node> fullPath) const
+{
+    if (fullPath.empty())
+        return {0, 0, 0};
+    return (fullPath.back().toWorldPos());
+}
+
+void indie::components::AIController::setHasBombWaitingToExplode(bool assign)
+{
+    _hasBombWaitingToExplode = assign;
 }
 
 void indie::components::AIController::setTargetVector(indie::maths::Vector3D assign)
@@ -86,7 +130,7 @@ void indie::components::AIController::setPreviousPos(std::pair<int, int> assign)
     _previousPos = assign;
 }
 
-void indie::components::AIController::setFullNodePath(std::stack<ai::AStar::Node> assign)
+void indie::components::AIController::setFullNodePath(std::vector<ai::AStar::Node> assign)
 {
     _fullNodePath = assign;
 }
@@ -101,7 +145,12 @@ bool indie::components::AIController::getHasTarget() const
     return _hasTarget;
 }
 
-std::stack<indie::ai::AStar::Node> indie::components::AIController::getFullNodePath() const
+bool indie::components::AIController::getHasBombWaitingToExplode() const
+{
+    return _hasBombWaitingToExplode;
+}
+
+std::vector<indie::ai::AStar::Node> indie::components::AIController::getFullNodePath() const
 {
     return _fullNodePath;
 }

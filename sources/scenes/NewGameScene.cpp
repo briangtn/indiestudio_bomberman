@@ -46,7 +46,9 @@ void indie::scenes::NewGameScene::onStart()
 {
     std::random_device rd;
     std::uniform_int_distribution<int> dist(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-    indie::Map::generateMap(mapWidth, mapHeight, dist(rd), false);
+    auto seed = dist(rd);
+    std::cout << "Seed: " << seed << std::endl;
+    indie::Map::generateMap(mapWidth, mapHeight, -2097377204, false);
     ECSWrapper ecs;
     ecs.systemManager.getSystem<systems::MovementSystem>().setMapSize(
         {static_cast<float>(mapWidth), static_cast<float>(mapHeight)});
@@ -154,7 +156,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlack()
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -177,7 +179,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnBlue()
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
         {"taunt", components::Animator::Animation(123, 145, 40, false, "idle")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -200,7 +202,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnWhite()
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -223,7 +225,7 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
         {"default", components::Animator::Animation(0, 0, 0, true, "")},
         {"idle", components::Animator::Animation(2, 60, 20, true, "")},
         {"walk", components::Animator::Animation(62, 121, 60, true, "")},
-        {"place bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
+        {"place_bomb", components::Animator::Animation(184, 243, 120, false, "idle")},
         {"die", components::Animator::Animation(245, 304, 100, false, "dead")},
         {"dead", components::Animator::Animation(305, 305, 0, true, "")},
         {"dabLoop", components::Animator::Animation(123, 145, 40, true, "")},
@@ -237,10 +239,17 @@ jf::entities::EntityHandler indie::scenes::NewGameScene::spawnYellow()
 void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityHandler entity,
                                                            indie::scenes::PlayerControllerType type)
 {
+
+    std::map<std::string, components::PlayerType> map = {
+        {"player1", components::P1},
+        {"player2", components::P2},
+        {"player3", components::P3},
+        {"player4", components::P4},
+    };
     if (type == AI) {
-        entity->assignComponent<components::AIController>();
+        auto ai = entity->assignComponent<components::AIController>();
+        ai->setPlayerType(map[entity->getName()]);
         auto mtt = entity->assignComponent<components::MoveToTarget>();
-        mtt->setTarget(entity->getComponent<components::Transform>()->getPosition());
     } else {
         auto pc = entity->assignComponent<components::PlayerController, components::PlayerController::PlayerControllerSettings>({
             entity->getName() + "xAxis",
@@ -248,12 +257,6 @@ void indie::scenes::NewGameScene::assignSpecificComponents(jf::entities::EntityH
             entity->getName() + "taunt",
             entity->getName() + "bomb",
         });
-        std::map<std::string, components::PlayerType> map = {
-            {"player1", components::P1},
-            {"player2", components::P2},
-            {"player3", components::P3},
-            {"player4", components::P4},
-        };
         pc->setPlayerType(map[entity->getName()]);
     }
 }

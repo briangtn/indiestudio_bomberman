@@ -60,9 +60,9 @@ void indie::systems::IrrklangAudioSystem::onUpdate(const std::chrono::nanosecond
                     component->setVolume(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume());
 
                 if (component->getState() == components::SoundComponent::STARTING && !component->getSpatialization())
-                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile()));
+                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), component->getIsLooped(), component->getIsPaused()));
                 else if (component->getState() == components::SoundComponent::STARTING && component->getSpatialization())
-                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition()));
+                    component->setSound(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().add3DSound(component->getSourceFile(), component->getPosition(), component->getIsLooped(), component->getIsPaused()));
             });
     _engine->update();
 }

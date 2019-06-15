@@ -20,7 +20,7 @@ namespace indie {
 
             /* enum for each type of bomb */
 
-            enum BombType {
+            enum BombType : uint8_t {
                 NORMAL,
                 FIRE,
                 WATER,
@@ -30,7 +30,7 @@ namespace indie {
 
             /* enum for each type of player */
 
-            enum PlayerType {
+            enum PlayerType : uint8_t {
                 P1 = 1,
                 P2 = 2,
                 P3 = 3,
@@ -101,5 +101,16 @@ namespace indie {
         };
     }
 }
+
+#else
+
+namespace indie {
+    namespace components {
+        enum BombType : uint8_t;
+        enum PlayerType : uint8_t;
+        class Bomb;
+    }
+}
+
 
 #endif /* !BOMB_HPP_ */

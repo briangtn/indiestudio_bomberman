@@ -31,12 +31,16 @@ namespace indie {
             float getSpeed() const;
             void setSpeed(float speed);
 
+            bool hasReachedTarget() const;
+            void setReachedTarget(bool reachedTarget);
+
             MoveToTarget &operator>>(std::ostream &file);
 
         private:
             maths::Vector3D _target;
             bool _followTarget;
             float _speed;
+            bool _reachedTarget;
         };
     }
 }
