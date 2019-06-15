@@ -16,6 +16,9 @@
 #include <fstream>
 #include <random>
 #include <boost/filesystem/operations.hpp>
+#include <events/IrrlichtKeyJustChangedEvent.hpp>
+#include <systems/PauseSystem.hpp>
+#include <events/AskingForSaveEvent.hpp>
 #include "ECSWrapper.hpp"
 #include "scenes/NewGameScene.hpp"
 #include "parser/Parser.hpp"
@@ -34,7 +37,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(true), _saveName("default.xml")
+    : _saveOnExit(true), _saveName("default.xml"), _pauseButtonEventID(), _saveEventID()
 {
 
 }
@@ -73,12 +76,32 @@ void indie::scenes::NewGameScene::onStart()
     auto component = entity->assignComponent<components::SoundComponent>("music_battle", components::SoundComponent::MUSIC);
     component->setSound(ecs.systemManager.getSystem<systems::IrrklangAudioSystem>().add2DSound(component->getSourceFile(), true, false));
     ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
+
+    InputManager::RegisterKey(irr::KEY_KEY_P);
+    _pauseButtonEventID = ecs.eventManager.addListener<void, events::IrrlichtKeyJustChangedEvent>(nullptr, [](void *, events::IrrlichtKeyJustChangedEvent e) {
+        ECSWrapper ecs;
+
+        if (e.keyCode == irr::KEY_KEY_P && e.pressed) {
+            if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::RUNNING) {
+                ecs.systemManager.stopSystem<systems::PauseSystem>();
+            } else if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::STOPPED || ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::NOT_STARTED) {
+                ecs.systemManager.startSystem<systems::PauseSystem>();
+            }
+        }
+    });
+    _saveEventID = ecs.eventManager.addListener<NewGameScene, events::AskingForSaveEvent>(this, [](NewGameScene *self, events::AskingForSaveEvent e){
+        self->save(true, true);
+    });
 }
 
 void indie::scenes::NewGameScene::onStop()
 {
+    ECSWrapper ecs;
+
     if (_saveOnExit)
         save(_saveName, true, true);
+    ecs.eventManager.removeListener(_pauseButtonEventID);
+    ecs.eventManager.removeListener(_saveEventID);
 }
 
 indie::scenes::SaveState indie::scenes::NewGameScene::save(bool override, bool saveShouldBeKeeped)
