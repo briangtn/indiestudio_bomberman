@@ -104,7 +104,7 @@ void indie::scenes::ResourcesPacksScene::createButtons(unsigned int page, std::v
         auto buttonComponent = buttonEntity->assignComponent<components::Button>(name, 100 + (i % 10));
         auto transformComponent = buttonEntity->assignComponent<components::Transform>();
         auto buttonFont = buttonEntity->assignComponent<components::Font>("default_font");
-
+        name[0] = tolower(name[0]);
         buttonFont->setPath("default_font");
         buttonComponent->setTexturePath("button_default");
         transformComponent->setScale({1200, 50, 0});
