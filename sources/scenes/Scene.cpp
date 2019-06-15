@@ -28,6 +28,7 @@
 #include "ai/AStar.hpp"
 #include "scenes/SceneManager.hpp"
 #include "events/IrrlichtJoystickInputEvent.hpp"
+#include "systems/IrrklangAudioSystem.hpp"
 #include "input/Controller.hpp"
 #include "components/Camera.hpp"
 #include "components/Hoverer.hpp"
@@ -81,20 +82,23 @@ void indie::scenes::Scene::onStart()
                 }));
             }
         });
+        settingsButton->setOnClicked([](indie::components::Button *button) {
+           indie::scenes::SceneManager::safeChangeScene("settings");
+        });
         loadSaveButton->setOnClicked([](indie::components::Button *button) {
             SceneManager::safeChangeScene("loadSave");
         });
         loadSaveButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
             auto transform = button->getEntity()->getComponent<indie::components::Transform>();
             if (isHovered) {
-                button->setTexturePath("button_new_game_hovered");
+                button->setTexturePath("button_load_game_hovered");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x - 10,
                     transform->getPosition().y,
                     transform->getPosition().z
                 }));
             } else {
-                button->setTexturePath("button_new_game");
+                button->setTexturePath("button_load_game");
                 transform->setPosition(indie::maths::Vector3D({
                     transform->getPosition().x + 10,
                     transform->getPosition().y,
@@ -146,6 +150,131 @@ void indie::scenes::Scene::onStart()
                 }));
             }
         });
+    }
+    if (_fileName == "settings.xml") {
+        std::stringstream effectVolumeStringStream;
+        std::stringstream musicVolumeStringStream;
+        auto backToMenuButton = ecs.entityManager.getEntitiesByName("backToMenuButton")[0]->getComponent<indie::components::Button>();
+
+        musicVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
+        effectVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
+        ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+        ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+
+        backToMenuButton->setOnClicked([](indie::components::Button *button) {
+            indie::scenes::SceneManager::safeChangeScene("mainMenu");
+        });
+        backToMenuButton->setOnHovered([](indie::components::Button *button, bool isHovered) {
+            if (isHovered) {
+                button->setTexturePath("button_back_to_menu_hovered");
+            } else {
+                button->setTexturePath("button_back_to_menu");
+            }
+        });
+
+        // Effect Volume Management
+        ecs.entityManager.getEntitiesByName("effectVolumeUpButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            std::stringstream effectVolumeStringStream;
+            ECSWrapper ecs;
+
+            if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() + 0.05f < 1.05) {
+                ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setEffectVolume(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() + 0.05f);
+                effectVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100 << "%";
+                ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+            }
+        });
+
+        ecs.entityManager.getEntitiesByName("effectVolumeDownButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            std::stringstream effectVolumeStringStream;
+            ECSWrapper ecs;
+            int volume = static_cast<int>(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() * 100);
+
+            if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getEffectVolume() > 0) {
+                volume -= 5;
+                ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setEffectVolume(volume / 100.0f);
+                effectVolumeStringStream << volume << "%";
+                ecs.entityManager.getEntitiesByName("effectValueText")[0]->getComponent<indie::components::Text>()->setText(effectVolumeStringStream.str());
+            }
+        });
+
+        // Music Volume Management
+        ecs.entityManager.getEntitiesByName("musicVolumeUpButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            std::stringstream musicVolumeStringStream;
+            ECSWrapper ecs;
+
+            if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() + 0.05f < 1.05) {
+                ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setMusicVolume(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() + 0.05f);
+                musicVolumeStringStream << ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100 << "%";
+                ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+            }
+        });
+
+        ecs.entityManager.getEntitiesByName("musicVolumeDownButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            std::stringstream musicVolumeStringStream;
+            ECSWrapper ecs;
+            int volume = static_cast<int>(ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() * 100);
+
+            if (ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().getMusicVolume() > 0) {
+                volume -= 5;
+                ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().setMusicVolume(volume / 100.0f);
+                musicVolumeStringStream << volume << "%";
+                ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
+            }
+        });
+    }
+    if (_fileName == "test.xml") {
+        auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
+            }
+        });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
+            }
+        });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
+            }
+        });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
+            }
+        });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place bomb");
+            }
+        });
+        _listeners.emplace_back(id);
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
+            }
+        });
+        _listeners.emplace_back(id);
+
+        indie::Map::generateMap(15, 13, 420, false);
+
+        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
+            ECSWrapper ecs;
+            if (e.wasPressed) {
+                indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+            }
+        });
+        _listeners.emplace_back(id);
     }
 }
 
