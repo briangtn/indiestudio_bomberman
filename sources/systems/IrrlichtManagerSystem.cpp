@@ -63,10 +63,6 @@ indie::systems::IrrlichtManagerSystem::~IrrlichtManagerSystem()
 
 void indie::systems::IrrlichtManagerSystem::onAwake()
 {
-    ECSWrapper ecs;
-    ecs.eventManager.addListener<IrrlichtManagerSystem, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_ESCAPE>>(this, [](IrrlichtManagerSystem *ms, auto e) {
-        ms->_device->closeDevice();
-    });
 }
 
 void indie::systems::IrrlichtManagerSystem::onStart()
