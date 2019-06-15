@@ -137,6 +137,7 @@ indie::Parser::Parser()
         {(L"Font"), &createFont},
         {(L"Hoverer"), &createHoverer},
         {(L"Image"), &createImage},
+        {(L"LeaderBoard"), &createLeaderBoard},
         {(L"Particle"), &createParticle},
         {(L"PlayerAlive"), &createPlayerAlive},
         {(L"PlayerController"), &createPlayerController},
