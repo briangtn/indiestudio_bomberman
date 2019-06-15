@@ -2,28 +2,29 @@
 ** EPITECH PROJECT, 2018
 ** indiestudio
 ** File description:
-** LoadSaveScene.cpp
+** ResourcesPackScene.cpp
 */
 
-/* Created the 15/06/2019 at 00:26 by brian */
+//
+// Created by romainfouyer on 6/15/19.
+//
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include "scenes/LoadSaveScene.hpp"
 #include "components/GUI/Image.hpp"
 #include "ECSWrapper.hpp"
-#include "components/Transform.hpp"
-#include "components/GUI/Button.hpp"
-#include "components/GUI/Font.hpp"
-#include "scenes/PlayerConfigScene.hpp"
+#include "scenes/ResourcesPackScene.hpp"
 #include "scenes/SceneManager.hpp"
+#include "assets_manager/AssetsManager.hpp"
+#include "components/Transform.hpp"
+#include "components/GUI/Font.hpp"
+#include "components/GUI/Button.hpp"
 
-int indie::scenes::LoadSaveScene::page = 0;
+int indie::scenes::ResourcesPacksScene::_page = 0;
 
-void indie::scenes::LoadSaveScene::onStart()
+void indie::scenes::ResourcesPacksScene::onStart()
 {
     ECSWrapper ecs;
-    std::vector<std::string> saves;
+    indie::AssetsManager &assetsManager = indie::AssetsManager::getInstance();
+    std::vector<std::string> resourcesPacks;
 
     auto backgroundEntity = ecs.entityManager.createEntity("background");
     backgroundEntity->assignComponent<indie::components::Image>("default_menu_background");
@@ -37,7 +38,7 @@ void indie::scenes::LoadSaveScene::onStart()
     backToMenuButtonTransform->setScale({212,75,0});
 
     backToMenuButton->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
-        indie::scenes::SceneManager::safeChangeScene("mainMenu");
+        indie::scenes::SceneManager::safeChangeScene("settings");
     });
 
     backToMenuButton->getComponent<indie::components::Button>()->setOnHovered([](indie::components::Button *button, bool isHovered) {
@@ -47,21 +48,13 @@ void indie::scenes::LoadSaveScene::onStart()
             button->setTexturePath("button_back");
     });
 
-    boost::filesystem::path dir("resources/saves");
-    boost::filesystem::recursive_directory_iterator end;
+    assetsManager.fetchResourcesPacks();
+    for (auto &it : assetsManager.getResourcesPacks())
+        resourcesPacks.push_back(it.first);
 
-    for (boost::filesystem::recursive_directory_iterator elem(dir); elem != end; ++elem) {
-        boost::filesystem::path file = elem->path();
-        std::string name = file.string();
+    _page = 0;
 
-        while (name.find("/") != std::string::npos) {
-            name = name.substr(name.find("/") + 1);
-        }
-        saves.push_back(name);
-    }
-    page = 0;
-
-    createButtons(page, saves);
+    createButtons(_page, resourcesPacks);
 
     auto leftPageEntity = ecs.entityManager.createEntity("leftPageButton");
     auto leftPageButton = leftPageEntity->assignComponent<components::Button>("<", 1);
@@ -73,12 +66,12 @@ void indie::scenes::LoadSaveScene::onStart()
     leftPageTransform->setScale({50, 50, 0});
     leftPageTransform->setPosition({1130, 620, 0});
 
-    leftPageButton->setOnClicked([saves](components::Button *btn){
-        if (page <= 0)
+    leftPageButton->setOnClicked([resourcesPacks](components::Button *btn){
+        if (_page <= 0)
             return;
         destroyButtons();
-        page--;
-        createButtons(page, saves);
+        _page--;
+        createButtons(_page, resourcesPacks);
     });
 
     auto rightPageEntity = ecs.entityManager.createEntity("rightPageButton");
@@ -91,38 +84,42 @@ void indie::scenes::LoadSaveScene::onStart()
     rightPageTransform->setScale({50, 50, 0});
     rightPageTransform->setPosition({1190, 620, 0});
 
-    rightPageButton->setOnClicked([saves](components::Button *btn){
-        if ((page + 1)* 10 > saves.size())
+    rightPageButton->setOnClicked([resourcesPacks](components::Button *btn){
+        if ((_page + 1)* 10 > resourcesPacks.size())
             return;
         destroyButtons();
-        page++;
-        createButtons(page, saves);
+        _page++;
+        createButtons(_page, resourcesPacks);
     });
 }
 
-void indie::scenes::LoadSaveScene::createButtons(unsigned int page, std::vector<std::string> saves)
+void indie::scenes::ResourcesPacksScene::createButtons(unsigned int page, std::vector<std::string> saves)
 {
     ECSWrapper ecs;
 
     for (int i = page * 10; i < (page * 10) + 10 && i < saves.size(); i++) {
+        std::string name = saves[i];
+        name[0] = toupper(name[0]);
         auto buttonEntity = ecs.entityManager.createEntity("button" + std::to_string(i % 10));
-        auto buttonComponent = buttonEntity->assignComponent<components::Button>(saves[i], 100 + (i % 10));
+        auto buttonComponent = buttonEntity->assignComponent<components::Button>(name, 100 + (i % 10));
         auto transformComponent = buttonEntity->assignComponent<components::Transform>();
         auto buttonFont = buttonEntity->assignComponent<components::Font>("default_font");
-
+        name[0] = tolower(name[0]);
         buttonFont->setPath("default_font");
         buttonComponent->setTexturePath("button_default");
         transformComponent->setScale({1200, 50, 0});
         transformComponent->setPosition({40, 10.0f + ((i % 10) * 60.0f), 0});
 
-        std::string name = saves[i];
         buttonComponent->setOnClicked([name](components::Button *btn) {
-            indie::scenes::PlayerConfigScene::Load(name.substr(0, name.find(".")), true);
+            indie::AssetsManager &assetsManager = indie::AssetsManager::getInstance();
+
+            assetsManager.loadResourcesPack(name);
+            indie::scenes::SceneManager::safeChangeScene("resourcesPacksScene");
         });
     }
 }
 
-void indie::scenes::LoadSaveScene::destroyButtons()
+void indie::scenes::ResourcesPacksScene::destroyButtons()
 {
     ECSWrapper ecs;
 
@@ -134,18 +131,18 @@ void indie::scenes::LoadSaveScene::destroyButtons()
     }
 }
 
-void indie::scenes::LoadSaveScene::onStop()
+void indie::scenes::ResourcesPacksScene::onStop()
 {
 
 }
 
-indie::scenes::SaveState indie::scenes::LoadSaveScene::save(bool override, bool saveShouldBeKeeped)
+indie::scenes::SaveState indie::scenes::ResourcesPacksScene::save(bool override, bool saveShouldBeKeeped)
 {
     return SUCCESS;
 }
 
 indie::scenes::SaveState
-indie::scenes::LoadSaveScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
+indie::scenes::ResourcesPacksScene::save(const std::string &saveName, bool override, bool saveShouldBeKeeped)
 {
     return SUCCESS;
 }
