@@ -47,6 +47,7 @@ void indie::systems::PauseSystem::onStart()
     ecs.systemManager.stopSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.stopSystem<indie::systems::LiveSystem>();
     ecs.systemManager.stopSystem<indie::systems::TauntSystem>();
+    ecs.systemManager.stopSystem<indie::systems::AISystem>();
     ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().pauseSounds(true);
 
     float gapSize = 10.0f;
@@ -116,6 +117,7 @@ void indie::systems::PauseSystem::onStop()
     ecs.systemManager.startSystem<indie::systems::DestroyOnTimeSystem>();
     ecs.systemManager.startSystem<indie::systems::LiveSystem>();
     ecs.systemManager.startSystem<indie::systems::TauntSystem>();
+    ecs.systemManager.startSystem<indie::systems::AISystem>();
     ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().playSounds(true);
 
     ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("backToGameButton")->getID());
