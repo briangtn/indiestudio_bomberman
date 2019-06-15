@@ -338,7 +338,6 @@ std::vector<jf::entities::EntityHandler> players)
     std::uniform_int_distribution<> dis(1, 100);
     int number = dis(gen);
 
-    std::cout << "number : " << number << std::endl;
     if (number == 42)
         state = indie::components::AIController::TAUNT;
     else if (state == indie::components::AIController::SURVIVE && number <= 7) {
