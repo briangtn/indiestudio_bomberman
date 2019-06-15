@@ -58,7 +58,7 @@ void indie::systems::LiveSystem::onUpdate(const std::chrono::nanoseconds &elapse
                     std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
             }
             _gameLaunched = false;
-            scenes::SceneManager::safeChangeScene("mainMenu"); //todo change to end instead of menu
+            scenes::SceneManager::safeChangeScene("endScene");
         }
 
         for (auto &entity : entityWithLives) {
@@ -126,10 +126,12 @@ indie::components::LeaderBoard::PlayerLeaderBoard indie::systems::LiveSystem::en
             values = leaderBoardComponent->getPlayerLeaderboard();
             int nbPlayers = values.size();
             for (auto &value : values) {
-                value.first = nbPlayers - value.first + 1;
+                value.second = nbPlayers - value.second + 1;
             }
+            ecs.entityManager.safeDeleteEntity(leaderBoardEntity->getID());
             return values;
         }
+        ecs.entityManager.safeDeleteEntity(leaderBoardEntity->getID());
     }
     std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
     return values;

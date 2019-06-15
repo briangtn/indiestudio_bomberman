@@ -127,6 +127,7 @@ void indie::components::Animator::OnAnimationEnd(irr::scene::IAnimatedMeshSceneN
     if (!data.loop && !data.transition.empty()) {
         setCurrentAnimation(data.transition);
     }
+    ecs.eventManager.emit<events::IrrlichtAnimationEndEvent>({getEntity()->getID(), _currentAnimation});
 }
 
 indie::components::Animator &indie::components::Animator::operator>>(std::ostream &file)

@@ -40,7 +40,7 @@ indie::components::LeaderBoard &indie::components::LeaderBoard::operator>>(std::
 {
     file << R"(        <component type="LeaderBoard">)" << std::endl;
     for (auto &it : _playerLeaderboard) {
-        file << R"(            <player id=")" << it.first << R"(" ranking=")" << it.second << "\"/>" << std::endl;
+        file << R"(            <player id=")" << it.first << R"(" ranking=")" << it.second << R"("/>)" << std::endl;
     }
     file << "        </component>" << std::endl;
     return *this;
