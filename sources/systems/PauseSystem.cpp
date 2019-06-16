@@ -58,7 +58,6 @@ void indie::systems::PauseSystem::onStart()
 {
     ECSWrapper ecs;
 
-    //destroyButtons();
     ecs.systemManager.stopSystem<indie::systems::MovementSystem>();
     ecs.systemManager.stopSystem<indie::systems::BombManagerSystem>();
     ecs.systemManager.stopSystem<indie::systems::BonusSystem>();
