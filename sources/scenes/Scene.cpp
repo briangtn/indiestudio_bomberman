@@ -329,6 +329,10 @@ indie::scenes::SaveState indie::scenes::Scene::save(const std::string &saveName,
                 }
             });
     file << "</scene>" << std::endl;
+
+    std::string name = saveName.substr(0, saveName.find(".xml"));
+    scenes::IScene *scene = indie::Parser::getInstance().loadSingleScene(name, saveName);
+    SceneManager::addSingleScene(name, scene);
     return SUCCESS;
 }
 
