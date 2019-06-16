@@ -209,7 +209,7 @@ indie::components::SoundComponent &indie::components::SoundComponent::operator>>
         file << R"(            <argument name="position" value=")" << _position << R"("/>)" << std::endl;
     }
     file << R"(            <argument name="playLooped" value=")" << std::boolalpha << _isLooped << R"("/>)" << std::endl;
-    file << R"(            <argument name="startPaused" value=")" << std::boolalpha << _isPaused << R"("/>)" << std::endl;
+    file << R"(            <argument name="startPaused" value=")" << std::boolalpha << !_isPaused << R"("/>)" << std::endl;
     file << R"(            <argument name="volume" value=")" << _volume << R"("/>)" << std::endl;
     file << R"(            <argument name="playPosition" value=")" << _playPosition << R"("/>)" << std::endl;
     if (_spatialization) {
