@@ -11,6 +11,7 @@
 #define INDIESTUDIO_PAUSESYSTEM_HPP
 
 #include "System.hpp"
+#include "ID.hpp"
 
 namespace indie {
     namespace systems {
@@ -24,6 +25,11 @@ namespace indie {
             void onUpdate(const std::chrono::nanoseconds &elapsedTime) override;
             void onStop() override;
             void onTearDown() override;
+            void destroyButtons();
+
+        private:
+            jf::internal::ID _pauseButtonEventID;
+            jf::internal::ID _saveEventID;
 
         };
     };

@@ -136,3 +136,8 @@ indie::components::LeaderBoard::PlayerLeaderBoard indie::systems::LiveSystem::en
     std::cerr << "[ERROR][LiveSystem] startNewGame was not called!" << std::endl;
     return values;
 }
+
+bool indie::systems::LiveSystem::isGameLaunched()
+{
+    return _gameLaunched;
+}

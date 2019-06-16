@@ -7,6 +7,7 @@
 
 /* Created the 15/06/2019 at 18:04 by brian */
 
+#include "events/IrrlichtKeyJustChangedEvent.hpp"
 #include "components/GUI/Font.hpp"
 #include "ECSWrapper.hpp"
 #include "input/InputManager.hpp"
@@ -23,13 +24,29 @@
 #include "systems/PauseSystem.hpp"
 
 indie::systems::PauseSystem::PauseSystem()
+    : _pauseButtonEventID()
 {
+    ECSWrapper ecs;
 
+    InputManager::RegisterKey(irr::KEY_ESCAPE);
+    _pauseButtonEventID = ecs.eventManager.addListener<void, events::IrrlichtKeyJustChangedEvent>(nullptr, [](void *, events::IrrlichtKeyJustChangedEvent e) {
+        ECSWrapper ecs;
+
+        if (e.keyCode == irr::KEY_ESCAPE && e.pressed && ecs.systemManager.getSystem<LiveSystem>().isGameLaunched()) {
+            if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::RUNNING) {
+                ecs.systemManager.stopSystem<systems::PauseSystem>();
+            } else if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::STOPPED || ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::NOT_STARTED) {
+                ecs.systemManager.startSystem<systems::PauseSystem>();
+            }
+        }
+    });
 }
 
 indie::systems::PauseSystem::~PauseSystem()
 {
+    ECSWrapper ecs;
 
+    ecs.eventManager.removeListener(_pauseButtonEventID);
 }
 
 void indie::systems::PauseSystem::onAwake()
@@ -41,6 +58,7 @@ void indie::systems::PauseSystem::onStart()
 {
     ECSWrapper ecs;
 
+    //destroyButtons();
     ecs.systemManager.stopSystem<indie::systems::MovementSystem>();
     ecs.systemManager.stopSystem<indie::systems::BombManagerSystem>();
     ecs.systemManager.stopSystem<indie::systems::BonusSystem>();
@@ -64,6 +82,8 @@ void indie::systems::PauseSystem::onStart()
 
     backToGameButtonComponent->setOnClicked([](components::Button *self) {
         ECSWrapper ecs;
+
+        ecs.systemManager.getSystem<PauseSystem>().destroyButtons();
         ecs.systemManager.stopSystem<PauseSystem>();
     });
 
@@ -78,6 +98,7 @@ void indie::systems::PauseSystem::onStart()
     saveComponent->setOnClicked([](components::Button *self) {
         ECSWrapper ecs;
 
+        ecs.systemManager.getSystem<PauseSystem>().destroyButtons();
         ecs.eventManager.emit<events::AskingForSaveEvent>({});
         scenes::SceneManager::safeChangeScene("mainMenu");
         ecs.systemManager.getSystem<systems::LiveSystem>().endGame();
@@ -96,10 +117,10 @@ void indie::systems::PauseSystem::onStart()
     quitComponent->setOnClicked([](components::Button *self){
         ECSWrapper ecs;
 
+        ecs.systemManager.getSystem<PauseSystem>().destroyButtons();
         scenes::SceneManager::safeChangeScene("mainMenu");
         ecs.systemManager.getSystem<systems::LiveSystem>().endGame();
-        if (ecs.systemManager.getState<systems::PauseSystem>() == jf::systems::RUNNING)
-            ecs.systemManager.stopSystem<PauseSystem>();
+        ecs.systemManager.stopSystem<PauseSystem>();
     });
 }
 
@@ -120,12 +141,28 @@ void indie::systems::PauseSystem::onStop()
     ecs.systemManager.startSystem<indie::systems::AISystem>();
     ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().playSounds(true);
 
-    ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("backToGameButton")->getID());
-    ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("saveButton")->getID());
-    ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("quitButton")->getID());
+    destroyButtons();
 }
 
 void indie::systems::PauseSystem::onTearDown()
 {
 
+}
+
+void indie::systems::PauseSystem::destroyButtons()
+{
+    ECSWrapper ecs;
+
+    try {
+        ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("backToGameButton")->getID());
+        ecs.entityManager.getEntityByName("backToGameButton")->setEnable(false);
+    } catch (jf::BadHandlerException &e) {}
+    try {
+        ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("saveButton")->getID());
+        ecs.entityManager.getEntityByName("saveButton")->setEnable(false);
+    } catch (jf::BadHandlerException &e) {}
+    try {
+        ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("quitButton")->getID());
+        ecs.entityManager.getEntityByName("quitButton")->setEnable(false);
+    } catch (jf::BadHandlerException &e) {}
 }

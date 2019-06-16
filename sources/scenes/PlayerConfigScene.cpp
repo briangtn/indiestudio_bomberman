@@ -8,6 +8,7 @@
 /* Created the 12/06/2019 at 13:59 by brian */
 
 #include <regex>
+#include "systems/LiveSystem.hpp"
 #include "scenes/PlayerConfigScene.hpp"
 #include "ECSWrapper.hpp"
 #include "components/GUI/Image.hpp"
@@ -108,6 +109,7 @@ void indie::scenes::PlayerConfigScene::onStart()
     updatePlayButton();
 
     buttonStartComponent->setOnClicked([](components::Button *btn){
+        ECSWrapper ecs;
         int i = 1;
         for (auto setting : playersSettings) {
             std::string iStr = std::to_string(i);
@@ -116,6 +118,10 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
+        if (onlyHumans)
+            ecs.systemManager.getSystem<systems::LiveSystem>().startGame();
+        else
+            ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
         indie::scenes::SceneManager::safeChangeScene(sceneToLoad);
     });
 
