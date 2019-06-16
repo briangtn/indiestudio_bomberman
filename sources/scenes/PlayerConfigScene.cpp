@@ -98,7 +98,7 @@ void indie::scenes::PlayerConfigScene::InitControllers()
     controller.addKey("taunt", 0, 4);
     controller.addKey("bomb", 0, 5);
 
-    controllers.emplace("Joy-Con \\(.*\\)", controller);
+    controllers.emplace("Joy-Con.*", controller);
 }
 
 void indie::scenes::PlayerConfigScene::onStart()
