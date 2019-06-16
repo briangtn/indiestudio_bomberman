@@ -46,7 +46,6 @@ int runBomberman()
         throw jf::SystemNotFoundException("A critical system is missing: IrrlichtManagerSystem", "main");
     }
 
-    ecs.systemManager.addSystem<indie::systems::PauseSystem>();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().activateJoysticks();
     ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowCaption("Indie Studio - Bomberman");
     indie::scenes::PlayerConfigScene::InitControllers();

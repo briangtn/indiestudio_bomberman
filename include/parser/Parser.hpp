@@ -49,6 +49,8 @@ namespace indie {
                                 const std::string &node = "component");
 
     private: /* SYSTEMS */
+        static void createAI(irr::io::IXMLReader *xmlReader,
+                                const std::string &fileName, unsigned int &line);
         static void createBombManager(irr::io::IXMLReader *xmlReader, const std::string &fileName,
                                       unsigned int &line);
         static void createBonus(irr::io::IXMLReader *xmlReader, const std::string &fileName,
@@ -63,9 +65,9 @@ namespace indie {
                                         const std::string &fileName, unsigned int &line);
         static void createMovement(irr::io::IXMLReader *xmlReader,
                                    const std::string &fileName, unsigned int &line);
-        static void createTaunt(irr::io::IXMLReader *xmlReader,
+        static void createPause(irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
-        static void createAI(irr::io::IXMLReader *xmlReader,
+        static void createTaunt(irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line);
 
     private: /* COMPONENTS */
