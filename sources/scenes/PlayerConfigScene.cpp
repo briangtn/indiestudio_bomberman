@@ -136,10 +136,6 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        if (onlyHumans)
-            ecs.systemManager.getSystem<systems::LiveSystem>().startGame();
-        else
-            ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
         indie::scenes::SceneManager::safeChangeScene(sceneToLoad);
     });
 
