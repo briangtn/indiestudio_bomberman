@@ -29,6 +29,7 @@ indie::components::Font::~Font()
     EMIT_DELETE(Font);
     ECSWrapper ecs;
     ecs.eventManager.removeListener(_eventCloseID);
+    _fontNode = nullptr;
 }
 
 const std::string &indie::components::Font::getPath() const

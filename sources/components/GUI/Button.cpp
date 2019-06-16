@@ -46,6 +46,8 @@ indie::components::Button::~Button()
     ecs.eventManager.removeListener(_eventCloseID);
     if (_buttonNode != nullptr)
         _buttonNode->remove();
+    _buttonNode = nullptr;
+    _textureNode = nullptr;
 }
 
 const std::string &indie::components::Button::getText() const
