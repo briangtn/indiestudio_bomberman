@@ -32,13 +32,38 @@
             <argument name="offset" value="0,0,0"/>
             <argument name="layer" value="0xffffffff"/>
         </component>
+        <component type="Button">
+            <argument name="text" value="buttonName" trimmed="false"/>
+            <argument name="id" value="1"/>
+            <argument name="textureFileName" value="path/to/texture"/>
+        </component>
         <component type="Camera">
             <argument name="FOV" value="45"/>
+        </component>
+        <component type="Destroy">
+            <argument name="time" value="1.5"/>
+        </component>
+        <component type="DynamicCamera">
+            <argument name="movementSpeed" value="1.5"/>
+            <argument name="blockBorders" value="5"/>
+        </component>
+        <component type="Font">
+            <argument name="fileName" value="path/to/font"/>
         </component>
         <component type="Hoverer">
             <argument name="speed" value="1,1,1"/>
             <argument name="amplitude" value="1,1,1"/>
             <argument name="advancement" value="0,0,0"/>
+        </component>
+        <component type="Image">
+            <argument name="fileName" value="path/to/image"/>
+            <argument name="alphaChannel" value="true"/>
+        </component>
+        <component type="LeaderBoard">
+            <player id="1" ranking="4"/>
+            <player id="2" ranking="3"/>
+            <player id="3" ranking="1"/>
+            <player id="4" ranking="2"/>
         </component>
         <component type="Material">
             <argument name="fileName" value="player_texture_red"/>
@@ -47,6 +72,12 @@
         </component>
         <component type="Mesh">
             <argument name="fileName" value="player_model"/>
+        </component>
+        <component type="MoveToTarget">
+            <argument name="target" value="0,0,0"/>
+            <argument name="followTarget" value="true"/>
+            <argument name="reachedTarget" value="true"/>
+            <argument name="speed" value="1.5"/>
         </component>
         <component type="Particle">
             <argument name="name" value="testParticule"/>
@@ -73,6 +104,7 @@
             <argument name="moveSpeed" value="1.5"/>
             <argument name="xRotate" value="xRotAxis"/>
             <argument name="yRotate" value="yRotAxis"/>
+            <argument name="zRotate" value="zRotAxis"/>
             <argument name="lockXRotate" value="true"/>
             <argument name="lockYRotate" value="false"/>
             <argument name="lockZRotate" value="true"/>
@@ -104,16 +136,6 @@
             <argument name="playPosition" value="0"/>
             <argument name="velocity" value="0,0,0"/>
         </component>
-        <component type="Transform">
-            <argument name="position" value="0,0,0"/>
-            <argument name="rotation" value="0,0,0"/>
-            <argument name="scale" value="0,0,0"/>
-        </component>
-        <component type="Button">
-            <argument name="text" value="I'm a button"/>
-            <argument name="id" value="1"/>
-            <argument name="textureFileName" value="path/to/background"/>
-        </component>
         <component type="Text">
             <argument name="text" value="I'm a text" trimmed="false"/>
             <argument name="horizontalAlignement" value="CENTER"/>
@@ -122,29 +144,10 @@
             <argument name="backgroundColor" value="255,0,255,0"/>
             <argument name="id" value="2"/>
         </component>
-        <component type="Font">
-            <argument name="fileName" value="path/to/font"/>
-        </component>
-        <component type="Image">
-            <argument name="fileName" value="path/to/image"/>
-        </component>
-		<component type="AIController">
-		</component>
-        <component type="LeaderBoard">
-            <player id="1" ranking="1"/>
-        </component>
-        <component type="DynamicCamera">
-            <argument name="movementSpeed" value="25.0"/>
-            <argument name="blockBorders" value="2"/>
-        </component>
-        <component type="PlayerAlive">
-            <argument name="lives" value="1"/>
-            <argument name="markedAsDead" value="false"/>
-        </component>
-        <component type="MoveToTarget">
-            <argument name="target" value="0,0,0"/>
-            <argument name="followTarget" value="true"/>
-            <argument name="speed" value="30.0"/>
+        <component type="Transform">
+            <argument name="position" value="0,0,0"/>
+            <argument name="rotation" value="0,0,0"/>
+            <argument name="scale" value="0,0,0"/>
         </component>
     </entity>
 </scene>
