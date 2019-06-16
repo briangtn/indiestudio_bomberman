@@ -18,6 +18,13 @@ indie::components::Particle::Particle(jf::entities::Entity &entity, const std::s
       _particle(nullptr),
       _emitter(nullptr),
       _affector(nullptr),
+      _emitterSize(/*irr::core::aabbox3d<irr::f32>(*/0, 0, 0, 0, 0 ,0/*)*/), //
+      _initialDirection(0, 0, 0), //
+      _emitRate(0, 0), //
+      _darkBrightColor({0, 0, 0, 0}, {0, 0, 0, 0}), //
+      _minMaxAge(0, 0), //
+      _angle(0), //
+      _minMaxSize({0, 0}, {0, 0}), //
       _layer(0),
       _texturePath(),
       _name(name),
@@ -28,6 +35,8 @@ indie::components::Particle::Particle(jf::entities::Entity &entity, const std::s
       _minMaxAgeInitialize(false),
       _angleInitialize(false),
       _minMaxSizeInitialize(false),
+      _fadeColor(0, 0, 0, 0), //
+      _fadeTime(0), //
       _fadeColorInitialize(false),
       _fadeTimeInitialize(false)
 {
