@@ -118,8 +118,8 @@ indie::Parser::Parser()
         {(L"BombManager"), &createBombManager},
         {(L"Bonus"), &createBonus},
         {(L"DestroyManager"), &createDestroyManager},
-        {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"IrrklangAudio"), &createIrrklangAudio},
+        {(L"IrrlichtManager"), &createIrrlichtManager},
         {(L"Live"), &createLive},
         {(L"Movement"), &createMovement},
         {(L"Pause"), &createPause},
@@ -415,6 +415,16 @@ void indie::Parser::createDestroyManager(irr::io::IXMLReader *xmlReader, const s
     ecs.systemManager.startSystem<systems::DestroyOnTimeSystem>();
 }
 
+void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrklangAudio", "system");
+    ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
+    ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
+}
+
 void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
 {
     ECSWrapper ecs;
@@ -441,16 +451,6 @@ void indie::Parser::createIrrlichtManager(irr::io::IXMLReader *xmlReader, const 
     if (!args["windowDimension"].empty()) {
         system.setWindowDimension(getVector2D(args["windowDimension"], fileName, line));
     }
-}
-
-void indie::Parser::createIrrklangAudio(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-    std::map<std::string, std::string> args = {{"", ""}};
-
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createIrrklangAudio", "system");
-    ecs.systemManager.addSystem<systems::IrrklangAudioSystem>();
-    ecs.systemManager.startSystem<systems::IrrklangAudioSystem>();
 }
 
 void indie::Parser::createLive(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
@@ -709,8 +709,6 @@ void indie::Parser::createBoxCollider(jf::entities::EntityHandler &entity, irr::
 void indie::Parser::createButton(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                  const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
-
     std::map<std::string, std::string> args = {
             {"text", ""},
             {"id", ""},
@@ -757,22 +755,6 @@ void indie::Parser::createDestroy(jf::entities::EntityHandler &entity, irr::io::
     }
 }
 
-void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
-                               const std::string &fileName, unsigned int &line)
-{
-    ECSWrapper ecs;
-
-    std::map<std::string, std::string> args = {
-            {"fileName", ""},
-    };
-    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
-    if (args["fileName"].empty()) {
-        throw exceptions::ParserInvalidFileException(
-                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
-    }
-    auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
-}
-
 void indie::Parser::createDynamicCamera(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                         const std::string &fileName, unsigned int &line)
 {
@@ -788,6 +770,20 @@ void indie::Parser::createDynamicCamera(jf::entities::EntityHandler &entity, irr
     if (!args["blockBorders"].empty()) {
         component->setBlockBorders(std::atoi(args["blockBorders"].c_str()));
     }
+}
+
+void indie::Parser::createFont(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
+                               const std::string &fileName, unsigned int &line)
+{
+    std::map<std::string, std::string> args = {
+            {"fileName", ""},
+    };
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createFont");
+    if (args["fileName"].empty()) {
+        throw exceptions::ParserInvalidFileException(
+                "Missing mandatory argument in file " + fileName + ".", "indie::Parser::createFont");
+    }
+    auto component = entity->assignComponent<indie::components::Font>(args["fileName"]);
 }
 
 void indie::Parser::createHoverer(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
@@ -819,8 +815,6 @@ void indie::Parser::createHoverer(jf::entities::EntityHandler &entity, irr::io::
 void indie::Parser::createImage(jf::entities::EntityHandler &entity, irr::io::IXMLReader *xmlReader,
                                 const std::string &fileName, unsigned int &line)
 {
-    ECSWrapper ecs;
-
     std::map<std::string, std::string> args = {
             {"fileName", ""},
             {"alphaChannel", ""}
