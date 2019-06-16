@@ -231,6 +231,7 @@ void indie::scenes::Scene::onStart()
         ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
             ECSWrapper ecs;
 
+            //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowDimension({640, 360});
             ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
             if (ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled())
                 ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_on");

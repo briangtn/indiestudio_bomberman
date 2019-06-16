@@ -26,6 +26,7 @@ indie::components::Image::Image(jf::entities::Entity &entity, const std::string 
         if (image->_imageNode != nullptr) {
             image->_imageNode->remove();
             image->_imageNode = nullptr;
+            image->_textureNode = nullptr;
         }
     });
     EMIT_CREATE(Image);
