@@ -29,7 +29,6 @@ namespace indie {
 
         private:
             jf::internal::ID _pauseButtonEventID;
-            jf::internal::ID _saveEventID;
 
         };
     };
