@@ -78,8 +78,14 @@ irrklang::ISound *indie::components::SoundComponent::getSound()
 void indie::components::SoundComponent::setSound(irrklang::ISound *sound)
 {
     _sound = sound;
-    if (_sound)
+    if (_sound) {
         _state = STARTED;
+        _sound->setVolume(_volume);
+        _sound->setPlayPosition(_playPosition);
+        if (_spatialization) {
+            _sound->setVelocity(irrklang::vec3df(_velocity.x, _velocity.y, _velocity.z));
+        }
+    }
 }
 
 const std::string &indie::components::SoundComponent::getSourceFile() const
