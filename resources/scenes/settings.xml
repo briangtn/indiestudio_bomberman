@@ -120,7 +120,7 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="Effects Volume:"/>
+            <argument name="text" value="Effects Volume:" trimmed="false"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
@@ -134,7 +134,7 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="Musics Volume:"/>
+            <argument name="text" value="Musics Volume:" trimmed="false"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
@@ -149,7 +149,7 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="Musics Volume:"/>
+            <argument name="text" value="Musics Volume:" trimmed="false"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
@@ -163,7 +163,7 @@
             <argument name="scale" value="1280,720,0"/>
         </component>
         <component type="Text">
-            <argument name="text" value="Effect Volume:"/>
+            <argument name="text" value="Effects Volume:" trimmed="false"/>
             <argument name="color" value="ff,00,00,00"/>
             <argument name="horizontalAlignement" value="CENTER"/>
         </component>
