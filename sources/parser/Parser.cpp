@@ -11,6 +11,7 @@
 #include <regex>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <systems/PauseSystem.hpp>
 #include "parser/Parser.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "exceptions/ParserExceptions.hpp"
@@ -113,6 +114,7 @@ indie::Parser::Parser()
     , _xmlReader(nullptr)
     , _scenes()
     , _systems({
+        {(L"AI"), &createAI},
         {(L"BombManager"), &createBombManager},
         {(L"Bonus"), &createBonus},
         {(L"DestroyManager"), &createDestroyManager},
@@ -120,8 +122,8 @@ indie::Parser::Parser()
         {(L"IrrklangAudio"), &createIrrklangAudio},
         {(L"Live"), &createLive},
         {(L"Movement"), &createMovement},
-        {(L"Taunt"), &createTaunt},
-        {(L"AI"), &createAI}
+        {(L"Pause"), &createPause},
+        {(L"Taunt"), &createTaunt}
     })
     , _components({
         {(L"AIController"), &createAIController},
@@ -475,6 +477,16 @@ void indie::Parser::createMovement(irr::io::IXMLReader *xmlReader, const std::st
         system.setMapSize({15, 15});
     }
     ecs.systemManager.startSystem<systems::MovementSystem>();
+}
+
+void indie::Parser::createPause(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
+{
+    ECSWrapper ecs;
+    std::map<std::string, std::string> args = {{"", ""}};
+
+    fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPause", "system");
+    ecs.systemManager.addSystem<systems::PauseSystem>();
+    ecs.systemManager.getSystem<systems::PauseSystem>();
 }
 
 void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)

@@ -18,4 +18,6 @@
     </system>
     <system type="AI">
     </system>
+    <system type="Pause">
+    </system>
 </ecs>
