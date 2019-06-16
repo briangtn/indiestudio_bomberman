@@ -151,6 +151,8 @@ int indie::AssetsManager::loadResourcesPack(const std::string &texturePackName)
     _currentAssets["music_title"] = _resourcesPacks[texturePackName] + "musics/music_title.ogg";
     _currentAssets["music_win"] = _resourcesPacks[texturePackName] + "musics/music_win.ogg";
 
+    _currentAssets["splash_screen"] = _resourcesPacks[texturePackName] + "textures/gui/splashscreen.png";
+
     return (0);
 }
 

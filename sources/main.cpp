@@ -9,6 +9,7 @@
 
 #include <typeinfo>
 #include <iostream>
+#include "systems/SplashScreenSystem.hpp"
 #include "systems/PauseSystem.hpp"
 #include "systems/TauntSystem.hpp"
 #include "systems/BonusSystem.hpp"
@@ -33,6 +34,7 @@
 #include "systems/LiveSystem.hpp"
 #include "assets_manager/AssetsManager.hpp"
 #include "scenes/InvalidXmlScene.hpp"
+#include "scenes/SplashScreenScene.hpp"
 
 int runBomberman()
 {
@@ -40,6 +42,9 @@ int runBomberman()
     std::vector<jf::internal::ID> listeners;
 
     indie::Parser::getInstance().loadSystems(SYSTEMS_FILE_PATH);
+
+    ecs.systemManager.addSystem<indie::systems::SplashScreenSystem>();
+    ecs.systemManager.startSystem<indie::systems::SplashScreenSystem>();
 
     try {
         ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>();
@@ -58,6 +63,7 @@ int runBomberman()
     indie::Parser::getInstance().loadScenes(SAVES_FOLDER_PATH);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
+    indie::scenes::SceneManager::addSingleScene("splashScreen", new indie::scenes::SplashScreenScene());
     indie::scenes::SceneManager::addSingleScene("invalidXML", new indie::scenes::InvalidXmlScene());
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
@@ -66,7 +72,7 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
     indie::scenes::SceneManager::addSingleScene("resourcesPacksScene", new indie::scenes::ResourcesPacksScene());
 
-    indie::scenes::SceneManager::changeScene("mainMenu");
+    indie::scenes::SceneManager::changeScene("splashScreen");
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||
