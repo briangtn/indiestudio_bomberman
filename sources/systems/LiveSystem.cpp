@@ -7,6 +7,7 @@
 
 /* Created the 13/06/2019 at 10:07 by jfrabel */
 
+#include <systems/BombManagerSystem.hpp>
 #include "systems/LiveSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "components/PlayerAlive.hpp"
@@ -118,6 +119,12 @@ indie::components::LeaderBoard::PlayerLeaderBoard indie::systems::LiveSystem::en
 {
     _gameLaunched = false;
     ECSWrapper ecs;
+    try {
+        ecs.systemManager.getSystem<systems::BombManagerSystem>().setNumberBombPlace(0, components::P1);
+        ecs.systemManager.getSystem<systems::BombManagerSystem>().setNumberBombPlace(0, components::P2);
+        ecs.systemManager.getSystem<systems::BombManagerSystem>().setNumberBombPlace(0, components::P3);
+        ecs.systemManager.getSystem<systems::BombManagerSystem>().setNumberBombPlace(0, components::P4);
+    } catch (jf::SystemNotFoundException &e) {}
     components::LeaderBoard::PlayerLeaderBoard values;
     auto leaderBoardEntity = ecs.entityManager.getEntityByName("leaderBoard");
     if (leaderBoardEntity.isValid()) {
