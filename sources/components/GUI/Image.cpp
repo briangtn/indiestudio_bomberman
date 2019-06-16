@@ -112,7 +112,7 @@ indie::components::Image &indie::components::Image::operator>>(std::ostream &fil
 {
     file << R"(        <component type="Image">)" << std::endl;
     file << R"(            <argument name="fileName" value=")" << _path << R"("/>)" << std::endl;
-    file << R"(            <argument name="alphaChannel" value=")" << std::boolalpha << R"("/>)" << std::endl;
+    file << R"(            <argument name="alphaChannel" value=")" << std::boolalpha << _useAlpha << R"("/>)" << std::endl;
     file << "        </component>" << std::endl;
     return *this;
 }
