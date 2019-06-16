@@ -30,7 +30,7 @@ const std::map<indie::components::BonusType, float> indie::systems::BonusSystem:
     {components::BONUS_T_BOMB_UP, 15.0f},
     {components::BONUS_T_FIRE_UP, 15.0f},
     {components::BONUS_T_SPEED_UP, 15.0f},
-    {components::BONUS_T_WALL_PASS, 2.5f},
+    {components::BONUS_T_WALL_PASS, 1.5f},
 };
 
 const std::map<indie::components::BonusType, std::pair<std::string, std::string>> indie::systems::BonusSystem::_bonusModelMap = {
