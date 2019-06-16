@@ -228,60 +228,6 @@ void indie::scenes::Scene::onStart()
             }
         });
     }
-    if (_fileName == "test.xml") {
-        auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place_bomb");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
-            }
-        });
-        _listeners.emplace_back(id);
-
-        indie::Map::generateMap(15, 13, 420, false);
-
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
-            }
-        });
-        _listeners.emplace_back(id);
-    }
 }
 
 void indie::scenes::Scene::onStop()
