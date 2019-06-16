@@ -151,10 +151,10 @@ void indie::scenes::PlayerConfigScene::onStart()
     backgroundTransform->setPosition({0, 0, -1});
 
     auto backToMenuButton = ecs.entityManager.createEntity("backToMenuButton");
-    auto backToMenuButtonComponent = backToMenuButton->assignComponent<indie::components::Button>("", 99, "button_back");
+    auto backToMenuButtonComponent = backToMenuButton->assignComponent<indie::components::Button>("", 99, "button_back_to_menu");
     auto backToMenuButtonTransform = backToMenuButton->assignComponent<indie::components::Transform>();
     backToMenuButtonTransform->setPosition({0, 645, 0});
-    backToMenuButtonTransform->setScale({212,75,0});
+    backToMenuButtonTransform->setScale({367,75,0});
 
     backToMenuButton->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
         indie::scenes::SceneManager::safeChangeScene("mainMenu");
