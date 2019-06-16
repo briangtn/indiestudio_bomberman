@@ -241,7 +241,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     auto detectControllerButtonFont = detectControllerButton->assignComponent<components::Font>("default_font");
 
     detectControllerButtonComponent->setTexturePath("button_default");
-    detectControllerButtonTransform->setPosition({basePos.x, basePos.y + blockSize.y, 0});
+    detectControllerButtonTransform->setPosition({basePos.x, basePos.y + (blockSize.y * (y == 0 ? 1 : 0)) - (50 * y), 0});
     detectControllerButtonTransform->setScale({blockSize.x, 50, 0});
 
     auto configControllerButton = ecs.entityManager.createEntity("configControllerButton" + idString);
@@ -250,7 +250,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     auto configControllerButtonFont = configControllerButton->assignComponent<components::Font>("default_font");
 
     configControllerButtonComponent->setTexturePath("button_default");
-    configControllerButtonTransform->setPosition({basePos.x, basePos.y + blockSize.y, 0});
+    configControllerButtonTransform->setPosition({basePos.x, basePos.y + (blockSize.y * (y == 0 ? 1 : 0)) - (50 * y), 0});
     configControllerButtonTransform->setScale({blockSize.x, 50, 0});
 
     if (playersSettings[id - 1].controllerType != INPUT_EXIST)
@@ -313,6 +313,7 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     });
 
     detectControllerButtonComponent->setOnClicked([id](components::Button *btn) {
+        PlayerConfigScene::setValid(false, id);
         indie::scenes::PlayerConfigScene::onWaitForInput(id);
     });
 
