@@ -32,6 +32,7 @@
 #include "components/Bomb.hpp"
 #include "systems/LiveSystem.hpp"
 #include "assets_manager/AssetsManager.hpp"
+#include "scenes/InvalidXmlScene.hpp"
 
 int runBomberman()
 {
@@ -57,6 +58,7 @@ int runBomberman()
     indie::Parser::getInstance().loadScenes(SAVES_FOLDER_PATH);
     indie::scenes::SceneManager::addScenes(indie::Parser::getInstance().loadScenes(SCENES_FOLDER_PATH));
 
+    indie::scenes::SceneManager::addSingleScene("invalidXML", new indie::scenes::InvalidXmlScene());
     indie::scenes::SceneManager::addSingleScene("playerConfig", new indie::scenes::PlayerConfigScene());
     indie::scenes::SceneManager::addSingleScene("controllerConfig", new indie::scenes::ControllerConfigScene());
     indie::scenes::SceneManager::addSingleScene("newGameScene", new indie::scenes::NewGameScene());

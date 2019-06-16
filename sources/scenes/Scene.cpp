@@ -53,9 +53,14 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 void indie::scenes::Scene::onStart()
 {
     try {
-        Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
-    } catch (indie::exceptions::ParserDeviceException e){
-        Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + _fileName);
+        try {
+            Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
+        } catch (indie::exceptions::ParserDeviceException &e) {
+            Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + _fileName);
+        }
+    } catch (std::exception &e) {
+        scenes::SceneManager::safeChangeScene("invalidXML");
+        return;
     }
     ECSWrapper ecs;
 
