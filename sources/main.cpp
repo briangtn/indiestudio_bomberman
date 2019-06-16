@@ -86,6 +86,7 @@ int runBomberman()
     return 0;
 }
 
+
 int main()
 {
     try {

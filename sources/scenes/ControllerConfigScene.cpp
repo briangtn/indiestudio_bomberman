@@ -175,8 +175,8 @@ void indie::scenes::ControllerConfigScene::left()
                 joysticksActivated.emplace(toSearch, e.data.Axis[i] <= -20000);
                 return;
             } else if ((e.data.Axis[i] <= 15000 && e.data.Axis[i] >= -15000) && finded != joysticksActivated.end()) {
+				controller.addAxis<JoystickAxis>("xAxis", { e.data.Joystick, finded->second });
                 joysticksActivated.erase(finded);
-                controller.addAxis<JoystickAxis>("xAxis", {e.data.Joystick, finded->second});
                 taunt();
             }
         }

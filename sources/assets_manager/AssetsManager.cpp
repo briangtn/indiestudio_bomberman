@@ -42,8 +42,8 @@ int indie::AssetsManager::addResourcesPack(const std::string &texturePackName, c
 void indie::AssetsManager::fetchResourcesPacks()
 {
     for (const auto & entry : boost::filesystem::directory_iterator(RESOURCES_PACK_PATH)) {
-        std::string nativePath = entry.path().native();
-        std::string fullPath = entry.path().native() + "/";
+        std::string nativePath = entry.path().string();
+        std::string fullPath = entry.path().string() + "/";
         std::string resourcePackName = nativePath.erase(0, std::string(RESOURCES_PACK_PATH).length());
         addResourcesPack(resourcePackName, fullPath);
     }
