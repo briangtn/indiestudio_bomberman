@@ -132,6 +132,10 @@ int indie::AssetsManager::loadResourcesPack(const std::string &texturePackName)
     _currentAssets["button_back_hovered"] = _resourcesPacks[texturePackName] + "textures/gui/button_back_hovered.png";
     _currentAssets["button_resources_packs"] = _resourcesPacks[texturePackName] + "textures/gui/button_resources_packs.png";
     _currentAssets["button_default"] = _resourcesPacks[texturePackName] + "textures/gui/button_default.png";
+    _currentAssets["button_debug_on"] = _resourcesPacks[texturePackName] + "textures/gui/button_debug_on.png";
+    _currentAssets["button_debug_off"] = _resourcesPacks[texturePackName] + "textures/gui/button_debug_off.png";
+    _currentAssets["button_fullscreen_on"] = _resourcesPacks[texturePackName] + "textures/gui/button_fullscreen_on.png";
+    _currentAssets["button_fullscreen_off"] = _resourcesPacks[texturePackName] + "textures/gui/button_fullscreen_off.png";
     _currentAssets["logo"] = _resourcesPacks[texturePackName] + "textures/gui/logo.png";
 
 

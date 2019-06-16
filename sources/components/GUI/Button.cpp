@@ -33,6 +33,7 @@ indie::components::Button::Button(
         if (button->_buttonNode != nullptr)
             button->_buttonNode->remove();
         button->_buttonNode = nullptr;
+        button->_textureNode = nullptr;
     });
     EMIT_CREATE(Button);
 }

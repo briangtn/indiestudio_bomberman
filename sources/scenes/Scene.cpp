@@ -228,6 +228,38 @@ void indie::scenes::Scene::onStart()
                 ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
             }
         });
+
+        ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            ECSWrapper ecs;
+
+            //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowDimension({640, 360});
+            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
+            if (ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled())
+                ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_on");
+            else
+                ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_off");
+        });
+        if (ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled())
+            ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_on");
+        else
+            ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_off");
+
+        ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            ECSWrapper ecs;
+
+            indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+            if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+            } else {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
+            }
+        });
+
+        if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+        } else {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
+        }
     }
     auto id = ecs.eventManager.addListener<Scene, events::AskingForSaveEvent>(this, [](Scene *self, events::AskingForSaveEvent e){
         self->save(true, true);
