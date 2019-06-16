@@ -310,7 +310,7 @@ ai::get2DPositionFromWorldPos(bonuses->getComponent<indie::components::Transform
 
 void indie::systems::AISystem::searchLogic(jf::components::ComponentHandler<indie::components::AIController> &component, jf::entities::EntityHandler &entity)
 {
-    ai::AStar::Node subtarget({{0, 0}, 0, 0, false, false, false, nullptr, 10});
+    ai::AStar::Node subtarget = {{0, 0}, 0, 0, false, false, false, nullptr, 10};
     maths::Vector3D playerPos = entity->getComponent<indie::components::Transform>()->getPosition();
 
     if (component->getState() != component->getLastState() || !component->getHasTarget()) {

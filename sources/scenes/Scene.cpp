@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
+#include <systems/LiveSystem.hpp>
 #include "components/DestroyOnTime.hpp"
 #include "events/AskingForSaveEvent.hpp"
 #include "scenes/Scene.hpp"
@@ -52,9 +53,14 @@ indie::scenes::Scene::Scene(const std::string &fileName)
 void indie::scenes::Scene::onStart()
 {
     try {
-        Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
-    } catch (indie::exceptions::ParserDeviceException e){
-        Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + _fileName);
+        try {
+            Parser::getInstance().loadScene(std::string(SCENES_FOLDER_PATH) + "/" + _fileName);
+        } catch (indie::exceptions::ParserDeviceException &e) {
+            Parser::getInstance().loadScene(std::string(SAVES_FOLDER_PATH) + "/" + _fileName);
+        }
+    } catch (std::exception &e) {
+        scenes::SceneManager::safeChangeScene("invalidXML");
+        return;
     }
     ECSWrapper ecs;
 
@@ -260,7 +266,10 @@ void indie::scenes::Scene::onStart()
         } else {
             ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
         }
+    } else if (_fileName.rfind("save ", 0) == 0) {
+        ecs.systemManager.getSystem<systems::LiveSystem>().startGame();
     }
+
     auto id = ecs.eventManager.addListener<Scene, events::AskingForSaveEvent>(this, [](Scene *self, events::AskingForSaveEvent e){
         self->save(true, true);
     });
