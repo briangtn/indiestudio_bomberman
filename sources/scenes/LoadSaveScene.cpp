@@ -55,9 +55,15 @@ void indie::scenes::LoadSaveScene::onStart()
         boost::filesystem::path file = elem->path();
         std::string name = file.string();
 
-        while (name.find("/") != std::string::npos) {
-            name = name.substr(name.find("/") + 1);
-        }
+#ifdef WIN32
+		while (name.find("\\") != std::string::npos) {
+			name = name.substr(name.find("\\") + 1);
+		}
+#else
+		while (name.find("/") != std::string::npos) {
+			name = name.substr(name.find("/") + 1);
+		}
+#endif
         std::regex regex(".*\\.xml$");
         if (std::regex_match(name, regex))
             saves.push_back(name);
