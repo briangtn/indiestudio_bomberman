@@ -25,9 +25,9 @@ indie::components::Image::Image(jf::entities::Entity &entity, const std::string 
     _eventCloseID = ecs.eventManager.addListener<Image, events::IrrlichtClosingWindowEvent>(this, [](Image *image, events::IrrlichtClosingWindowEvent e) {
         if (image->_imageNode != nullptr) {
             image->_imageNode->remove();
-            image->_imageNode = nullptr;
-            image->_textureNode = nullptr;
         }
+        image->_imageNode = nullptr;
+        image->_textureNode = nullptr;
     });
     EMIT_CREATE(Image);
 }
@@ -41,6 +41,8 @@ indie::components::Image::~Image()
     if (_imageNode != nullptr) {
         _imageNode->remove();
     }
+    _imageNode = nullptr;
+    _textureNode = nullptr;
 }
 
 const std::string &indie::components::Image::getPath() const

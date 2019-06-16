@@ -126,7 +126,7 @@ void indie::scenes::PlayerConfigScene::onStart()
             ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
         indie::scenes::SceneManager::safeChangeScene(sceneToLoad);
     });
-
+/*
     auto buttonReloadEntity = ecs.entityManager.createEntity("buttonReload");
     auto buttonReloadComponent = buttonReloadEntity->assignComponent<indie::components::Button>("", 4);
     auto buttonReloadTransform = buttonReloadEntity->assignComponent<indie::components::Transform>();
@@ -141,7 +141,7 @@ void indie::scenes::PlayerConfigScene::onStart()
 
         ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>().reloadJoysticks();
     });
-
+*/
     for (unsigned int i = 1; i <= 4; i++)
         createConfigBlock(i);
 
@@ -387,7 +387,16 @@ void indie::scenes::PlayerConfigScene::onWaitForInput(int id)
             if (e.data.IsButtonPressed(i)) {
                 ECSWrapper ecs;
                 auto &system = ecs.systemManager.getSystem<systems::IrrlichtManagerSystem>();
-                std::string name = std::string(system.getJoystickInfos()[e.data.Joystick].Name.c_str());
+                auto &joystickInfos = system.getJoystickInfos();
+                const irr::SJoystickInfo *joystickInfo = nullptr;
+                for (int joystickIndex = 0; joystickIndex < joystickInfos.size(); ++joystickIndex) {
+                    if (joystickInfos[joystickIndex].Joystick == e.data.Joystick) {
+                        joystickInfo = &joystickInfos[joystickIndex];
+                    }
+                }
+                std::string name;
+                if (joystickInfo != nullptr)
+                    name = std::string(joystickInfos[e.data.Joystick].Name.c_str());
 
                 for (auto &controller : controllers) {
                     std::regex reg(controller.first);

@@ -48,6 +48,7 @@ indie::components::Text::~Text()
     ecs.eventManager.removeListener(_eventCloseID);
     if (_textNode != nullptr)
         _textNode->remove();
+    _textNode = nullptr;
 }
 
 const std::string &indie::components::Text::getText() const
