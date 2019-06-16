@@ -37,7 +37,7 @@
 #include "components/PlayerAlive.hpp"
 
 indie::scenes::NewGameScene::NewGameScene()
-    : _saveOnExit(true), _saveName("default.xml"), _saveEventID()
+    : _saveOnExit(false), _saveName("default.xml"), _saveEventID()
 {
 
 }
