@@ -11,7 +11,7 @@
 #include <regex>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-#include <systems/PauseSystem.hpp>
+#include "systems/PauseSystem.hpp"
 #include "parser/Parser.hpp"
 #include "exceptions/IrrlichtManagerExceptions.hpp"
 #include "exceptions/ParserExceptions.hpp"
