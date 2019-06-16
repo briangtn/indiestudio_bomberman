@@ -8,7 +8,7 @@
 /* Created the 14/06/2019 at 16:39 by jbulteau */
 
 #include <algorithm>
-#include <scenes/PlayerConfigScene.hpp>
+#include "scenes/PlayerConfigScene.hpp"
 #include "scenes/EndScene.hpp"
 #include "ECSWrapper.hpp"
 #include "components/Camera.hpp"
