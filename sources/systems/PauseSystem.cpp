@@ -138,7 +138,6 @@ void indie::systems::PauseSystem::onStop()
     ecs.systemManager.startSystem<indie::systems::LiveSystem>();
     ecs.systemManager.startSystem<indie::systems::TauntSystem>();
     ecs.systemManager.startSystem<indie::systems::AISystem>();
-    ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().playSounds(true);
 
     destroyButtons();
 }
@@ -164,4 +163,5 @@ void indie::systems::PauseSystem::destroyButtons()
         ecs.entityManager.safeDeleteEntity(ecs.entityManager.getEntityByName("quitButton")->getID());
         ecs.entityManager.getEntityByName("quitButton")->setEnable(false);
     } catch (jf::BadHandlerException &e) {}
+    ecs.systemManager.getSystem<indie::systems::IrrklangAudioSystem>().pauseSounds(false);
 }
