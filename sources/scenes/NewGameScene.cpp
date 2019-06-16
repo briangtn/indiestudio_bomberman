@@ -33,6 +33,7 @@
 #include "components/PlayerController.hpp"
 #include "components/Camera.hpp"
 #include "components/DynamicCamera.hpp"
+#include "scenes/SceneManager.hpp"
 #include "systems/IrrklangAudioSystem.hpp"
 #include "components/PlayerAlive.hpp"
 
@@ -122,6 +123,10 @@ indie::scenes::SaveState indie::scenes::NewGameScene::save(const std::string &sa
             }
         });
     file << "</scene>" << std::endl;
+
+    std::string name = saveName.substr(0, saveName.find(".xml"));
+    scenes::IScene *scene = indie::Parser::getInstance().loadSingleScene(name, saveName);
+    SceneManager::addSingleScene(name, scene);
     return SUCCESS;
 }
 
