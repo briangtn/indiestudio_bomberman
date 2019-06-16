@@ -123,13 +123,13 @@ namespace indie {
 
             /* BoxEmitter Info */
 
-            irr::core::aabbox3d<irr::f32> _emitterSize; //
-            irr::core::vector3df _initialDirection; //
-            std::pair<int, int> _emitRate; //
-            std::pair<irr::video::SColor, irr::video::SColor> _darkBrightColor; //
-            std::pair<int, int> _minMaxAge; //
-            int _angle; //
-            std::pair<irr::core::dimension2df, irr::core::dimension2df> _minMaxSize; //
+            irr::core::aabbox3d<irr::f32> _emitterSize;
+            irr::core::vector3df _initialDirection;
+            std::pair<int, int> _emitRate;
+            std::pair<irr::video::SColor, irr::video::SColor> _darkBrightColor;
+            std::pair<int, int> _minMaxAge;
+            int _angle;
+            std::pair<irr::core::dimension2df, irr::core::dimension2df> _minMaxSize;
 
             bool _emiterSizeInitialize;
             bool _initialDirectionInitialize;
@@ -141,8 +141,8 @@ namespace indie {
 
             /* FadeOut Info */
 
-            irr::video::SColor _fadeColor; //
-            int _fadeTime; //
+            irr::video::SColor _fadeColor;
+            int _fadeTime;
 
             bool _fadeColorInitialize;
             bool _fadeTimeInitialize;
