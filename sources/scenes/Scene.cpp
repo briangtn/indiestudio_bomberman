@@ -227,6 +227,23 @@ void indie::scenes::Scene::onStart()
                 ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
             }
         });
+
+        ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            ECSWrapper ecs;
+
+            indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+            if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+            } else {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
+            }
+        });
+
+        if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+        } else {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
+        }
     }
     if (_fileName == "test.xml") {
         auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {

@@ -19,7 +19,17 @@
             <argument name="id" value="1"/>
         </component>
     </entity>
-
+    <entity name="debugButton">
+        <component type="Transform">
+            <argument name="position" value="775,640,0"/> <!-- (720 / 2) - 80 - 10 -->
+            <argument name="scale" value="500,75,0"/>
+        </component>
+        <component type="Button">
+            <argument name="text" value="."/>
+            <argument name="textureFileName" value="button_debug_off"/>
+            <argument name="id" value="69"/>
+        </component>
+    </entity>
     <entity name="resourcesPacksButton">
         <component type="Transform">
             <argument name="position" value="250,500,0"/> <!-- (720 / 2) - 80 - 10 -->
