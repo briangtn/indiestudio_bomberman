@@ -64,7 +64,7 @@ void indie::scenes::LoadSaveScene::onStart()
 			name = name.substr(name.find("/") + 1);
 		}
 #endif
-        std::regex regex(".*\\.xml$");
+        std::regex regex("^save .*\\.xml$");
         if (std::regex_match(name, regex))
             saves.push_back(name);
     }
