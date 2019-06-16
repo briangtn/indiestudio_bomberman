@@ -377,13 +377,13 @@ int indie::systems::BombManagerSystem::checkIsCollide(indie::maths::Vector3D vec
                 auto componentBoxMusic = ecs.entityManager.createEntity("soundBox");
                 auto BoxSound = componentBoxMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("crate_break_sound", components::SoundComponent::SoundType::EFFECT);
                 BoxSound->setIsPaused(false);
-                componentBoxMusic->assignComponent<components::DestroyOnTime, float>(5);
+                componentBoxMusic->assignComponent<components::DestroyOnTime, float>(10);
                 ret = ret == 0 ? 2 : ret;
             } else if ((collider->getLayer() & PLAYER_LAYER)) {
                 auto componentDeathMusic = ecs.entityManager.createEntity("soundDeath");
                 auto DeathSound = componentDeathMusic->assignComponent<components::SoundComponent, std::string, components::SoundComponent::SoundType>("player_die_sound", components::SoundComponent::SoundType::EFFECT);
                 DeathSound->setIsPaused(false);
-                componentDeathMusic->assignComponent<components::DestroyOnTime, float>(3);
+                componentDeathMusic->assignComponent<components::DestroyOnTime, float>(10);
                 auto playerLiveComponent = entity->getComponent<components::PlayerAlive>();
                 if (playerLiveComponent.isValid()) {
                     playerLiveComponent->setLives(playerLiveComponent->getLives() - 1);
