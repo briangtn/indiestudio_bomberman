@@ -33,6 +33,7 @@ namespace indie {
         public:
             void startNewGame();
             void startGame();
+            bool isGameLaunched();
             components::LeaderBoard::PlayerLeaderBoard endGame();
 
         private:

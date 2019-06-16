@@ -13,7 +13,8 @@
 #include <iomanip>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
-#include <components/DestroyOnTime.hpp>
+#include "components/DestroyOnTime.hpp"
+#include "events/AskingForSaveEvent.hpp"
 #include "scenes/Scene.hpp"
 #include "parser/Parser.hpp"
 #include "ECSWrapper.hpp"
@@ -228,6 +229,10 @@ void indie::scenes::Scene::onStart()
             }
         });
     }
+    auto id = ecs.eventManager.addListener<Scene, events::AskingForSaveEvent>(this, [](Scene *self, events::AskingForSaveEvent e){
+        self->save(true, true);
+    });
+    _listeners.emplace_back(id);
 }
 
 void indie::scenes::Scene::onStop()
