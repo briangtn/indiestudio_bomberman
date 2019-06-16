@@ -71,18 +71,34 @@ void indie::scenes::PlayerConfigScene::InitControllers()
     controller = Controller("");
     controller.addAxis<JoystickAxis>("xAxis", {0, 0});
     controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
-    controller.addKey("taunt", 0, 1);
-    controller.addKey("bomb", 0, 2);
+    controller.addKey("taunt", 0, 3);
+    controller.addKey("bomb", 0, 1);
 
     controllers.emplace(".*Xbox One Controller.*", controller);
 
     controller = Controller("");
     controller.addAxis<JoystickAxis>("xAxis", {0, 0});
     controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
-    controller.addKey("taunt", 0, 0);
-    controller.addKey("bomb", 0, 2);
+    controller.addKey("taunt", 0, 2);
+    controller.addKey("bomb", 0, 1);
 
     controllers.emplace(".*Sony.*Controller.*", controller);
+
+    controller = Controller("");
+    controller.addAxis<JoystickAxis>("xAxis", {0, 0});
+    controller.addAxis<JoystickAxis>("zAxis", {0, 1, true});
+    controller.addKey("taunt", 0, 2);
+    controller.addKey("bomb", 0, 1);
+
+    controllers.emplace("Lic Pro Controller", controller);
+
+    controller = Controller("");
+    controller.addAxis<JoystickAxis>("xAxis", {0, 4});
+    controller.addAxis<JoystickAxis>("zAxis", {0, 5, true});
+    controller.addKey("taunt", 0, 4);
+    controller.addKey("bomb", 0, 5);
+
+    controllers.emplace("Joy-Con.*", controller);
 }
 
 void indie::scenes::PlayerConfigScene::onStart()
@@ -120,10 +136,6 @@ void indie::scenes::PlayerConfigScene::onStart()
                 setting.controller.generateKeysAndAxes("player" + iStr);
             i++;
         }
-        if (onlyHumans)
-            ecs.systemManager.getSystem<systems::LiveSystem>().startGame();
-        else
-            ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
         indie::scenes::SceneManager::safeChangeScene(sceneToLoad);
     });
 /*

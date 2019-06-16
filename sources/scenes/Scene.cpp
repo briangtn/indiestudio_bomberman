@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
+#include <systems/LiveSystem.hpp>
 #include "components/DestroyOnTime.hpp"
 #include "events/AskingForSaveEvent.hpp"
 #include "scenes/Scene.hpp"
@@ -260,7 +261,10 @@ void indie::scenes::Scene::onStart()
         } else {
             ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
         }
+    } else if (_fileName.rfind("save ", 0) == 0) {
+        ecs.systemManager.getSystem<systems::LiveSystem>().startGame();
     }
+
     auto id = ecs.eventManager.addListener<Scene, events::AskingForSaveEvent>(this, [](Scene *self, events::AskingForSaveEvent e){
         self->save(true, true);
     });

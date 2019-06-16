@@ -80,6 +80,7 @@ void indie::scenes::NewGameScene::onStart()
     _saveEventID = ecs.eventManager.addListener<NewGameScene, events::AskingForSaveEvent>(this, [](NewGameScene *self, events::AskingForSaveEvent e){
         self->save(true, true);
     });
+    ecs.systemManager.getSystem<systems::LiveSystem>().startNewGame();
 }
 
 void indie::scenes::NewGameScene::onStop()
