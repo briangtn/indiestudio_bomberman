@@ -64,21 +64,7 @@ int runBomberman()
     indie::scenes::SceneManager::addSingleScene("loadSave", new indie::scenes::LoadSaveScene());
     indie::scenes::SceneManager::addSingleScene("resourcesPacksScene", new indie::scenes::ResourcesPacksScene());
 
-    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_J>>(nullptr, [](void *null, auto e) {
-        if (e.wasPressed) {
-            ECSWrapper ecs;
-            ecs.eventManager.emit<indie::events::AskingForBonusSpawnEvent>({{40, 0, 0}, indie::components::BonusSpawner::BONUS_SPAWNER_T_SPECIFIC, indie::components::BONUS_T_WALL_PASS});
-        }
-    });
-
     indie::scenes::SceneManager::changeScene("mainMenu");
-
-    ecs.eventManager.addListener<void, indie::events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
-        ECSWrapper ecs;
-        if (e.wasPressed) {
-            indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
-        }
-    });
 
     while (ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::AWAKING ||
            ecs.systemManager.getState<indie::systems::IrrlichtManagerSystem>() == jf::systems::STARTING ||

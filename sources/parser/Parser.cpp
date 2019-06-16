@@ -981,7 +981,7 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
     auto component = entity->assignComponent<components::Particle>(
         args["name"]);
     if (!args["fileName"].empty() && !args["layer"].empty()) {
-        component->setTexture(std::stoi(args["layer"]), args["fileName"]);
+        component->setTexture(std::stoul(args["layer"], nullptr, 16), args["fileName"]);
     } else if (!args["fileName"].empty()) {
         throw exceptions::ParserInvalidFileException(
                 "Missing argument 'layer' for texture setting for component 'Particle' at line "
@@ -1000,8 +1000,8 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
         component->setInitialDirection(getVector3D(args["direction"], fileName, line));
     }
     if (!args["emitRate"].empty()) {
-        component->setEmitRate(std::make_pair(std::stoi(args["emitRate"].substr(0, args["emitRate"].find(','))),
-                std::stoi(args["emitRate"].substr(args["emitRate"].find(',') + 1))));
+        component->setEmitRate(std::make_pair(std::stoul(args["emitRate"].substr(0, args["emitRate"].find(',')), nullptr, 16),
+                std::stoi(args["emitRate"].substr(args["emitRate"].find(',') + 1), nullptr, 16)));
     }
     if (!args["brightColor"].empty()) {
         component->setDarkBrightColor(std::make_pair(
@@ -1009,11 +1009,11 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
                 getColor(args["brightColor"].substr(args["brightColor"].find(';') + 1), fileName, line)));
     }
     if (!args["age"].empty()) {
-        component->setMinMaxAge(std::make_pair(std::stoi(args["age"].substr(0, args["emitRate"].find(','))),
-                std::stoi(args["age"].substr(args["age"].find(',') + 1))));
+        component->setMinMaxAge(std::make_pair(std::stoul(args["age"].substr(0, args["emitRate"].find(',')), nullptr, 16),
+                std::stoul(args["age"].substr(args["age"].find(',') + 1), nullptr, 16)));
     }
     if (!args["angle"].empty()) {
-        component->setAngle(std::stoi(args["angle"]));
+        component->setAngle(std::stoi(args["angle"], nullptr, 16));
     }
     if (!args["size"].empty()) {
         component->setMinMaxSize(std::make_pair(
@@ -1024,7 +1024,7 @@ void indie::Parser::createParticle(jf::entities::EntityHandler &entity, irr::io:
         component->setFadeColor(getColor(args["fadeColor"], fileName, line));
     }
     if (!args["fadeTime"].empty()) {
-        component->setFadeTime(std::stoi(args["fadeTime"]));
+        component->setFadeTime(std::stoul(args["fadeTime"], nullptr, 16));
     }
 }
 

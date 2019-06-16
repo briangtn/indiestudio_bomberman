@@ -228,60 +228,38 @@ void indie::scenes::Scene::onStart()
                 ecs.entityManager.getEntitiesByName("musicValueText")[0]->getComponent<indie::components::Text>()->setText(musicVolumeStringStream.str());
             }
         });
-    }
-    if (_fileName == "test.xml") {
-        auto id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_W>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("default");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_X>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("idle");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_C>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("walk");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_V>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("taunt");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_B>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("place_bomb");
-            }
-        });
-        _listeners.emplace_back(id);
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_N>>(nullptr, [](void *n, auto e) {
-            ECSWrapper ecs;
-            if (e.wasPressed) {
-                ecs.entityManager.getEntitiesByName("player")[0]->getComponent<components::Animator>()->setCurrentAnimation("die");
-            }
-        });
-        _listeners.emplace_back(id);
 
-        indie::Map::generateMap(15, 13, 420, false);
-
-        id = ecs.eventManager.addListener<void, events::IrrlichtSpecifiedKeyInputEvent<irr::KEY_KEY_M>>(nullptr, [](void *n, auto e) {
+        ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
             ECSWrapper ecs;
-            if (e.wasPressed) {
-                indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+
+            //ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setWindowDimension({640, 360});
+            ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().setFullScreenEnabled(!ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled());
+            if (ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled())
+                ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_on");
+            else
+                ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_off");
+        });
+        if (ecs.systemManager.getSystem<indie::systems::IrrlichtManagerSystem>().isFullScreenEnabled())
+            ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_on");
+        else
+            ecs.entityManager.getEntitiesByName("fullscreenButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_fullscreen_off");
+
+        ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+            ECSWrapper ecs;
+
+            indie::systems::IrrlichtManagerSystem::drawGizmos(!indie::systems::IrrlichtManagerSystem::getDrawGizmos());
+            if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+            } else {
+                ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
             }
         });
-        _listeners.emplace_back(id);
+
+        if (indie::systems::IrrlichtManagerSystem::getDrawGizmos()) {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_on");
+        } else {
+            ecs.entityManager.getEntitiesByName("debugButton")[0]->getComponent<indie::components::Button>()->setTexturePath("button_debug_off");
+        }
     }
     auto id = ecs.eventManager.addListener<Scene, events::AskingForSaveEvent>(this, [](Scene *self, events::AskingForSaveEvent e){
         self->save(true, true);

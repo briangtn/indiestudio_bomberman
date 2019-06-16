@@ -98,6 +98,11 @@
             <argument name="fileName" value="bomb_plasma_sound"/>
             <argument name="type" value="EFFECT"/>
             <argument name="position" value="0,0,0"/>
+            <argument name="playLooped" value="true"/>
+            <argument name="startPaused" value="true"/>
+            <argument name="volume" value="1.0"/>
+            <argument name="playPosition" value="0"/>
+            <argument name="velocity" value="0,0,0"/>
         </component>
         <component type="Transform">
             <argument name="position" value="0,0,0"/>

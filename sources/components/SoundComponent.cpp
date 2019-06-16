@@ -27,7 +27,10 @@ indie::components::SoundComponent::SoundComponent(jf::entities::Entity &entity, 
     , _spatialization(false)
     , _isLooped(false)
     , _isPaused(true)
+    , _volume(1)
+    , _playPosition(0)
     , _position(0, 0, 0)
+    , _velocity(0, 0, 0)
 {
     EMIT_CREATE(SoundComponent);
 }
@@ -41,7 +44,10 @@ indie::components::SoundComponent::SoundComponent(jf::entities::Entity &entity, 
         , _spatialization(true)
         , _isLooped(false)
         , _isPaused(true)
+        , _volume(1)
+        , _playPosition(0)
         , _position(position)
+        , _velocity(0, 0, 0)
 {
     EMIT_CREATE(SoundComponent);
 }
@@ -72,8 +78,14 @@ irrklang::ISound *indie::components::SoundComponent::getSound()
 void indie::components::SoundComponent::setSound(irrklang::ISound *sound)
 {
     _sound = sound;
-    if (_sound)
+    if (_sound) {
         _state = STARTED;
+        _sound->setVolume(_volume);
+        _sound->setPlayPosition(_playPosition);
+        if (_spatialization) {
+            _sound->setVelocity(irrklang::vec3df(_velocity.x, _velocity.y, _velocity.z));
+        }
+    }
 }
 
 const std::string &indie::components::SoundComponent::getSourceFile() const
@@ -128,11 +140,12 @@ float indie::components::SoundComponent::getVolume() const
     if (_sound) {
         return _sound->getVolume();
     }
-    return 0;
+    return _volume;
 }
 
 void indie::components::SoundComponent::setVolume(float volume)
 {
+    _volume = volume;
     if (_sound) {
         _sound->setVolume(volume);
     }
@@ -143,11 +156,12 @@ unsigned int indie::components::SoundComponent::getPlayPosition() const
     if (_sound) {
         return _sound->getPlayPosition();
     }
-    return 0;
+    return _playPosition;
 }
 
 void indie::components::SoundComponent::setPlayPosition(unsigned int position)
 {
+    _playPosition = position;
     if (_sound) {
         _sound->setPlayPosition(position);
     }
@@ -175,11 +189,12 @@ const indie::maths::Vector3D indie::components::SoundComponent::getVelocity() co
         irrklang::vec3df velocity = _sound->getVelocity();
         return indie::maths::Vector3D(velocity.X, velocity.Y, velocity.Z);
     }
-    return indie::maths::Vector3D(0, 0, 0);
+    return _velocity;
 }
 
 void indie::components::SoundComponent::setVelocity(const indie::maths::Vector3D &velocity)
 {
+    _velocity = velocity;
     if (_sound && _spatialization) {
         _sound->setVelocity(irrklang::vec3df(velocity.x, velocity.y, velocity.z));
     }
@@ -192,6 +207,13 @@ indie::components::SoundComponent &indie::components::SoundComponent::operator>>
     file << R"(            <argument name="type" value=")" << ((_soundType == MUSIC) ? "MUSIC" : "EFFECT") << R"("/>)" << std::endl;
     if (_spatialization) {
         file << R"(            <argument name="position" value=")" << _position << R"("/>)" << std::endl;
+    }
+    file << R"(            <argument name="playLooped" value=")" << std::boolalpha << _isLooped << R"("/>)" << std::endl;
+    file << R"(            <argument name="startPaused" value=")" << std::boolalpha << _isPaused << R"("/>)" << std::endl;
+    file << R"(            <argument name="volume" value=")" << _volume << R"("/>)" << std::endl;
+    file << R"(            <argument name="playPosition" value=")" << _playPosition << R"("/>)" << std::endl;
+    if (_spatialization) {
+        file << R"(            <argument name="velocity" value=")" << _velocity << R"("/>)" << std::endl;
     }
     file << "        </component>" << std::endl;
     return *this;

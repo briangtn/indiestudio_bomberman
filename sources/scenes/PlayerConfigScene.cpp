@@ -8,6 +8,7 @@
 /* Created the 12/06/2019 at 13:59 by brian */
 
 #include <regex>
+#include "components/GUI/Font.hpp"
 #include "systems/LiveSystem.hpp"
 #include "scenes/PlayerConfigScene.hpp"
 #include "ECSWrapper.hpp"
@@ -100,6 +101,7 @@ void indie::scenes::PlayerConfigScene::onStart()
     auto buttonStartEntity = ecs.entityManager.createEntity("buttonStart");
     auto buttonStartComponent = buttonStartEntity->assignComponent<indie::components::Button>("", 3);
     auto buttonStartTransform = buttonStartEntity->assignComponent<indie::components::Transform>();
+
     buttonStartTransform->setPosition({(1280 - 200) / 2, (720 - 200) / 2, 100});
     buttonStartTransform->setScale({200, 200, 0});
     buttonStartComponent->setTexturePath("play_button");
@@ -147,6 +149,25 @@ void indie::scenes::PlayerConfigScene::onStart()
     backgroundEntity->assignComponent<indie::components::Image>("default_menu_background");
     auto backgroundTransform = backgroundEntity->assignComponent<indie::components::Transform>();
     backgroundTransform->setPosition({0, 0, -1});
+
+    auto backToMenuButton = ecs.entityManager.createEntity("backToMenuButton");
+    auto backToMenuButtonComponent = backToMenuButton->assignComponent<indie::components::Button>("", 99, "button_back_to_menu");
+    auto backToMenuButtonTransform = backToMenuButton->assignComponent<indie::components::Transform>();
+    backToMenuButtonTransform->setPosition({0, 645, 0});
+    backToMenuButtonTransform->setScale({367,75,0});
+
+    backToMenuButton->getComponent<indie::components::Button>()->setOnClicked([](indie::components::Button *button) {
+        indie::scenes::SceneManager::safeChangeScene("mainMenu");
+    });
+    backToMenuButtonComponent->setOnHovered([](indie::components::Button *button, bool isHovered) {
+        if (isHovered) {
+            button->setTexturePath("button_back_to_menu_hovered");
+        } else {
+            button->setTexturePath("button_back_to_menu");
+        }
+    });
+
+
     UpdateConfigController();
 }
 
@@ -189,24 +210,34 @@ void indie::scenes::PlayerConfigScene::createConfigBlock(int id)
     auto leftButton = ecs.entityManager.createEntity("leftButton" + idString);
     auto leftButtonComponent = leftButton->assignComponent<indie::components::Button>("", 10 + id);
     auto leftButtonTransform = leftButton->assignComponent<indie::components::Transform>();
+
+    leftButtonComponent->setTexturePath("button_default");
     leftButtonTransform->setPosition({basePos.x, basePos.y, 0});
     leftButtonTransform->setScale({buttonSize.x, buttonSize.y, 0});
 
     auto rightButton = ecs.entityManager.createEntity("rightButton" + idString);
     auto rightButtonComponent = rightButton->assignComponent<indie::components::Button>("", 20 + id);
     auto rightButtonTransform = rightButton->assignComponent<indie::components::Transform>();
+
+    rightButtonComponent->setTexturePath("button_default");
     rightButtonTransform->setPosition({basePos.x + gapSize * 2 + buttonSize.x + imageSize.x, basePos.y, 0});
     rightButtonTransform->setScale({buttonSize.x, buttonSize.y, 0});
 
     auto detectControllerButton = ecs.entityManager.createEntity("detectControllerButton" + idString);
     auto detectControllerButtonComponent = detectControllerButton->assignComponent<indie::components::Button>("Detect controller", 30 + id);
     auto detectControllerButtonTransform = detectControllerButton->assignComponent<indie::components::Transform>();
+    auto detectControllerButtonFont = detectControllerButton->assignComponent<components::Font>("default_font");
+
+    detectControllerButtonComponent->setTexturePath("button_default");
     detectControllerButtonTransform->setPosition({basePos.x, basePos.y + blockSize.y, 0});
     detectControllerButtonTransform->setScale({blockSize.x, 50, 0});
 
     auto configControllerButton = ecs.entityManager.createEntity("configControllerButton" + idString);
     auto configControllerButtonComponent = configControllerButton->assignComponent<indie::components::Button>("Config controller", 40 + id);
     auto configControllerButtonTransform = configControllerButton->assignComponent<indie::components::Transform>();
+    auto configControllerButtonFont = configControllerButton->assignComponent<components::Font>("default_font");
+
+    configControllerButtonComponent->setTexturePath("button_default");
     configControllerButtonTransform->setPosition({basePos.x, basePos.y + blockSize.y, 0});
     configControllerButtonTransform->setScale({blockSize.x, 50, 0});
 
