@@ -70,8 +70,11 @@ namespace indie {
 
             bool _isLooped;
             bool _isPaused;
+            float _volume;
+            unsigned int _playPosition;
 
             indie::maths::Vector3D _position;
+            indie::maths::Vector3D _velocity;
         };
     }
 }
