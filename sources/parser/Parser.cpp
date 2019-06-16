@@ -486,7 +486,6 @@ void indie::Parser::createPause(irr::io::IXMLReader *xmlReader, const std::strin
 
     fillMapArgs(args, xmlReader, fileName, line, "indie::Parser::createPause", "system");
     ecs.systemManager.addSystem<systems::PauseSystem>();
-    ecs.systemManager.getSystem<systems::PauseSystem>();
 }
 
 void indie::Parser::createTaunt(irr::io::IXMLReader *xmlReader, const std::string &fileName, unsigned int &line)
