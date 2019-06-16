@@ -7,7 +7,7 @@
 
 /* Created the 13/06/2019 at 10:07 by jfrabel */
 
-#include <systems/BombManagerSystem.hpp>
+#include "systems/BombManagerSystem.hpp"
 #include "systems/LiveSystem.hpp"
 #include "ECSWrapper.hpp"
 #include "components/PlayerAlive.hpp"
